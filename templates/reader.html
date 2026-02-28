@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block body_attributes %}class="{{ body_classes }}"{% endblock %}
+
+{% block content %}
+
+<script> //для решения проблемы с передачей стилей пользователя с БД
+    // Устанавливаем классы, переданные сервером, сразу после загрузки DOM
+    document.body.className = "{{ body_classes }}";
+</script>
+
+<!-- Верхняя панель, прилипающая при прокрутке -->
+<div class="sticky-top bg-white border-bottom py-2 mb-3" style="z-index: 100;">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="mb-0 me-2">{{ book.title }}</h5>
+            <div class="d-flex align-items-center gap-3">
+                <!-- Ползунок размера шрифта (уже есть) -->
+                <div class="d-flex align-items-center">
+                    <label for="fontSizeRange" class="form-label me-2 mb-0 small">Размер</label>
+                    <input type="range" class="form-range" id="fontSizeRange" min="0" max="2" step="1" value="1" style="width: 100px;">
+                    <span id="fontSizeLabel" class="badge bg-secondary ms-2">Средний</span>
+                </div>
+
+                <!-- Кнопки переключения темы -->
+                <div class="btn-group btn-group-sm" role="group" aria-label="Тема оформления">
+                    <button type="button" class="btn btn-outline-secondary theme-btn" data-theme="normal">☀️</button>
+                    <button type="button" class="btn btn-outline-secondary theme-btn" data-theme="dark">🌙</button>
+                    <button type="button" class="btn btn-outline-secondary theme-btn" data-theme="sepia">📜</button>
+                    <button type="button" class="btn btn-outline-secondary theme-btn" data-theme="high">🔆</button>
+                </div>
+
+                <!-- Кнопка сброса -->
+                <button id="resetSettingsBtn" class="btn btn-outline-danger btn-sm">↺ Сброс</button>
+
+                <a href="/profile/{{ user_id }}" class="btn btn-outline-primary btn-sm">← Выйти</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Текст книги -->
+<div class="container">
+    <div id="book-content">
+        {{ book_content | safe }}
+    </div>
+</div>
+
+<script>
+    // Получаем элементы
+    const body = document.body;
+    const slider = document.getElementById('fontSizeRange');
+    const label = document.getElementById('fontSizeLabel');
+    const themeButtons = document.querySelectorAll('.theme-btn');
+    const resetBtn = document.getElementById('resetSettingsBtn');
+
+    // Функция для обновления класса размера шрифта
+    function updateFontSize(value) {
+        body.classList.remove('font-small', 'font-medium', 'font-large');
+        if (value == 0) {
+            body.classList.add('font-small');
+            label.textContent = 'Маленький';
+        } else if (value == 1) {
+            body.classList.add('font-medium');
+            label.textContent = 'Средний';
+        } else if (value == 2) {
+            body.classList.add('font-large');
+            label.textContent = 'Крупный';
+        }
+    }
+
+    // Функция для обновления темы
+    function updateTheme(theme) {
+        // Удаляем все классы темы (normal, dark, sepia, high)
+        body.classList.remove('theme-normal', 'theme-dark', 'theme-sepia', 'theme-high');
+        body.classList.add(`theme-${theme}`);
+    }
+
+    // Устанавливаем начальное состояние слайдера и темы в соответствии с текущими классами body
+    // Размер
+    if (body.classList.contains('font-large')) {
+        slider.value = 2;
+        label.textContent = 'Крупный';
+    } else if (body.classList.contains('font-small')) {
+        slider.value = 0;
+        label.textContent = 'Маленький';
+    } else {
+        slider.value = 1; // medium
+        label.textContent = 'Средний';
+    }
+
+    // Тема: определяем, какой класс темы есть
+    const currentTheme = Array.from(body.classList).find(cls => cls.startsWith('theme-'));
+    if (currentTheme) {
+        // currentTheme = 'theme-normal' и т.д.
+        // Ничего делать не нужно, кнопки подсветим позже
+    } else {
+        // Если класса темы нет, считаем темой normal и добавляем класс
+        body.classList.add('theme-normal');
+    }
+
+    // Подсветка активной кнопки темы
+    function highlightActiveTheme() {
+        const activeTheme = Array.from(body.classList).find(cls => cls.startsWith('theme-')).replace('theme-', '');
+        themeButtons.forEach(btn => {
+            if (btn.dataset.theme === activeTheme) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    // Вызываем подсветку при загрузке
+    highlightActiveTheme();
+
+    // Обработчик для слайдера
+    slider.addEventListener('input', function() {
+        updateFontSize(this.value);
+    });
+
+    // Обработчики для кнопок темы
+    themeButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const theme = this.dataset.theme;
+            updateTheme(theme);
+            highlightActiveTheme();
+        });
+    });
+
+    // Кнопка сброса: возвращаем исходные настройки (изначальные классы, которые прислал сервер)
+    // Для этого сохраним исходные классы при загрузке страницы
+    const originalClasses = body.className; // строка классов
+
+    resetBtn.addEventListener('click', function() {
+        body.className = originalClasses; // восстанавливаем исходные классы
+        // Перенастроим слайдер и подсветку под восстановленные классы
+        // Размер
+        if (body.classList.contains('font-large')) {
+            slider.value = 2;
+            label.textContent = 'Крупный';
+        } else if (body.classList.contains('font-small')) {
+            slider.value = 0;
+            label.textContent = 'Маленький';
+        } else {
+            slider.value = 1;
+            label.textContent = 'Средний';
+        }
+        // Тема
+        highlightActiveTheme();
+    });
+</script>
+
+{% endblock %}
+
+

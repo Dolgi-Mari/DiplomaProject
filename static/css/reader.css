@@ -1,0 +1,71 @@
+/* reader.css — стили для читалки */
+
+/* Базовые стили (по умолчанию) */
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #000;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    padding: 20px;
+}
+
+/* Увеличенный шрифт */
+body.font-large {
+    font-size: 24px;
+    line-height: 1.7;
+}
+
+body.font-medium {
+    font-size: 20px;
+    line-height: 1.6;
+}
+
+body.font-small {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Тёмная тема */
+body.theme-dark {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+/* Высокий контраст (жёлтый/чёрный) */
+body.theme-high {
+    background-color: #ffeb3b;
+    color: #000;
+}
+
+/* Сепия */
+body.theme-sepia {
+    background-color: #f4ecd8;
+    color: #5b4636;
+}
+
+/* Шрифт с засечками */
+body.serif {
+    font-family: 'Times New Roman', serif;
+}
+
+/* Шрифт без засечек (по умолчанию уже sans, но можно уточнить) */
+body.sans-serif {
+    font-family: Arial, sans-serif;
+}
+
+/* Стили для контента книги */
+#book-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#book-content p {
+    margin-bottom: 1.2em;
+}
+
+body.theme-normal {
+    background-color: #fff;
+    color: #000;
+}

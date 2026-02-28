@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Тест зрения</h1>
+<p>Ответьте на несколько вопросов, чтобы мы подобрали оптимальные настройки чтения.</p>
+
+<form method="POST" action="/test">
+    <!-- Вопрос 1: Острота зрения (размер шрифта) -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">1. Какой размер шрифта вам комфортен?</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small">
+                <label class="form-check-label" for="vision_small">Мелкий (как в обычных книгах)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium">
+                <label class="form-check-label" for="vision_medium">Средний (чуть крупнее)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large">
+                <label class="form-check-label" for="vision_large">Крупный (нужно увеличение)</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вопрос 2: Контрастность -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">2. Какой вариант контраста вам удобнее?</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="contrast" id="contrast_normal" value="normal">
+                <label class="form-check-label" for="contrast_normal">Обычный (чёрное на белом)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="contrast" id="contrast_high" value="high">
+                <label class="form-check-label" for="contrast_high">Высокий контраст (жёлтый/чёрный)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="contrast" id="contrast_dark" value="dark">
+                <label class="form-check-label" for="contrast_dark">Тёмная тема (белое на чёрном)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="contrast" id="contrast_sepia" value="sepia">
+                <label class="form-check-label" for="contrast_sepia">Сепия (мягкий фон)</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вопрос 3: Цветовосприятие (упрощённо) -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">3. Есть ли у вас особенности цветовосприятия?</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="color" id="color_normal" value="normal">
+                <label class="form-check-label" for="color_normal">Нет, вижу все цвета нормально</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="color" id="color_deutan" value="deutan">
+                <label class="form-check-label" for="color_deutan">Не различаю оттенки красного/зелёного</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="color" id="color_protan" value="protan">
+                <label class="form-check-label" for="color_protan">Плохо вижу красный</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="color" id="color_tritan" value="tritan">
+                <label class="form-check-label" for="color_tritan">Плохо вижу синий/жёлтый</label>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить и продолжить</button>
+</form>
+{% endblock %}
