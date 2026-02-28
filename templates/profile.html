@@ -55,10 +55,14 @@
                             {% else %}
                                 <span class="badge bg-warning text-dark ms-2">HTML не готов</span>
                             {% endif %}
+                            <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Удалить книгу? Это действие нельзя отменить.');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger ms-2">Удалить</button>
+                            </form>
                         </div>
                         <span class="badge bg-secondary">{{ book.uploaded_at.strftime('%d.%m.%Y') }}</span>
                     </li>
                     {% endfor %}
+                    
                 </ul>
                 {% else %}
                 <p>У вас пока нет загруженных книг.</p>

@@ -7,6 +7,7 @@ from epub_parser import extract_text_from_epub, get_epub_title
 from pdf_parser import extract_text_from_pdf, get_pdf_title
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import session
+from flask import abort, flash
 
 # ================== КОНФИГУРАЦИЯ ==================
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -256,6 +257,33 @@ def read_book(book_id):
                            user_id=book.user_id,
                            body_classes=body_class_str)
     
+@app.route('/delete_book/<int:book_id>', methods=['POST'])
+def delete_book(book_id):
+    # Проверка авторизации
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    book = Book.query.get_or_404(book_id)
+    
+    # Проверка, что книга принадлежит текущему пользователю
+    if book.user_id != session['user_id']:
+        abort(403)  # доступ запрещён
+    
+    # Удаляем физические файлы
+    try:
+        if os.path.exists(book.file_path):
+            os.remove(book.file_path)
+        if book.extracted_html_path and os.path.exists(book.extracted_html_path):
+            os.remove(book.extracted_html_path)
+    except Exception as e:
+        flash(f'Ошибка при удалении файлов: {e}', 'error')
+    
+    # Удаляем запись из БД
+    db.session.delete(book)
+    db.session.commit()
+    
+    flash('Книга успешно удалена', 'success')
+    return redirect(url_for('profile', user_id=session['user_id']))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
