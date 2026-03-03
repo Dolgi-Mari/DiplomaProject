@@ -30,6 +30,18 @@
                     <button type="button" class="btn btn-outline-secondary theme-btn" data-theme="high">🔆</button>
                 </div>
 
+                <!-- Переключатель шрифта -->
+                <div class="btn-group btn-group-sm ms-2" role="group">
+                    <button type="button" class="btn btn-outline-secondary font-family-btn" data-font="sans">Sans</button>
+                    <button type="button" class="btn btn-outline-secondary font-family-btn" data-font="serif">Serif</button>
+                </div>
+
+                <!-- Переключатель интервала -->
+                <div class="btn-group btn-group-sm ms-2" role="group">
+                    <button type="button" class="btn btn-outline-secondary line-height-btn" data-line="normal">Обычный</button>
+                    <button type="button" class="btn btn-outline-secondary line-height-btn" data-line="large">Увеличенный</button>
+                </div>
+
                 <!-- Кнопка сброса -->
                 <button id="resetSettingsBtn" class="btn btn-outline-danger btn-sm">↺ Сброс</button>
 
@@ -75,6 +87,56 @@
         body.classList.remove('theme-normal', 'theme-dark', 'theme-sepia', 'theme-high');
         body.classList.add(`theme-${theme}`);
     }
+
+    // Функция для переключения шрифта
+    const fontButtons = document.querySelectorAll('.font-family-btn');
+    fontButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const font = this.dataset.font; // 'sans' или 'serif'
+            body.classList.remove('font-sans', 'font-serif');
+            body.classList.add(`font-${font}`);
+            // Можно подсвечивать активную кнопку
+            fontButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Функция для переключения интервала
+    const lineButtons = document.querySelectorAll('.line-height-btn');
+    lineButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const line = this.dataset.line; // 'normal' или 'large'
+            body.classList.remove('line-height-normal', 'line-height-large');
+            body.classList.add(`line-height-${line}`);
+            lineButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // При загрузке страницы подсветить активные кнопки на основе текущих классов
+    // (аналогично тому, как мы делали для темы)
+    function highlightActiveButtons() {
+        // Сброс активных кнопок шрифта
+        document.querySelectorAll('.font-family-btn').forEach(btn => btn.classList.remove('active'));
+        // Установка активной кнопки шрифта
+        if (body.classList.contains('font-serif')) {
+            document.querySelector('.font-family-btn[data-font="serif"]').classList.add('active');
+        } else {
+            document.querySelector('.font-family-btn[data-font="sans"]').classList.add('active');
+        }
+
+        // Сброс активных кнопок интервала
+        document.querySelectorAll('.line-height-btn').forEach(btn => btn.classList.remove('active'));
+        // Установка активной кнопки интервала
+        if (body.classList.contains('line-height-large')) {
+            document.querySelector('.line-height-btn[data-line="large"]').classList.add('active');
+        } else {
+            document.querySelector('.line-height-btn[data-line="normal"]').classList.add('active');
+        }
+    }
+
+    // Вызвать при загрузке
+    highlightActiveButtons();
 
     // Устанавливаем начальное состояние слайдера и темы в соответствии с текущими классами body
     // Размер
@@ -148,6 +210,8 @@
         }
         // Тема
         highlightActiveTheme();
+        // Подсветка кнопок шрифта и интервала
+        highlightActiveButtons();
     });
 </script>
 

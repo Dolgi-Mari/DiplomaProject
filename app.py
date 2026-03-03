@@ -254,12 +254,19 @@ def read_book(book_id):
     theme_pref = user.theme_pref if user and user.theme_pref else 'normal'
     body_classes.append(f'theme-{theme_pref}')
 
-    # Гарнитура (по умолчанию sans-serif, если serif не выбран)
-    # Пока нет отдельного поля, можно ориентироваться на что-то, но мы добавим позже.
-    # Пока просто добавим класс sans-serif или serif, если будет поле.
-    # Для демо добавим проверку: если пользователь выбрал "serif" (можно потом добавить в тест)
-    # Но сейчас нет такого поля. Поэтому пока без класса serif.
-    # Можно захардкодить serif для определённого пользователя или оставить пустым.
+    # Новые классы
+    if user.font_family:
+        body_classes.append(f'font-{user.font_family}')
+    else:
+        body_classes.append('font-sans')  # по умолчанию
+
+    if user.line_height:
+        body_classes.append(f'line-height-{user.line_height}')
+    else:
+        body_classes.append('line-height-normal')
+
+    if user.light_sensitive:
+        body_classes.append('light-sensitive')
 
     # Собираем строку классов
     body_class_str = ' '.join(body_classes)
