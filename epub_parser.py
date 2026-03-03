@@ -1,8 +1,6 @@
 import os
 from ebooklib import epub
 from bs4 import BeautifulSoup
-import xml.etree.ElementTree as ET
-from ebooklib import epub
 
 def get_epub_title(epub_path):
     """
@@ -11,13 +9,9 @@ def get_epub_title(epub_path):
     """
     try:
         book = epub.read_epub(epub_path)
-        # Название обычно хранится в метаданных Dublin Core
-        # В ebooklib оно доступно через book.titles (список)
-        if book.titles:
-            return book.titles[0]
-        # Если нет, пробуем найти в метаданных через get_metadata
+        # Используем только get_metadata
         metadata = book.get_metadata('DC', 'title')
-        if metadata:
+        if metadata and len(metadata) > 0:
             return metadata[0][0]
         return None
     except Exception as e:
@@ -26,35 +20,60 @@ def get_epub_title(epub_path):
 
 def extract_text_from_epub(epub_path, output_html_path):
     """
-    Извлекает текст из EPUB-файла и сохраняет его как простой HTML.
-    
-    :param epub_path: путь к файлу EPUB
-    :param output_html_path: путь, куда сохранить результат
-    :return: True, если успешно, иначе False
+    Извлекает текст и изображения из EPUB-файла, сохраняет HTML и копирует картинки.
     """
     try:
-        # Открываем книгу
         book = epub.read_epub(epub_path)
-        
-        # Список для сбора всего текста
         all_html_pieces = []
-        
-        # Проходим по всем элементам книги
+
+        output_dir = os.path.dirname(output_html_path)
+        images_dir = os.path.join(output_dir, 'images')
+        os.makedirs(images_dir, exist_ok=True)
+
+        # Отладка: вывести все ресурсы книги
+        print("=" * 50)
+        print("Все ресурсы книги:")
         for item in book.get_items():
-            # Нас интересуют только документы (тип 9 - документ)
-            if item.get_type() == 9:
-                # Получаем содержимое как байты, декодируем
+            print(f"Тип: {item.get_type()}, имя: {item.get_name()}")
+        print("=" * 50)
+
+        for item in book.get_items():
+            if item.get_type() == 9:  # документ (XHTML)
                 content = item.get_body_content().decode('utf-8', errors='ignore')
-                # Парсим HTML
                 soup = BeautifulSoup(content, 'html.parser')
-                # Удаляем скрипты и стили (они не нужны для текста)
+
+                # Удаляем скрипты и стили
                 for script in soup(['script', 'style']):
                     script.decompose()
-                # Получаем текст в виде HTML (с сохранением абзацев)
-                # Можно взять просто текст, но лучше сохранить абзацы
+
+                # Обрабатываем изображения
+                for img in soup.find_all('img'):
+                    src = img.get('src')
+                    if src:
+                        img_filename = os.path.basename(src)
+                        print(f"Найдено изображение: src='{src}', basename='{img_filename}'")
+                        found = False
+                        # Ищем ресурс с таким же именем файла среди всех элементов книги
+                        for resource in book.get_items():
+                            resource_name = resource.get_name()
+                            # Сравниваем только имя файла (последний компонент пути)
+                            if os.path.basename(resource_name).lower() == img_filename.lower():
+                                print(f"  Найден ресурс: {resource_name} (тип {resource.get_type()})")
+                                img_data = resource.get_content()
+                                img_local_path = os.path.join(images_dir, img_filename)
+                                with open(img_local_path, 'wb') as f:
+                                    f.write(img_data)
+                                print(f"  Изображение сохранено в {img_local_path}")
+                                img['src'] = f'images/{img_filename}'
+                                found = True
+                                break
+                        if not found:
+                            print(f"  ВНИМАНИЕ: ресурс для {img_filename} не найден!")
+
+                # Сохраняем обработанный HTML
                 text = str(soup.body) if soup.body else str(soup)
                 all_html_pieces.append(text)
-        
+
         # Собираем итоговый HTML
         full_html = f"""<!DOCTYPE html>
 <html>
@@ -66,16 +85,13 @@ def extract_text_from_epub(epub_path, output_html_path):
     {''.join(all_html_pieces)}
 </body>
 </html>"""
-        
-        # Создаём папку для выходного файла, если её нет
-        output_dir = os.path.dirname(output_html_path)
-        if output_dir:  # создаём папку, только если путь не пустой
-            os.makedirs(output_dir, exist_ok=True)
-        
-        # Сохраняем
+
+        os.makedirs(output_dir, exist_ok=True)
+
         with open(output_html_path, 'w', encoding='utf-8') as f:
             f.write(full_html)
-        
+
+        print(f"HTML сохранён: {output_html_path}")
         return True
     except Exception as e:
         print(f"Ошибка при обработке EPUB: {e}")
@@ -83,7 +99,6 @@ def extract_text_from_epub(epub_path, output_html_path):
 
 # Для тестирования, если файл запускают напрямую
 if __name__ == "__main__":
-    # Замени путь на реальный EPUB-файл
     test_epub = "C:/Users/Мария/Desktop/DiplomaProject/test-book-2.epub"
     test_output = "test_output.html"
     if os.path.exists(test_epub):
