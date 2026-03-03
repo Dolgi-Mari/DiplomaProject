@@ -18,9 +18,10 @@ def get_epub_title(epub_path):
         print(f"Ошибка при получении названия EPUB: {e}")
         return None
 
-def extract_text_from_epub(epub_path, output_html_path):
+def extract_text_from_epub(epub_path, output_html_path, book_id):
     """
     Извлекает текст и изображения из EPUB-файла, сохраняет HTML и копирует картинки.
+    book_id нужен для формирования правильного URL к картинкам.
     """
     try:
         book = epub.read_epub(epub_path)
@@ -30,33 +31,22 @@ def extract_text_from_epub(epub_path, output_html_path):
         images_dir = os.path.join(output_dir, 'images')
         os.makedirs(images_dir, exist_ok=True)
 
-        # Отладка: вывести все ресурсы книги
-        print("=" * 50)
-        print("Все ресурсы книги:")
-        for item in book.get_items():
-            print(f"Тип: {item.get_type()}, имя: {item.get_name()}")
-        print("=" * 50)
-
         for item in book.get_items():
             if item.get_type() == 9:  # документ (XHTML)
                 content = item.get_body_content().decode('utf-8', errors='ignore')
                 soup = BeautifulSoup(content, 'html.parser')
 
-                # Удаляем скрипты и стили
                 for script in soup(['script', 'style']):
                     script.decompose()
 
-                # Обрабатываем изображения
                 for img in soup.find_all('img'):
                     src = img.get('src')
                     if src:
                         img_filename = os.path.basename(src)
                         print(f"Найдено изображение: src='{src}', basename='{img_filename}'")
                         found = False
-                        # Ищем ресурс с таким же именем файла среди всех элементов книги
                         for resource in book.get_items():
                             resource_name = resource.get_name()
-                            # Сравниваем только имя файла (последний компонент пути)
                             if os.path.basename(resource_name).lower() == img_filename.lower():
                                 print(f"  Найден ресурс: {resource_name} (тип {resource.get_type()})")
                                 img_data = resource.get_content()
@@ -64,17 +54,16 @@ def extract_text_from_epub(epub_path, output_html_path):
                                 with open(img_local_path, 'wb') as f:
                                     f.write(img_data)
                                 print(f"  Изображение сохранено в {img_local_path}")
-                                img['src'] = f'images/{img_filename}'
+                                # Формируем URL для доступа через Flask
+                                img['src'] = f'/book_images/{book_id}/{img_filename}'
                                 found = True
                                 break
                         if not found:
                             print(f"  ВНИМАНИЕ: ресурс для {img_filename} не найден!")
 
-                # Сохраняем обработанный HTML
                 text = str(soup.body) if soup.body else str(soup)
                 all_html_pieces.append(text)
 
-        # Собираем итоговый HTML
         full_html = f"""<!DOCTYPE html>
 <html>
 <head>

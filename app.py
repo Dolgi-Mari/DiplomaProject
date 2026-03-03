@@ -8,6 +8,7 @@ from pdf_parser import extract_text_from_pdf, get_pdf_title
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import session
 from flask import abort, flash
+from flask import send_from_directory, abort
 
 # ================== КОНФИГУРАЦИЯ ==================
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -199,7 +200,7 @@ def upload(user_id):
                 html_filename = filename.rsplit('.', 1)[0] + '.html'
                 html_path = os.path.join(html_folder, html_filename)
 
-                success = extract_text_from_epub(file_path, html_path)
+                success = extract_text_from_epub(file_path, html_path, new_book.id)
                 if success:
                     new_book.extracted_html_path = html_path
                     db.session.commit()
@@ -365,6 +366,21 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('home'))
 
+@app.route('/book_images/<int:book_id>/<path:filename>')
+def book_images(book_id, filename):
+    """Отдаёт изображения из папки книги."""
+    book = Book.query.get_or_404(book_id)
+    if not book.extracted_html_path:
+        abort(404)
+    # Определяем папку, где лежат изображения (рядом с HTML файлом)
+    html_dir = os.path.dirname(book.extracted_html_path)
+    images_dir = os.path.join(html_dir, 'images')
+    # Проверяем существование файла
+    if os.path.exists(os.path.join(images_dir, filename)):
+        return send_from_directory(images_dir, filename)
+    else:
+        abort(404)
+        
 # ================== ЗАПУСК ==================
 if __name__ == '__main__':
     app.run(debug=True)
