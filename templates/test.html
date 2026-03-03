@@ -70,6 +70,51 @@
         </div>
     </div>
 
+    <!-- Вопрос 4: Чувствительность к свету -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">4. Чувствительны ли вы к яркому свету?</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="light_sensitive" id="light_yes" value="yes">
+                <label class="form-check-label" for="light_yes">Да, мне комфортнее в тёмном режиме</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="light_sensitive" id="light_no" value="no" checked>
+                <label class="form-check-label" for="light_no">Нет, яркий свет не мешает</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вопрос 5: Тип шрифта -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">5. Какой тип шрифта вам удобнее?</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="font_family" id="font_sans" value="sans" checked>
+                <label class="form-check-label" for="font_sans">Без засечек (Arial, Verdana) — обычно для экрана</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="font_family" id="font_serif" value="serif">
+                <label class="form-check-label" for="font_serif">С засечками (Times, Georgia) — для печатного стиля</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вопрос 6: Межстрочный интервал -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">6. Какой межстрочный интервал вам комфортен?</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" checked>
+                <label class="form-check-label" for="line_normal">Обычный (как в книгах)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="line_height" id="line_large" value="large">
+                <label class="form-check-label" for="line_large">Увеличенный (легче читать)</label>
+            </div>
+        </div>
+    </div>
+
     <button type="submit" class="btn btn-primary">Сохранить и продолжить</button>
 </form>
 {% endblock %}

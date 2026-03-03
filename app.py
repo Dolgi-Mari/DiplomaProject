@@ -40,6 +40,12 @@ class User(db.Model):
     color_vision = db.Column(db.String(20))   # 'normal', 'deutan', 'protan', 'tritan'
     font_pref = db.Column(db.String(20))      # 'small', 'medium', 'large'
     theme_pref = db.Column(db.String(20))     # 'light', 'dark', 'sepia', 'high_contrast'
+    
+    # НОВЫЕ ПОЛЯ
+    light_sensitive = db.Column(db.Boolean, default=False)        # чувствительность к свету (да/нет)
+    font_family = db.Column(db.String(20), default='sans')        # 'sans' или 'serif'
+    line_height = db.Column(db.String(20), default='normal')      # 'normal' или 'large'
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -91,12 +97,20 @@ def test():
         vision = request.form.get('vision', 'medium')
         contrast = request.form.get('contrast', 'normal')
         color = request.form.get('color', 'normal')
+        # НОВЫЕ ПОЛЯ
+        light_sensitive = request.form.get('light_sensitive') == 'yes'  # True/False
+        font_family = request.form.get('font_family', 'sans')
+        line_height = request.form.get('line_height', 'normal')
         
         # Обновляем поля существующего пользователя
         user.font_pref = vision
         user.theme_pref = contrast
         user.color_vision = color
-        user.contrast = contrast  # если нужно отдельное поле для контраста
+        user.contrast = contrast
+        
+        user.light_sensitive = light_sensitive
+        user.font_family = font_family
+        user.line_height = line_height
         
         db.session.commit()
         
