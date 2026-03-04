@@ -1,4 +1,5 @@
 import os
+import shutil
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -342,7 +343,10 @@ def delete_book(book_id):
         if os.path.exists(book.file_path):
             os.remove(book.file_path)
         if book.extracted_html_path and os.path.exists(book.extracted_html_path):
-            os.remove(book.extracted_html_path)
+            # Удаляем папку html, где лежит этот файл
+            html_dir = os.path.dirname(book.extracted_html_path)
+            if os.path.exists(html_dir):
+                shutil.rmtree(html_dir)
     except Exception as e:
         flash(f'Ошибка при удалении файлов: {e}', 'error')
     
