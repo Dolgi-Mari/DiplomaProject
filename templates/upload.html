@@ -11,8 +11,8 @@
                 
                 <form method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="file" class="form-label">Выберите файл (EPUB, PDF, FB2)</label>
-                        <input class="form-control" type="file" id="file" name="file" accept=".epub,.pdf,.fb2">
+                        <label for="file" class="form-label">Выберите файл (EPUB, PDF, FB2, docx)</label>
+                        <input class="form-control" type="file" id="file" name="file" accept=".epub,.pdf,.fb2,.docx ">
                     </div>
                     <button type="submit" class="btn btn-primary">Загрузить</button>
                     <a href="/profile/{{ user.id }}" class="btn btn-secondary">Отмена</a>

@@ -9,6 +9,8 @@ from flask import session
 from flask import abort, flash
 from flask import send_from_directory, abort
 from pdf_parser import extract_text_and_images_from_pdf, get_pdf_title
+from docx_parser import extract_text_from_docx, get_docx_title
+from fb2_parser import get_fb2_title, extract_text_and_images_from_fb2
 
 # ================== КОНФИГУРАЦИЯ ==================
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -17,7 +19,7 @@ app = Flask(__name__)
 
 # Настройки загрузки файлов
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'epub', 'pdf', 'fb2'}
+ALLOWED_EXTENSIONS = {'epub', 'pdf', 'fb2', 'docx'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 
@@ -182,6 +184,20 @@ def upload(user_id):
                         book_title = title_from_meta
                 except Exception as e:
                     print(f"Ошибка при получении названия PDF: {e}")
+            elif file_ext == 'docx':
+                try:
+                    title_from_meta = get_docx_title(file_path)
+                    if title_from_meta:
+                        book_title = title_from_meta
+                except Exception as e:
+                    print(f"Ошибка при получении названия DOCX: {e}")
+            elif file_ext == 'fb2':
+                try:
+                    title_from_meta = get_fb2_title(file_path)
+                    if title_from_meta:
+                        book_title = title_from_meta
+                except Exception as e:
+                    print(f"Ошибка при получении названия FB2: {e}")
 
             # Создаём запись в БД с полученным названием
             new_book = Book(
@@ -222,6 +238,36 @@ def upload(user_id):
                     print(f"HTML создан: {html_path}")
                 else:
                     print(f"Не удалось извлечь текст из PDF: {filename}")
+
+            # --- БЛОК ДЛЯ DOCX ---
+            if file_ext == 'docx':
+                html_folder = os.path.join(user_folder, 'html')
+                os.makedirs(html_folder, exist_ok=True)
+                html_filename = filename.rsplit('.', 1)[0] + '.html'
+                html_path = os.path.join(html_folder, html_filename)
+
+                success = extract_text_from_docx(file_path, html_path, new_book.id)
+                if success:
+                    new_book.extracted_html_path = html_path
+                    db.session.commit()
+                    print(f"HTML создан: {html_path}")
+                else:
+                    print(f"Не удалось извлечь текст из DOCX: {filename}")
+            
+            # --- БЛОК ДЛЯ FB2 ---
+            if file_ext == 'fb2':
+                html_folder = os.path.join(user_folder, 'html')
+                os.makedirs(html_folder, exist_ok=True)
+                html_filename = filename.rsplit('.', 1)[0] + '.html'
+                html_path = os.path.join(html_folder, html_filename)
+
+                success = extract_text_and_images_from_fb2(file_path, html_path, new_book.id)
+                if success:
+                    new_book.extracted_html_path = html_path
+                    db.session.commit()
+                    print(f"HTML создан: {html_path}")
+                else:
+                    print(f"Не удалось извлечь текст из FB2: {filename}")
 
             return f"Книга {filename} успешно загружена! <a href='/profile/{user.id}'>Вернуться в профиль</a>"
     
