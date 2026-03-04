@@ -125,3 +125,43 @@ body.theme-high img {
 body.light-sensitive img {
     filter: brightness(0.9); /* применяется вместе с фильтрами темы */
 }
+
+/* Стили для таблиц */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    background-color: inherit;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Для тёмной темы */
+body.theme-dark table {
+    border-color: #555;
+}
+body.theme-dark th {
+    background-color: #333;
+    color: #ddd;
+}
+body.theme-dark td {
+    border-color: #555;
+}
+
+/* Для сепии */
+body.theme-sepia table {
+    border-color: #c0a16b;
+}
+body.theme-sepia th {
+    background-color: #e5d3b5;
+    color: #5b4636;
+}

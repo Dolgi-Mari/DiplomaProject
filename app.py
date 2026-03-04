@@ -10,7 +10,7 @@ from flask import session
 from flask import abort, flash
 from flask import send_from_directory, abort
 from pdf_parser import extract_text_and_images_from_pdf, get_pdf_title
-from docx_parser import extract_text_from_docx, get_docx_title
+from docx_parser import extract_text_and_images_from_docx, get_docx_title
 from fb2_parser import get_fb2_title, extract_text_and_images_from_fb2
 
 # ================== КОНФИГУРАЦИЯ ==================
@@ -247,7 +247,7 @@ def upload(user_id):
                 html_filename = filename.rsplit('.', 1)[0] + '.html'
                 html_path = os.path.join(html_folder, html_filename)
 
-                success = extract_text_from_docx(file_path, html_path, new_book.id)
+                success = extract_text_and_images_from_docx(file_path, html_path, new_book.id)
                 if success:
                     new_book.extracted_html_path = html_path
                     db.session.commit()
