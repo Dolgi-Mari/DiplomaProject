@@ -12,6 +12,9 @@ from flask import send_from_directory, abort
 from pdf_parser import extract_text_and_images_from_pdf, get_pdf_title
 from docx_parser import extract_text_and_images_from_docx, get_docx_title
 from fb2_parser import get_fb2_title, extract_text_and_images_from_fb2
+from flask import url_for
+
+from ishihara_data import EXPECTED, PLATE_OPTIONS
 
 # ================== КОНФИГУРАЦИЯ ==================
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -104,33 +107,35 @@ def test():
         return redirect(url_for('login'))
     
     if request.method == 'POST':
-        # Существующие поля
+        # Старые поля
         vision = request.form.get('vision', 'medium')
         contrast = request.form.get('contrast', 'normal')
-        # Новые поля
-        color_blindness = request.form.get('color_blindness', 'none')
-        light_sensitivity = request.form.get('light_sensitivity', 'low')
+        color_vision = request.form.get('color_vision', 'normal')
+        light_sensitive = request.form.get('light_sensitive') == 'yes'
+        font_family = request.form.get('font_family', 'sans')
+        line_height = request.form.get('line_height', 'normal')
+        
+        # Новые поля для ползунков и дислексии
+        contrast_sensitivity = int(request.form.get('contrast_sensitivity', 50))
+        brightness_preference = int(request.form.get('brightness_preference', 50))
+        preferred_line_width_ch = int(request.form.get('preferred_line_width_ch', 66))
         dyslexia = request.form.get('dyslexia') == 'yes'
-        dyslexia_font = request.form.get('dyslexia_font') == 'yes'
-        line_width = request.form.get('line_width', 'medium')
+        dyslexia_font = request.form.get('dyslexia_font') == 'opendyslexic'
 
-        # Обновляем поля пользователя
+        # Обновляем пользователя
         user.font_pref = vision
         user.theme_pref = contrast
-        # Для совместимости сохраняем contrast отдельно (можно оставить как есть)
+        user.color_vision = color_vision
         user.contrast = contrast
-        # Цветовосприятие (старое поле) – можно заполнить обобщённо
-        if color_blindness == 'none':
-            user.color_vision = 'normal'
-        else:
-            user.color_vision = color_blindness
-
+        user.light_sensitive = light_sensitive
+        user.font_family = font_family
+        user.line_height = line_height
         # Новые поля
-        user.color_blindness_type = color_blindness
-        user.light_sensitivity_level = light_sensitivity
+        user.contrast_sensitivity = contrast_sensitivity
+        user.brightness_preference = brightness_preference
+        user.preferred_line_width_ch = preferred_line_width_ch
         user.has_dyslexia = dyslexia
         user.dyslexia_font = dyslexia_font
-        user.line_width_pref = line_width
 
         db.session.commit()
         return redirect(url_for('profile', user_id=user.id))
@@ -444,7 +449,59 @@ def book_images(book_id, filename):
         return send_from_directory(images_dir, filename)
     else:
         abort(404)
+
+@app.route('/ishihara_test', methods=['GET', 'POST'])
+def ishihara_test():
+    # Только для авторизованных пользователей
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user = User.query.get(session['user_id'])
+    if not user:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        # Собираем ответы
+        user_answers = {}
+        for i in range(1, 39):
+            key = f'plate_{i}'
+            user_answers[i] = request.form.get(key, 'none')
         
+        # Подсчёт совпадений
+        scores = {'normal': 0, 'protan': 0, 'deutan': 0}
+        for plate_num, expected in EXPECTED.items():
+            user_ans = user_answers.get(plate_num)
+            if user_ans is None:
+                continue
+            for typ in scores:
+                if expected.get(typ) == user_ans:
+                    scores[typ] += 1
+        
+        diagnosis = max(scores, key=scores.get)
+        # Сохраняем в БД
+        user.color_blindness_type = diagnosis
+        # Для обратной совместимости обновим и старое поле color_vision
+        if diagnosis == 'normal':
+            user.color_vision = 'normal'
+        elif diagnosis == 'protan':
+            user.color_vision = 'protan'
+        elif diagnosis == 'deutan':
+            user.color_vision = 'deutan'
+        else:
+            user.color_vision = 'unknown'
+        db.session.commit()
+        
+        return render_template('ishihara_result.html', diagnosis=diagnosis, scores=scores)
+    
+    # GET: показываем форму
+    plates = []
+    for i in range(1, 39):
+        plates.append({
+            'number': i,
+            'options': PLATE_OPTIONS[i],
+            'image': url_for('static', filename=f'ishihara/plate{i}.jpg')
+        })
+    return render_template('ishihara_test.html', plates=plates)
+  
 # ================== ЗАПУСК ==================
 if __name__ == '__main__':
     app.run(debug=True)

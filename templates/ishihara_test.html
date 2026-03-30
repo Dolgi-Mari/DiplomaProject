@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Тест на цветовосприятие (таблицы Ишихары)</h1>
+<p>Рассмотрите каждую картинку и выберите, что вы видите. Если не видите ничего, выберите "Ничего не вижу".</p>
+
+<form method="POST" action="{{ url_for('ishihara_test') }}">
+    {% for plate in plates %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Рисунок {{ plate.number }}</h5>
+            <img src="{{ plate.image }}" class="img-fluid mb-2" alt="Таблица {{ plate.number }}">
+            {% for value, label in plate.options %}
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="plate_{{ plate.number }}" id="plate{{ plate.number }}_{{ value }}" value="{{ value }}">
+                <label class="form-check-label" for="plate{{ plate.number }}_{{ value }}">
+                    {{ label }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    
+    <button type="submit" class="btn btn-primary">Отправить результаты</button>
+</form>
+{% endblock %}
