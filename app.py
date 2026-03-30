@@ -50,6 +50,13 @@ class User(db.Model):
     font_family = db.Column(db.String(20), default='sans')        # 'sans' или 'serif'
     line_height = db.Column(db.String(20), default='normal')      # 'normal' или 'large'
 
+    # еще новые поля (доработка теста)
+    color_blindness_type = db.Column(db.String(20), default='none')   # 'none', 'protanopia', 'deuteranopia', 'tritanopia'
+    has_dyslexia = db.Column(db.Boolean, default=False)
+    dyslexia_font = db.Column(db.Boolean, default=False)
+    light_sensitivity_level = db.Column(db.String(20), default='low')   # 'low', 'medium', 'high'
+    line_width_pref = db.Column(db.String(20), default='medium')        # 'narrow', 'medium', 'wide'
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -97,28 +104,35 @@ def test():
         return redirect(url_for('login'))
     
     if request.method == 'POST':
-        # Получаем данные из формы
+        # Существующие поля
         vision = request.form.get('vision', 'medium')
         contrast = request.form.get('contrast', 'normal')
-        color = request.form.get('color', 'normal')
-        # НОВЫЕ ПОЛЯ
-        light_sensitive = request.form.get('light_sensitive') == 'yes'  # True/False
-        font_family = request.form.get('font_family', 'sans')
-        line_height = request.form.get('line_height', 'normal')
-        
-        # Обновляем поля существующего пользователя
+        # Новые поля
+        color_blindness = request.form.get('color_blindness', 'none')
+        light_sensitivity = request.form.get('light_sensitivity', 'low')
+        dyslexia = request.form.get('dyslexia') == 'yes'
+        dyslexia_font = request.form.get('dyslexia_font') == 'yes'
+        line_width = request.form.get('line_width', 'medium')
+
+        # Обновляем поля пользователя
         user.font_pref = vision
         user.theme_pref = contrast
-        user.color_vision = color
+        # Для совместимости сохраняем contrast отдельно (можно оставить как есть)
         user.contrast = contrast
-        
-        user.light_sensitive = light_sensitive
-        user.font_family = font_family
-        user.line_height = line_height
-        
+        # Цветовосприятие (старое поле) – можно заполнить обобщённо
+        if color_blindness == 'none':
+            user.color_vision = 'normal'
+        else:
+            user.color_vision = color_blindness
+
+        # Новые поля
+        user.color_blindness_type = color_blindness
+        user.light_sensitivity_level = light_sensitivity
+        user.has_dyslexia = dyslexia
+        user.dyslexia_font = dyslexia_font
+        user.line_width_pref = line_width
+
         db.session.commit()
-        
-        # Перенаправляем в профиль
         return redirect(url_for('profile', user_id=user.id))
     
     # GET-запрос — показываем форму теста

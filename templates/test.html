@@ -2,10 +2,10 @@
 
 {% block content %}
 <h1 class="mb-4">Тест зрения</h1>
-<p>Ответьте на несколько вопросов, чтобы мы подобрали оптимальные настройки чтения.</p>
+<p>Ответьте на вопросы, чтобы мы подобрали оптимальные настройки чтения.</p>
 
 <form method="POST" action="/test">
-    <!-- Вопрос 1: Острота зрения (размер шрифта) -->
+    <!-- Вопрос 1: Размер шрифта -->
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">1. Какой размер шрифта вам комфортен?</h5>
@@ -47,70 +47,93 @@
         </div>
     </div>
 
-    <!-- Вопрос 3: Цветовосприятие (упрощённо) -->
+    <!-- Вопрос 3: Нарушения цветовосприятия -->
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">3. Есть ли у вас особенности цветовосприятия?</h5>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="color" id="color_normal" value="normal">
-                <label class="form-check-label" for="color_normal">Нет, вижу все цвета нормально</label>
+                <input class="form-check-input" type="radio" name="color_blindness" id="color_none" value="none">
+                <label class="form-check-label" for="color_none">Нет, вижу все цвета нормально</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="color" id="color_deutan" value="deutan">
-                <label class="form-check-label" for="color_deutan">Не различаю оттенки красного/зелёного</label>
+                <input class="form-check-input" type="radio" name="color_blindness" id="color_protan" value="protanopia">
+                <label class="form-check-label" for="color_protan">Плохо различаю красный (протанопия)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="color" id="color_protan" value="protan">
-                <label class="form-check-label" for="color_protan">Плохо вижу красный</label>
+                <input class="form-check-input" type="radio" name="color_blindness" id="color_deutan" value="deuteranopia">
+                <label class="form-check-label" for="color_deutan">Плохо различаю зелёный (дейтеранопия)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="color" id="color_tritan" value="tritan">
-                <label class="form-check-label" for="color_tritan">Плохо вижу синий/жёлтый</label>
+                <input class="form-check-input" type="radio" name="color_blindness" id="color_tritan" value="tritanopia">
+                <label class="form-check-label" for="color_tritan">Плохо различаю синий/жёлтый (тританопия)</label>
             </div>
         </div>
     </div>
 
-    <!-- Вопрос 4: Чувствительность к свету -->
+    <!-- Вопрос 4: Светочувствительность -->
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">4. Чувствительны ли вы к яркому свету?</h5>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="light_sensitive" id="light_yes" value="yes">
-                <label class="form-check-label" for="light_yes">Да, мне комфортнее в тёмном режиме</label>
+                <input class="form-check-input" type="radio" name="light_sensitivity" id="light_low" value="low">
+                <label class="form-check-label" for="light_low">Нет, яркий свет не мешает</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="light_sensitive" id="light_no" value="no">
-                <label class="form-check-label" for="light_no">Нет, яркий свет не мешает</label>
-            </div>
-        </div>
-    </div>
-
-    <!-- Вопрос 5: Тип шрифта -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">5. Какой тип шрифта вам удобнее?</h5>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="font_family" id="font_sans" value="sans">
-                <label class="form-check-label" for="font_sans">Без засечек (Arial, Verdana) — обычно для экрана</label>
+                <input class="form-check-input" type="radio" name="light_sensitivity" id="light_medium" value="medium">
+                <label class="form-check-label" for="light_medium">Иногда бывает дискомфорт</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="font_family" id="font_serif" value="serif">
-                <label class="form-check-label" for="font_serif">С засечками (Times, Georgia) — для печатного стиля</label>
+                <input class="form-check-input" type="radio" name="light_sensitivity" id="light_high" value="high">
+                <label class="form-check-label" for="light_high">Да, яркий свет вызывает дискомфорт/головную боль</label>
             </div>
         </div>
     </div>
 
-    <!-- Вопрос 6: Межстрочный интервал -->
+    <!-- Вопрос 5: Особенности чтения (дислексия) -->
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">6. Какой межстрочный интервал вам комфортен?</h5>
+            <h5 class="card-title">5. Возникают ли у вас трудности при чтении?</h5>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal">
-                <label class="form-check-label" for="line_normal">Обычный (как в книгах)</label>
+                <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_no" value="no">
+                <label class="form-check-label" for="dyslexia_no">Нет, читаю свободно</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="line_height" id="line_large" value="large">
-                <label class="form-check-label" for="line_large">Увеличенный (легче читать)</label>
+                <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes">
+                <label class="form-check-label" for="dyslexia_yes">Да, трудно следить за строкой, путаю буквы</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вопрос 6: Специальный шрифт для дислексии -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">6. Если у вас есть трудности с чтением, поможет ли специальный шрифт?</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="dyslexia_font" id="dyslexia_font_no" value="no">
+                <label class="form-check-label" for="dyslexia_font_no">Не нужен</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="dyslexia_font" id="dyslexia_font_yes" value="yes">
+                <label class="form-check-label" for="dyslexia_font_yes">Да, пробовал(а), помогает</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вопрос 7: Ширина строки -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">7. Какая длина строки вам удобнее?</h5>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="line_width" id="line_narrow" value="narrow">
+                <label class="form-check-label" for="line_narrow">Короткая (до 40 символов)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="line_width" id="line_medium" value="medium">
+                <label class="form-check-label" for="line_medium">Средняя (до 60 символов)</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="line_width" id="line_wide" value="wide">
+                <label class="form-check-label" for="line_wide">Длинная (более 80 символов)</label>
             </div>
         </div>
     </div>
