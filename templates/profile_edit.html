@@ -1,74 +1,71 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="mb-4">Тест зрения и восприятия</h1>
-<p>Ответьте на вопросы, чтобы мы подобрали оптимальные настройки чтения. Некоторые параметры можно настроить ползунками.</p>
+<h1 class="mb-4">Редактирование настроек</h1>
+<p>Измените параметры, которые мы определили по результатам теста. Настройки будут применены в читалке.</p>
 
-<form method="POST" action="/test">
-    <div class="alert alert-info" role="alert">
-        <strong>Важно:</strong> Этот тест не является медицинским и не может служить основанием для диагностики. Результаты используются только для настройки интерфейса чтения.
-    </div>
+<form method="POST" action="{{ url_for('edit_profile') }}">
     <!-- ===== 1. Размер шрифта ===== -->
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">1. Какой размер шрифта вам комфортен?</h5>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small">
+                <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small" {% if user.font_pref == 'small' %}checked{% endif %}>
                 <label class="form-check-label" for="vision_small">Мелкий (как в обычных книгах)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium">
+                <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium" {% if user.font_pref == 'medium' or not user.font_pref %}checked{% endif %}>
                 <label class="form-check-label" for="vision_medium">Средний (чуть крупнее)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large">
+                <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large" {% if user.font_pref == 'large' %}checked{% endif %}>
                 <label class="form-check-label" for="vision_large">Крупный (нужно увеличение)</label>
             </div>
         </div>
     </div>
 
-    <!-- ===== 2. Контрастность ===== -->
+    <!-- ===== 2. Тема оформления ===== -->
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">2. Какой вариант контраста вам удобнее?</h5>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="theme" id="contrast_normal" value="normal">
-                <label class="form-check-label" for="contrast_normal">Обычный (чёрное на белом)</label>
+                <input class="form-check-input" type="radio" name="theme" id="theme_normal" value="normal" {% if user.theme_pref == 'normal' %}checked{% endif %}>
+                <label class="form-check-label" for="theme_normal">Обычный (чёрное на белом)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="theme" id="contrast_high" value="high">
-                <label class="form-check-label" for="contrast_high">Высокий контраст (жёлтый/чёрный)</label>
+                <input class="form-check-input" type="radio" name="theme" id="theme_high" value="high" {% if user.theme_pref == 'high' %}checked{% endif %}>
+                <label class="form-check-label" for="theme_high">Высокий контраст (жёлтый/чёрный)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="theme" id="contrast_dark" value="dark">
-                <label class="form-check-label" for="contrast_dark">Тёмная тема (белое на чёрном)</label>
+                <input class="form-check-input" type="radio" name="theme" id="theme_dark" value="dark" {% if user.theme_pref == 'dark' %}checked{% endif %}>
+                <label class="form-check-label" for="theme_dark">Тёмная тема (белое на чёрном)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="theme" id="contrast_sepia" value="sepia">
-                <label class="form-check-label" for="contrast_sepia">Сепия (мягкий фон)</label>
+                <input class="form-check-input" type="radio" name="theme" id="theme_sepia" value="sepia" {% if user.theme_pref == 'sepia' %}checked{% endif %}>
+                <label class="form-check-label" for="theme_sepia">Сепия (мягкий фон)</label>
             </div>
         </div>
     </div>
 
-    <!-- ===== 3. Цветовосприятие ===== -->
+    <!-- ===== 3. Цветовосприятие (ручной выбор) ===== -->
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">3. Есть ли у вас особенности цветовосприятия?</h5>
-            <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>.</p>
+            <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>. Результаты теста Ишихары имеют приоритет.</p>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal">
+                <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal" {% if user.color_vision == 'normal' %}checked{% endif %}>
                 <label class="form-check-label" for="color_normal">Нет, вижу все цвета нормально</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan">
+                <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan" {% if user.color_vision == 'deutan' %}checked{% endif %}>
                 <label class="form-check-label" for="color_deutan">Не различаю оттенки красного/зелёного</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan">
+                <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan" {% if user.color_vision == 'protan' %}checked{% endif %}>
                 <label class="form-check-label" for="color_protan">Плохо вижу красный</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan">
+                <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan" {% if user.color_vision == 'tritan' %}checked{% endif %}>
                 <label class="form-check-label" for="color_tritan">Плохо вижу синий/жёлтый</label>
             </div>
         </div>
@@ -79,15 +76,15 @@
         <div class="card-body">
             <h5 class="card-title">4. Ваша чувствительность к яркому свету</h5>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_low" value="low" checked>
+                <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_low" value="low" {% if user.light_sensitivity_level == 'low' %}checked{% endif %}>
                 <label class="form-check-label" for="light_low">Низкая (яркий свет не мешает)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_medium" value="medium">
+                <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_medium" value="medium" {% if user.light_sensitivity_level == 'medium' %}checked{% endif %}>
                 <label class="form-check-label" for="light_medium">Средняя (предпочитаю приглушённый свет)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_high" value="high">
+                <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_high" value="high" {% if user.light_sensitivity_level == 'high' %}checked{% endif %}>
                 <label class="form-check-label" for="light_high">Высокая (яркий свет вызывает дискомфорт)</label>
             </div>
         </div>
@@ -101,9 +98,9 @@
             <div id="contrastDemo" style="padding: 15px; background-color: #fff; color: #000; margin-bottom: 10px; border: 1px solid #ddd;">
                 Это пример текста. Двигайте ползунок, чтобы изменить контраст. Чем темнее текст, тем выше контраст.
             </div>
-            <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="50" step="1">
-            <span id="contrastValue">50</span>%
-            <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="50">
+            <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="{{ user.contrast_sensitivity or 50 }}" step="1">
+            <span id="contrastValue">{{ user.contrast_sensitivity or 50 }}</span>%
+            <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="{{ user.contrast_sensitivity or 50 }}">
         </div>
     </div>
 
@@ -115,9 +112,9 @@
             <div id="brightnessDemo" style="padding: 15px; background-color: #f0f0f0; color: #000; margin-bottom: 10px; border: 1px solid #ddd;">
                 Пример текста на фоне. Двигайте ползунок, чтобы изменить яркость.
             </div>
-            <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="50" step="1">
-            <span id="brightnessValue">50</span>%
-            <input type="hidden" name="brightness_preference" id="brightnessPreference" value="50">
+            <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="{{ user.brightness_preference or 50 }}" step="1">
+            <span id="brightnessValue">{{ user.brightness_preference or 50 }}</span>%
+            <input type="hidden" name="brightness_preference" id="brightnessPreference" value="{{ user.brightness_preference or 50 }}">
         </div>
     </div>
 
@@ -129,9 +126,9 @@
             <div id="lineWidthDemo" style="padding: 15px; background-color: #f8f9fa; color: #000; margin-bottom: 10px; border: 1px solid #ddd;">
                 Это пример текста. Двигайте ползунок, чтобы изменить ширину строки. Идеальная длина обычно 50–75 символов.
             </div>
-            <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="66" step="1">
-            <span id="lineWidthValue">66</span> символов
-            <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="66">
+            <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="{{ user.preferred_line_width_ch or 66 }}" step="1">
+            <span id="lineWidthValue">{{ user.preferred_line_width_ch or 66 }}</span> символов
+            <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="{{ user.preferred_line_width_ch or 66 }}">
         </div>
     </div>
 
@@ -140,11 +137,11 @@
         <div class="card-body">
             <h5 class="card-title">8. Есть ли у вас диагностированная дислексия?</h5>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes">
+                <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes" {% if user.has_dyslexia %}checked{% endif %}>
                 <label class="form-check-label" for="dyslexia_yes">Да</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_no" value="no">
+                <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_no" value="no" {% if not user.has_dyslexia %}checked{% endif %}>
                 <label class="form-check-label" for="dyslexia_no">Нет</label>
             </div>
         </div>
@@ -164,26 +161,26 @@
                 Быстрая коричневая лиса прыгает через ленивую собаку.
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="dyslexia_font" id="font_standard" value="standard">
+                <input class="form-check-input" type="radio" name="dyslexia_font" id="font_standard" value="standard" {% if not user.dyslexia_font %}checked{% endif %}>
                 <label class="form-check-label" for="font_standard">Обычный шрифт</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="dyslexia_font" id="font_opendyslexic" value="opendyslexic">
+                <input class="form-check-input" type="radio" name="dyslexia_font" id="font_opendyslexic" value="opendyslexic" {% if user.dyslexia_font %}checked{% endif %}>
                 <label class="form-check-label" for="font_opendyslexic">OpenDyslexic</label>
             </div>
         </div>
     </div>
-   
+
     <!-- ===== 10. Тип шрифта (с засечками/без) ===== -->
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">10. Какой тип шрифта вам удобнее?</h5>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="font_family" id="font_sans" value="sans" checked>
+                <input class="form-check-input" type="radio" name="font_family" id="font_sans" value="sans" {% if user.font_family == 'sans' or not user.font_family %}checked{% endif %}>
                 <label class="form-check-label" for="font_sans">Без засечек (Arial, Verdana) — обычно для экрана</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="font_family" id="font_serif" value="serif">
+                <input class="form-check-input" type="radio" name="font_family" id="font_serif" value="serif" {% if user.font_family == 'serif' %}checked{% endif %}>
                 <label class="form-check-label" for="font_serif">С засечками (Times, Georgia) — для печатного стиля</label>
             </div>
         </div>
@@ -194,17 +191,18 @@
         <div class="card-body">
             <h5 class="card-title">11. Какой межстрочный интервал вам комфортен?</h5>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" checked>
+                <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" {% if user.line_height == 'normal' or not user.line_height %}checked{% endif %}>
                 <label class="form-check-label" for="line_normal">Обычный (как в книгах)</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="line_height" id="line_large" value="large">
+                <input class="form-check-input" type="radio" name="line_height" id="line_large" value="large" {% if user.line_height == 'large' %}checked{% endif %}>
                 <label class="form-check-label" for="line_large">Увеличенный (легче читать)</label>
             </div>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary">Сохранить и продолжить</button>
+    <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    <a href="{{ url_for('profile', user_id=user.id) }}" class="btn btn-secondary">Отмена</a>
 </form>
 
 <script>
@@ -215,7 +213,6 @@
     const contrastHidden = document.getElementById('contrastSensitivity');
 
     function updateContrast(value) {
-        // value от 0 до 100, переводим в цвет текста от светло-серого до чёрного
         const grayValue = Math.floor(255 * (1 - value / 100));
         contrastDemo.style.color = `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
         contrastValueSpan.textContent = value;
@@ -234,7 +231,6 @@
     const brightnessHidden = document.getElementById('brightnessPreference');
 
     function updateBrightness(value) {
-        // value от 0 до 100, переводим в brightness от 0.3 до 1.0 (чтобы не было совсем чёрно)
         const brightness = 0.3 + (value / 100) * 0.7;
         brightnessDemo.style.backgroundColor = `rgba(255, 255, 255, ${brightness})`;
         brightnessDemo.style.filter = `brightness(${brightness})`;
@@ -263,9 +259,7 @@
         updateLineWidth(lineWidthSlider.value);
     });
     updateLineWidth(lineWidthSlider.value);
-</script>
 
-<script>
     // Показываем вопрос о шрифте только если выбрана дислексия
     const dyslexiaYes = document.getElementById('dyslexia_yes');
     const dyslexiaNo = document.getElementById('dyslexia_no');

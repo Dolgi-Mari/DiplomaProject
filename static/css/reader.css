@@ -165,3 +165,90 @@ body.theme-sepia th {
     background-color: #e5d3b5;
     color: #5b4636;
 }
+/* CSS-переменные для контраста и яркости */
+body {
+    --text-contrast: 1;
+    --bg-brightness: 1;
+    --line-width: 66ch;
+}
+
+#book-content {
+    max-width: var(--line-width);
+    margin: 0 auto;
+    filter: contrast(var(--text-contrast)) brightness(var(--bg-brightness));
+}
+
+/* Классы для дальтонизма (примерные схемы) */
+body.theme-protanopia {
+    background-color: #f0f0f0;
+    color: #1a1a1a;
+}
+body.theme-protanopia a {
+    color: #0066cc;
+}
+body.theme-deuteranopia {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+body.theme-deuteranopia a {
+    color: #007bff;
+}
+body.theme-tritanopia {
+    background-color: #fff3e0;
+    color: #4a2e00;
+}
+body.theme-tritanopia a {
+    color: #d9534f;
+}
+
+/* Шрифт OpenDyslexic */
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/static/fonts/OpenDyslexic-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+body.dyslexic-font {
+    font-family: 'OpenDyslexic', monospace;
+}
+/* ===== Шрифт OpenDyslexic ===== */
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/static/fonts/OpenDyslexic-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/static/fonts/OpenDyslexic-Italic.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/static/fonts/OpenDyslexic-Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/static/fonts/OpenDyslexic-BoldItalic.otf') format('opentype');
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* Альтернативный вариант OpenDyslexicAlta – можно подключить отдельно, но мы будем использовать основной */
+@font-face {
+    font-family: 'OpenDyslexicAlta';
+    src: url('/static/fonts/OpenDyslexicAlta-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Класс для применения шрифта OpenDyslexic (основного) */
+body.dyslexic-font {
+    font-family: 'OpenDyslexic', 'OpenDyslexicAlta', monospace;
+}

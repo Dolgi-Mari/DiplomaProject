@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block body_attributes %}class="{{ body_classes }}"{% endblock %}
+{% block body_attributes %}class="{{ body_classes }}" style="{{ style_vars }}"{% endblock %}
 
 {% block content %}
 
@@ -193,9 +193,11 @@
     // Кнопка сброса: возвращаем исходные настройки (изначальные классы, которые прислал сервер)
     // Для этого сохраним исходные классы при загрузке страницы
     const originalClasses = body.className; // строка классов
+    const originalStyle = body.getAttribute('style') || '';
 
     resetBtn.addEventListener('click', function() {
         body.className = originalClasses; // восстанавливаем исходные классы
+        body.setAttribute('style', originalStyle);
         // Перенастроим слайдер и подсветку под восстановленные классы
         // Размер
         if (body.classList.contains('font-large')) {

@@ -93,54 +93,52 @@ def home():
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
-    """Страница теста зрения. Если пользователь залогинен — обновляет его настройки, иначе предлагает войти."""
-    # Проверяем, залогинен ли пользователь
     if 'user_id' not in session:
-        # Если не залогинен, перенаправляем на страницу входа с сообщением
         return redirect(url_for('login', next=url_for('test')))
-    
-    # Получаем текущего пользователя из сессии
     user = User.query.get(session['user_id'])
     if not user:
-        # Если пользователь не найден (маловероятно), очищаем сессию и просим войти заново
         session.pop('user_id', None)
         return redirect(url_for('login'))
-    
+
     if request.method == 'POST':
-        # Старые поля
-        vision = request.form.get('vision', 'medium')
-        contrast = request.form.get('contrast', 'normal')
+        # Старые поля (для совместимости)
+        font_pref = request.form.get('vision', 'medium')
+        # Тема: может приходить как theme или contrast
+        theme = request.form.get('theme')
+        if not theme:
+            theme = request.form.get('contrast', 'normal')
         color_vision = request.form.get('color_vision', 'normal')
-        light_sensitive = request.form.get('light_sensitive') == 'yes'
         font_family = request.form.get('font_family', 'sans')
         line_height = request.form.get('line_height', 'normal')
         
-        # Новые поля для ползунков и дислексии
+        # Новые поля
         contrast_sensitivity = int(request.form.get('contrast_sensitivity', 50))
         brightness_preference = int(request.form.get('brightness_preference', 50))
         preferred_line_width_ch = int(request.form.get('preferred_line_width_ch', 66))
-        dyslexia = request.form.get('dyslexia') == 'yes'
+        has_dyslexia = request.form.get('dyslexia') == 'yes'
         dyslexia_font = request.form.get('dyslexia_font') == 'opendyslexic'
+        light_sensitivity_level = request.form.get('light_sensitivity_level', 'low')
 
         # Обновляем пользователя
-        user.font_pref = vision
-        user.theme_pref = contrast
+        user.font_pref = font_pref
+        user.theme_pref = theme
+        user.contrast = theme  # для обратной совместимости
         user.color_vision = color_vision
-        user.contrast = contrast
-        user.light_sensitive = light_sensitive
         user.font_family = font_family
         user.line_height = line_height
-        # Новые поля
         user.contrast_sensitivity = contrast_sensitivity
         user.brightness_preference = brightness_preference
         user.preferred_line_width_ch = preferred_line_width_ch
-        user.has_dyslexia = dyslexia
+        user.has_dyslexia = has_dyslexia
         user.dyslexia_font = dyslexia_font
-
+        user.light_sensitivity_level = light_sensitivity_level
+        
+        # Не перезаписываем color_blindness_type, если он уже установлен тестом Ишихары
+        # Можно оставить как есть
+        
         db.session.commit()
         return redirect(url_for('profile', user_id=user.id))
     
-    # GET-запрос — показываем форму теста
     return render_template('test.html')
 
 @app.route('/profile/<int:user_id>')
@@ -155,7 +153,37 @@ def profile(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('profile.html', user=user)
 
+@app.route('/profile/edit', methods=['GET', 'POST'])
+def edit_profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user = User.query.get(session['user_id'])
+    if not user:
+        return redirect(url_for('login'))
 
+    if request.method == 'POST':
+        # Обновляем поля
+        user.font_pref = request.form.get('vision', user.font_pref)
+        theme = request.form.get('theme')
+        if not theme:
+            theme = request.form.get('contrast', user.theme_pref)
+        user.theme_pref = theme
+        user.contrast = theme
+        user.color_vision = request.form.get('color_vision', user.color_vision)
+        user.font_family = request.form.get('font_family', user.font_family)
+        user.line_height = request.form.get('line_height', user.line_height)
+        user.contrast_sensitivity = int(request.form.get('contrast_sensitivity', user.contrast_sensitivity or 50))
+        user.brightness_preference = int(request.form.get('brightness_preference', user.brightness_preference or 50))
+        user.preferred_line_width_ch = int(request.form.get('preferred_line_width_ch', user.preferred_line_width_ch or 66))
+        user.has_dyslexia = request.form.get('dyslexia') == 'yes'
+        user.dyslexia_font = request.form.get('dyslexia_font') == 'opendyslexic'
+        user.light_sensitivity_level = request.form.get('light_sensitivity_level', user.light_sensitivity_level or 'low')
+        # Для color_blindness_type не обновляем, его меняет только тест Ишихары
+        db.session.commit()
+        flash('Настройки обновлены', 'success')
+        return redirect(url_for('profile', user_id=user.id))
+
+    return render_template('profile_edit.html', user=user)
 
 @app.route('/upload/<int:user_id>', methods=['GET', 'POST'])
 def upload(user_id):
@@ -309,41 +337,15 @@ def read_book(book_id):
     with open(html_path, 'r', encoding='utf-8') as f:
         book_content = f.read()
 
-    # Формируем классы для body на основе настроек пользователя
-    
-    body_classes = []
-
-    # Размер шрифта
-    font_pref = user.font_pref if user and user.font_pref else 'medium'
-    body_classes.append(f'font-{font_pref}')
-
-    # Тема
-    theme_pref = user.theme_pref if user and user.theme_pref else 'normal'
-    body_classes.append(f'theme-{theme_pref}')
-
-    # Новые классы
-    if user.font_family:
-        body_classes.append(f'font-{user.font_family}')
-    else:
-        body_classes.append('font-sans')  # по умолчанию
-
-    if user.line_height:
-        body_classes.append(f'line-height-{user.line_height}')
-    else:
-        body_classes.append('line-height-normal')
-
-    if user.light_sensitive:
-        body_classes.append('light-sensitive')
-
-    # Собираем строку классов
-    body_class_str = ' '.join(body_classes)
-    
+    # Генерируем классы и стили
+    body_classes, style_vars = generate_body_classes(user)
 
     return render_template('reader.html',
                            book=book,
                            book_content=book_content,
                            user_id=book.user_id,
-                           body_classes=body_class_str)
+                           body_classes=body_classes,
+                           style_vars=style_vars)
     
 @app.route('/delete_book/<int:book_id>', methods=['POST'])
 def delete_book(book_id):
@@ -449,6 +451,73 @@ def book_images(book_id, filename):
         return send_from_directory(images_dir, filename)
     else:
         abort(404)
+
+def generate_body_classes(user):
+    """
+    Формирует строку классов для body на основе всех параметров пользователя.
+    Возвращает также словарь CSS-переменных для инлайн-стилей.
+    """
+    classes = []
+    css_vars = {}
+
+    # 1. Размер шрифта
+    font_size = getattr(user, 'font_pref', 'medium')
+    classes.append(f'font-{font_size}')
+
+    # 2. Тема (с учётом дальтонизма)
+    color_blind = getattr(user, 'color_blindness_type', 'none')
+    if color_blind == 'protanopia':
+        classes.append('theme-protanopia')
+    elif color_blind == 'deuteranopia':
+        classes.append('theme-deuteranopia')
+    elif color_blind == 'tritanopia':
+        classes.append('theme-tritanopia')
+    else:
+        theme = getattr(user, 'theme_pref', 'normal')
+        classes.append(f'theme-{theme}')
+
+    # 3. Шрифт
+    if getattr(user, 'has_dyslexia', False) and getattr(user, 'dyslexia_font', False):
+        classes.append('dyslexic-font')
+    else:
+        font_family = getattr(user, 'font_family', 'sans')
+        classes.append(f'font-{font_family}')
+
+    # 4. Межстрочный интервал
+    line_height = getattr(user, 'line_height', 'normal')
+    classes.append(f'line-height-{line_height}')
+
+    # 5. Чувствительность к свету (может добавлять класс)
+    light_level = getattr(user, 'light_sensitivity_level', 'low')
+    if light_level in ('medium', 'high'):
+        classes.append('light-sensitive')
+    # Для высокой чувствительности можно принудительно включить тёмную тему, но это уже реализовано выше.
+
+    # 6. CSS-переменные для точной настройки
+    # Ширина строки
+    line_width = getattr(user, 'preferred_line_width_ch', 66)
+    css_vars['--line-width'] = f'{line_width}ch'
+
+    # Контраст текста (значение 0..100 -> коэффициент 0.5..2.0)
+    contrast_val = getattr(user, 'contrast_sensitivity', 50)
+    contrast_factor = 0.5 + (contrast_val / 100) * 1.5
+    css_vars['--text-contrast'] = f'{contrast_factor}'
+
+    # Яркость фона (0..100 -> 0.3..1.2)
+    brightness_val = getattr(user, 'brightness_preference', 50)
+    brightness_factor = 0.3 + (brightness_val / 100) * 0.9
+    # Если чувствительность к свету высокая, дополнительно уменьшаем яркость
+    if light_level == 'high':
+        brightness_factor *= 0.8
+    css_vars['--bg-brightness'] = f'{brightness_factor}'
+
+    # Дополнительно можно передать цветовую коррекцию для дальтонизма (если нужно)
+    # ...
+
+    # Формируем строку классов и строку стилей
+    class_str = ' '.join(classes)
+    style_str = '; '.join(f'{k}: {v}' for k, v in css_vars.items())
+    return class_str, style_str
 
 @app.route('/ishihara_test', methods=['GET', 'POST'])
 def ishihara_test():
