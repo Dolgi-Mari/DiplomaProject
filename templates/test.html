@@ -1,284 +1,425 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    /* Базовые стили демо-блока (по умолчанию) */
+    .live-preview.theme-normal {
+        background: white !important;
+        color: black !important;
+    }
+    /* Стили для разных тем */
+    .live-preview.theme-dark { background: #1e1e1e !important; color: #ddd !important; }
+    .live-preview.theme-sepia { background: #f4ecd8 !important; color: #5b4636 !important; }
+    .live-preview.theme-high { background: #ffeb3b !important; color: #000 !important; }
+    /* Цветовые схемы для дальтонизма */
+    .live-preview.theme-protanopia { background: #f0f0f0 !important; color: #1a1a1a !important; }
+    .live-preview.theme-deuteranopia { background: #f8f9fa !important; color: #212529 !important; }
+    .live-preview.theme-tritanopia { background: #fff3e0 !important; color: #4a2e00 !important; }
+
+    /* Размер шрифта */
+    .live-preview.font-small .preview-text { font-size: 12px; }
+    .live-preview.font-medium .preview-text { font-size: 16px; }
+    .live-preview.font-large .preview-text { font-size: 24px; }
+
+    /* Межстрочный интервал */
+    .live-preview.line-height-normal .preview-text { line-height: 1.5; }
+    .live-preview.line-height-large .preview-text { line-height: 2.0; }
+
+    /* Шрифты */
+    .live-preview.font-sans .preview-text { font-family: Arial, sans-serif; }
+    .live-preview.font-serif .preview-text { font-family: 'Times New Roman', serif; }
+    .live-preview.dyslexic-font .preview-text { font-family: 'OpenDyslexic', monospace; }
+
+    /* Светочувствительность (только high) */
+    .live-preview.light-sensitive {
+        filter: brightness(0.85) contrast(0.95);
+    }
+
+    /* Основные стили контейнера */
+    .test-content-wrapper {
+        margin-right: 320px;
+    }
+    .live-preview {
+        position: fixed;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        min-width: 200px;
+        max-width: 90vw;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        padding: 20px;
+        z-index: 1000;
+        border: 1px solid #ddd;
+        transition: all 0.2s ease;
+    }
+    .live-preview h4 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+    }
+    .preview-text {
+        max-width: 100%;
+        overflow-wrap: break-word;
+        word-break: break-word;
+    }
+    @media (max-width: 768px) {
+        .test-content-wrapper {
+            margin-right: 0;
+        }
+        .live-preview {
+            position: static;
+            transform: none;
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+    }
+</style>
+
 <h1 class="mb-4">Тест зрения и восприятия</h1>
 <p>Ответьте на вопросы, чтобы мы подобрали оптимальные настройки чтения. Некоторые параметры можно настроить ползунками.</p>
 
 <form method="POST" action="/test">
-    <div class="alert alert-info" role="alert">
-        <strong>Важно:</strong> Этот тест не является медицинским и не может служить основанием для диагностики. Результаты используются только для настройки интерфейса чтения.
-    </div>
-    <!-- ===== 1. Размер шрифта ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">1. Какой размер шрифта вам комфортен?</h5>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small">
-                <label class="form-check-label" for="vision_small">Мелкий (как в обычных книгах)</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium">
-                <label class="form-check-label" for="vision_medium">Средний (чуть крупнее)</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large">
-                <label class="form-check-label" for="vision_large">Крупный (нужно увеличение)</label>
-            </div>
+    <div class="live-preview" id="livePreview">
+        <h4>📖 Пример текста</h4>
+        <div class="preview-text" id="previewText">
+            Быстрая коричневая лиса прыгает через ленивую собаку.<br>
+            Это демонстрационный текст, который покажет, как будут выглядеть ваши настройки. Длина строки, контраст, шрифт и тема применятся прямо здесь.
         </div>
     </div>
 
-    <!-- ===== 2. Контрастность ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">2. Какой вариант контраста вам удобнее?</h5>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="theme" id="contrast_normal" value="normal">
-                <label class="form-check-label" for="contrast_normal">Обычный (чёрное на белом)</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="theme" id="contrast_high" value="high">
-                <label class="form-check-label" for="contrast_high">Высокий контраст (жёлтый/чёрный)</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="theme" id="contrast_dark" value="dark">
-                <label class="form-check-label" for="contrast_dark">Тёмная тема (белое на чёрном)</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="theme" id="contrast_sepia" value="sepia">
-                <label class="form-check-label" for="contrast_sepia">Сепия (мягкий фон)</label>
+    <div class="test-content-wrapper">
+        <!-- ===== 1. Размер шрифта ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">1. Какой размер шрифта вам комфортен?</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small">
+                    <label class="form-check-label" for="vision_small">Мелкий (как в обычных книгах)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium">
+                    <label class="form-check-label" for="vision_medium">Средний (чуть крупнее)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large">
+                    <label class="form-check-label" for="vision_large">Крупный (нужно увеличение)</label>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- ===== 3. Цветовосприятие ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">3. Есть ли у вас особенности цветовосприятия?</h5>
-            <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>.</p>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal">
-                <label class="form-check-label" for="color_normal">Нет, вижу все цвета нормально</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan">
-                <label class="form-check-label" for="color_deutan">Не различаю оттенки красного/зелёного</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan">
-                <label class="form-check-label" for="color_protan">Плохо вижу красный</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan">
-                <label class="form-check-label" for="color_tritan">Плохо вижу синий/жёлтый</label>
+        <!-- ===== 2. Контрастность ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">2. Какой вариант контраста вам удобнее?</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="theme" id="contrast_normal" value="normal">
+                    <label class="form-check-label" for="contrast_normal">Обычный (чёрное на белом)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="theme" id="contrast_high" value="high">
+                    <label class="form-check-label" for="contrast_high">Высокий контраст (жёлтый/чёрный)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="theme" id="contrast_dark" value="dark">
+                    <label class="form-check-label" for="contrast_dark">Тёмная тема (белое на чёрном)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="theme" id="contrast_sepia" value="sepia">
+                    <label class="form-check-label" for="contrast_sepia">Сепия (мягкий фон)</label>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- ===== 4. Чувствительность к свету ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">4. Ваша чувствительность к яркому свету</h5>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_low" value="low" checked>
-                <label class="form-check-label" for="light_low">Низкая (яркий свет не мешает)</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_medium" value="medium">
-                <label class="form-check-label" for="light_medium">Средняя (предпочитаю приглушённый свет)</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_high" value="high">
-                <label class="form-check-label" for="light_high">Высокая (яркий свет вызывает дискомфорт)</label>
+        <!-- ===== 3. Цветовосприятие ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">3. Есть ли у вас особенности цветовосприятия?</h5>
+                <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>.</p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal">
+                    <label class="form-check-label" for="color_normal">Нет, вижу все цвета нормально</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan">
+                    <label class="form-check-label" for="color_deutan">Не различаю оттенки красного/зелёного</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan">
+                    <label class="form-check-label" for="color_protan">Плохо вижу красный</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan">
+                    <label class="form-check-label" for="color_tritan">Плохо вижу синий/жёлтый</label>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- ===== 5. Ползунок контрастной чувствительности ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">5. Подберите комфортный уровень контраста текста</h5>
-            <p class="small">Двигайте ползунок, пока текст не станет удобным для чтения.</p>
-            <div id="contrastDemo" style="padding: 15px; background-color: #fff; color: #000; margin-bottom: 10px; border: 1px solid #ddd;">
-                Это пример текста. Двигайте ползунок, чтобы изменить контраст. Чем темнее текст, тем выше контраст.
+        <!-- ===== 4. Чувствительность к свету ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">4. Ваша чувствительность к яркому свету</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_low" value="low" checked>
+                    <label class="form-check-label" for="light_low">Низкая (яркий свет не мешает)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_medium" value="medium">
+                    <label class="form-check-label" for="light_medium">Средняя (предпочитаю приглушённый свет)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_high" value="high">
+                    <label class="form-check-label" for="light_high">Высокая (яркий свет вызывает дискомфорт)</label>
+                </div>
             </div>
-            <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="50" step="1">
-            <span id="contrastValue">50</span>%
-            <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="50">
         </div>
-    </div>
 
-    <!-- ===== 6. Ползунок яркости фона ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">6. Подберите комфортную яркость фона</h5>
-            <p class="small">Двигайте ползунок, чтобы изменить яркость фона.</p>
-            <div id="brightnessDemo" style="padding: 15px; background-color: #f0f0f0; color: #000; margin-bottom: 10px; border: 1px solid #ddd;">
-                Пример текста на фоне. Двигайте ползунок, чтобы изменить яркость.
+        <!-- ===== 5. Ползунок контрастной чувствительности ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">5. Подберите комфортный уровень контраста текста</h5>
+                <p class="small">Двигайте ползунок, пока текст в демо-блоке не станет удобным.</p>
+                <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="50" step="1">
+                <span id="contrastValue">50</span>%
+                <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="50">
             </div>
-            <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="50" step="1">
-            <span id="brightnessValue">50</span>%
-            <input type="hidden" name="brightness_preference" id="brightnessPreference" value="50">
         </div>
-    </div>
 
-    <!-- ===== 7. Ползунок длины строки ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">7. Подберите комфортную длину строки</h5>
-            <p class="small">Двигайте ползунок, чтобы изменить ширину текстового блока (в символах).</p>
-            <div id="lineWidthDemo" style="padding: 15px; background-color: #f8f9fa; color: #000; margin-bottom: 10px; border: 1px solid #ddd;">
-                Это пример текста. Двигайте ползунок, чтобы изменить ширину строки. Идеальная длина обычно 50–75 символов.
+        <!-- ===== 6. Ползунок яркости фона ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">6. Подберите комфортную яркость фона</h5>
+                <p class="small">Двигайте ползунок, чтобы изменить яркость фона.</p>
+                <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="50" step="1">
+                <span id="brightnessValue">50</span>%
+                <input type="hidden" name="brightness_preference" id="brightnessPreference" value="50">
             </div>
-            <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="66" step="1">
-            <span id="lineWidthValue">66</span> символов
-            <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="66">
         </div>
-    </div>
 
-    <!-- ===== 8. Дислексия ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">8. Есть ли у вас диагностированная дислексия?</h5>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes">
-                <label class="form-check-label" for="dyslexia_yes">Да</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_no" value="no">
-                <label class="form-check-label" for="dyslexia_no">Нет</label>
+        <!-- ===== 7. Ползунок длины строки ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">7. Подберите комфортную длину строки</h5>
+                <p class="small">Двигайте ползунок, чтобы изменить ширину текстового блока (в символах).</p>
+                <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="66" step="1">
+                <span id="lineWidthValue">66</span> символов
+                <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="66">
             </div>
         </div>
-    </div>
 
-    <!-- ===== 9. Сравнение шрифтов (для дислексии) ===== -->
-    <div class="card mb-3" id="dyslexiaFontCard" style="display: none;">
-        <div class="card-body">
-            <h5 class="card-title">9. Какой шрифт вам легче читать?</h5>
-            <p class="small">Ниже показан один и тот же текст разными шрифтами.</p>
-            <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; font-family: Arial, sans-serif;">
-                <strong>Обычный шрифт (Arial):</strong><br>
-                Быстрая коричневая лиса прыгает через ленивую собаку.
-            </div>
-            <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; font-family: 'OpenDyslexic', monospace;">
-                <strong>Шрифт OpenDyslexic:</strong><br>
-                Быстрая коричневая лиса прыгает через ленивую собаку.
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="dyslexia_font" id="font_standard" value="standard">
-                <label class="form-check-label" for="font_standard">Обычный шрифт</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="dyslexia_font" id="font_opendyslexic" value="opendyslexic">
-                <label class="form-check-label" for="font_opendyslexic">OpenDyslexic</label>
+        <!-- ===== 8. Дислексия ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">8. Есть ли у вас диагностированная дислексия?</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes">
+                    <label class="form-check-label" for="dyslexia_yes">Да</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_no" value="no">
+                    <label class="form-check-label" for="dyslexia_no">Нет</label>
+                </div>
             </div>
         </div>
-    </div>
-   
-    <!-- ===== 10. Тип шрифта (с засечками/без) ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">10. Какой тип шрифта вам удобнее?</h5>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="font_family" id="font_sans" value="sans" checked>
-                <label class="form-check-label" for="font_sans">Без засечек (Arial, Verdana) — обычно для экрана</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="font_family" id="font_serif" value="serif">
-                <label class="form-check-label" for="font_serif">С засечками (Times, Georgia) — для печатного стиля</label>
-            </div>
-        </div>
-    </div>
 
-    <!-- ===== 11. Межстрочный интервал ===== -->
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">11. Какой межстрочный интервал вам комфортен?</h5>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" checked>
-                <label class="form-check-label" for="line_normal">Обычный (как в книгах)</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="line_height" id="line_large" value="large">
-                <label class="form-check-label" for="line_large">Увеличенный (легче читать)</label>
+        <!-- ===== 9. Сравнение шрифтов (для дислексии) ===== -->
+        <div class="card mb-3" id="dyslexiaFontCard" style="display: none;">
+            <div class="card-body">
+                <h5 class="card-title">9. Какой шрифт вам легче читать?</h5>
+                <p class="small">Ниже показан один и тот же текст разными шрифтами.</p>
+                <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; font-family: Arial, sans-serif;">
+                    <strong>Обычный шрифт (Arial):</strong><br>
+                    Быстрая коричневая лиса прыгает через ленивую собаку.
+                </div>
+                <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; font-family: 'OpenDyslexic', monospace;">
+                    <strong>Шрифт OpenDyslexic:</strong><br>
+                    Быстрая коричневая лиса прыгает через ленивую собаку.
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="dyslexia_font" id="font_standard" value="standard">
+                    <label class="form-check-label" for="font_standard">Обычный шрифт</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="dyslexia_font" id="font_opendyslexic" value="opendyslexic">
+                    <label class="form-check-label" for="font_opendyslexic">OpenDyslexic</label>
+                </div>
             </div>
         </div>
-    </div>
+    
+        <!-- ===== 10. Тип шрифта (с засечками/без) ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">10. Какой тип шрифта вам удобнее?</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="font_family" id="font_sans" value="sans" checked>
+                    <label class="form-check-label" for="font_sans">Без засечек (Arial, Verdana) — обычно для экрана</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="font_family" id="font_serif" value="serif">
+                    <label class="form-check-label" for="font_serif">С засечками (Times, Georgia) — для печатного стиля</label>
+                </div>
+            </div>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Сохранить и продолжить</button>
+        <!-- ===== 11. Межстрочный интервал ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">11. Какой межстрочный интервал вам комфортен?</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" checked>
+                    <label class="form-check-label" for="line_normal">Обычный (как в книгах)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="line_height" id="line_large" value="large">
+                    <label class="form-check-label" for="line_large">Увеличенный (легче читать)</label>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить и продолжить</button>
+    </div>
 </form>
 
 <script>
-    // Ползунок контрастной чувствительности
+    // --- Элементы ползунков ---
     const contrastSlider = document.getElementById('contrastSlider');
-    const contrastDemo = document.getElementById('contrastDemo');
     const contrastValueSpan = document.getElementById('contrastValue');
     const contrastHidden = document.getElementById('contrastSensitivity');
-
-    function updateContrast(value) {
-        // value от 0 до 100, переводим в цвет текста от светло-серого до чёрного
-        const grayValue = Math.floor(255 * (1 - value / 100));
-        contrastDemo.style.color = `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
-        contrastValueSpan.textContent = value;
-        contrastHidden.value = value;
-    }
-
-    contrastSlider.addEventListener('input', () => {
-        updateContrast(contrastSlider.value);
-    });
-    updateContrast(contrastSlider.value);
-
-    // Ползунок яркости фона
     const brightnessSlider = document.getElementById('brightnessSlider');
-    const brightnessDemo = document.getElementById('brightnessDemo');
     const brightnessValueSpan = document.getElementById('brightnessValue');
     const brightnessHidden = document.getElementById('brightnessPreference');
-
-    function updateBrightness(value) {
-        // value от 0 до 100, переводим в brightness от 0.3 до 1.0 (чтобы не было совсем чёрно)
-        const brightness = 0.3 + (value / 100) * 0.7;
-        brightnessDemo.style.backgroundColor = `rgba(255, 255, 255, ${brightness})`;
-        brightnessDemo.style.filter = `brightness(${brightness})`;
-        brightnessValueSpan.textContent = value;
-        brightnessHidden.value = value;
-    }
-
-    brightnessSlider.addEventListener('input', () => {
-        updateBrightness(brightnessSlider.value);
-    });
-    updateBrightness(brightnessSlider.value);
-
-    // Ползунок длины строки
     const lineWidthSlider = document.getElementById('lineWidthSlider');
-    const lineWidthDemo = document.getElementById('lineWidthDemo');
     const lineWidthValueSpan = document.getElementById('lineWidthValue');
     const lineWidthHidden = document.getElementById('preferredLineWidth');
 
-    function updateLineWidth(value) {
-        lineWidthDemo.style.maxWidth = value + 'ch';
-        lineWidthValueSpan.textContent = value;
-        lineWidthHidden.value = value;
+    function updateSliders() {
+        if (contrastSlider) {
+            contrastValueSpan.textContent = contrastSlider.value;
+            contrastHidden.value = contrastSlider.value;
+        }
+        if (brightnessSlider) {
+            brightnessValueSpan.textContent = brightnessSlider.value;
+            brightnessHidden.value = brightnessSlider.value;
+        }
+        if (lineWidthSlider) {
+            lineWidthValueSpan.textContent = lineWidthSlider.value;
+            lineWidthHidden.value = lineWidthSlider.value;
+        }
+        updatePreview();
     }
 
-    lineWidthSlider.addEventListener('input', () => {
-        updateLineWidth(lineWidthSlider.value);
-    });
-    updateLineWidth(lineWidthSlider.value);
-</script>
+    if (contrastSlider) contrastSlider.addEventListener('input', updateSliders);
+    if (brightnessSlider) brightnessSlider.addEventListener('input', updateSliders);
+    if (lineWidthSlider) lineWidthSlider.addEventListener('input', updateSliders);
 
-<script>
-    // Показываем вопрос о шрифте только если выбрана дислексия
+    // --- Показ/скрытие блока выбора шрифта при дислексии ---
     const dyslexiaYes = document.getElementById('dyslexia_yes');
     const dyslexiaNo = document.getElementById('dyslexia_no');
     const dyslexiaFontCard = document.getElementById('dyslexiaFontCard');
+
     function toggleDyslexiaFont() {
         if (dyslexiaYes.checked) {
             dyslexiaFontCard.style.display = 'block';
         } else {
             dyslexiaFontCard.style.display = 'none';
         }
+        updatePreview();
     }
-    dyslexiaYes.addEventListener('change', toggleDyslexiaFont);
-    dyslexiaNo.addEventListener('change', toggleDyslexiaFont);
+    if (dyslexiaYes) dyslexiaYes.addEventListener('change', toggleDyslexiaFont);
+    if (dyslexiaNo) dyslexiaNo.addEventListener('change', toggleDyslexiaFont);
     toggleDyslexiaFont();
+
+    function getSelectedValue(name) {
+        const radio = document.querySelector(`input[name="${name}"]:checked`);
+        return radio ? radio.value : null;
+    }
+
+    function updatePreview() {
+        const previewDiv = document.getElementById('livePreview');
+        const previewTextDiv = document.getElementById('previewText');
+        if (!previewDiv) return;
+
+        // 1. Базовые настройки
+        const fontSize = getSelectedValue('vision') || 'medium';
+        let theme = getSelectedValue('theme') || getSelectedValue('contrast') || 'normal';
+        const colorVision = getSelectedValue('color_vision') || 'normal';
+        const fontFamily = getSelectedValue('font_family') || 'sans';
+        const lineHeight = getSelectedValue('line_height') || 'normal';
+        const lightSensitive = getSelectedValue('light_sensitivity_level') || 'low';
+        const dyslexia = getSelectedValue('dyslexia') === 'yes';
+        const dyslexiaFont = getSelectedValue('dyslexia_font') === 'opendyslexic';
+
+        // 2. Ползунки
+        const contrastVal = contrastSlider ? parseInt(contrastSlider.value) : 50;
+        const brightnessVal = brightnessSlider ? parseInt(brightnessSlider.value) : 50;
+        const lineWidthVal = lineWidthSlider ? parseInt(lineWidthSlider.value) : 66;
+
+        // Формулы: при 50 дают 1.0, диапазон 0.5..1.5
+        const contrastFactor = 0.5 + contrastVal / 100;
+        const brightnessFactor = 0.5 + brightnessVal / 100;
+
+        // 3. Формируем классы
+        let classes = [`font-${fontSize}`];
+
+        // Цветовая схема: приоритет у цветового зрения
+        if (colorVision === 'protan') {
+            classes.push('theme-protanopia');
+        } else if (colorVision === 'deutan') {
+            classes.push('theme-deuteranopia');
+        } else if (colorVision === 'tritan') {
+            classes.push('theme-tritanopia');
+        } else {
+            classes.push(`theme-${theme}`);
+        }
+
+        if (fontFamily === 'sans') classes.push('font-sans');
+        else classes.push('font-serif');
+
+        if (lineHeight === 'large') classes.push('line-height-large');
+        else classes.push('line-height-normal');
+
+        if (lightSensitive === 'high') {
+            classes.push('light-sensitive');
+        }
+
+        if (dyslexia && dyslexiaFont) {
+            classes.push('dyslexic-font');
+        }
+
+        // 4. Применяем классы
+        previewDiv.className = 'live-preview ' + classes.join(' ');
+
+        // 5. Применяем фильтры (контраст и яркость) к блоку, только если они не равны 1
+        if (contrastFactor !== 1 || brightnessFactor !== 1) {
+            previewDiv.style.filter = `contrast(${contrastFactor}) brightness(${brightnessFactor})`;
+        } else {
+            previewDiv.style.filter = ''; // сброс, чтобы не было наложения
+        }
+
+        // 6. Длина строки
+        // Длина строки: меняем ширину всего блока
+        previewDiv.style.width = 'auto';
+        previewDiv.style.maxWidth = lineWidthVal + 'ch';
+    }
+
+    // Привязываем обработчики ко всем элементам формы
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('change', updatePreview);
+        if (input.type === 'range') {
+            input.addEventListener('input', updatePreview);
+        }
+    });
+    // Дополнительно для радиокнопок дислексийного шрифта
+    const dyslexiaFontRadios = document.querySelectorAll('input[name="dyslexia_font"]');
+    dyslexiaFontRadios.forEach(radio => radio.addEventListener('change', updatePreview));
+
+    // Инициализация
+    updatePreview();
 </script>
 {% endblock %}
