@@ -252,3 +252,15 @@ body.dyslexic-font {
 body.dyslexic-font {
     font-family: 'OpenDyslexic', 'OpenDyslexicAlta', monospace;
 }
+
+/* классы для каждого из 10 шрифтов */
+.live-preview.font-pt-serif .preview-text { font-family: 'PT Serif', serif; }
+.live-preview.font-noto-serif .preview-text { font-family: 'Noto Serif', serif; }
+.live-preview.font-pt-sans .preview-text { font-family: 'PT Sans', sans-serif; }
+.live-preview.font-noto-sans .preview-text { font-family: 'Noto Sans', sans-serif; }
+.live-preview.font-roboto .preview-text { font-family: 'Roboto', sans-serif; }
+.live-preview.font-arial .preview-text { font-family: Arial, sans-serif; }
+.live-preview.font-verdana .preview-text { font-family: Verdana, sans-serif; }
+.live-preview.font-comic-sans-ms .preview-text { font-family: 'Comic Sans MS', cursive; }
+.live-preview.font-century-gothic .preview-text { font-family: 'Century Gothic', sans-serif; }
+.live-preview.font-open-sans .preview-text { font-family: 'Open Sans', sans-serif; }

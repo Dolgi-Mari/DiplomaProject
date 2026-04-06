@@ -50,15 +50,15 @@ class User(db.Model):
     
     # НОВЫЕ ПОЛЯ
     light_sensitive = db.Column(db.Boolean, default=False)        # чувствительность к свету (да/нет)
-    font_family = db.Column(db.String(20), default='sans')        # 'sans' или 'serif'
     line_height = db.Column(db.String(20), default='normal')      # 'normal' или 'large'
 
     # еще новые поля (доработка теста)
     color_blindness_type = db.Column(db.String(20), default='none')   # 'none', 'protanopia', 'deuteranopia', 'tritanopia'
     has_dyslexia = db.Column(db.Boolean, default=False)
-    dyslexia_font = db.Column(db.Boolean, default=False)
     light_sensitivity_level = db.Column(db.String(20), default='low')   # 'low', 'medium', 'high'
     line_width_pref = db.Column(db.String(20), default='medium')        # 'narrow', 'medium', 'wide'
+
+    preferred_font = db.Column(db.String(50), default='Roboto')   # новое поле
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -101,40 +101,39 @@ def test():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        # Старые поля (для совместимости)
+        # Старые поля
         font_pref = request.form.get('vision', 'medium')
-        # Тема: может приходить как theme или contrast
+        # Тема
         theme = request.form.get('theme')
         if not theme:
             theme = request.form.get('contrast', 'normal')
         color_vision = request.form.get('color_vision', 'normal')
-        font_family = request.form.get('font_family', 'sans')
         line_height = request.form.get('line_height', 'normal')
         
-        # Новые поля
+        # ползунки, светочувствительность
         contrast_sensitivity = int(request.form.get('contrast_sensitivity', 50))
         brightness_preference = int(request.form.get('brightness_preference', 50))
         preferred_line_width_ch = int(request.form.get('preferred_line_width_ch', 66))
-        has_dyslexia = request.form.get('dyslexia') == 'yes'
-        dyslexia_font = request.form.get('dyslexia_font') == 'opendyslexic'
         light_sensitivity_level = request.form.get('light_sensitivity_level', 'low')
+
+        # Дислексия и выбор шрифта
+        has_dyslexia = request.form.get('dyslexia') == 'yes'
+        preferred_font = request.form.get('preferred_font', 'Roboto')   # новое поле
 
         # Обновляем пользователя
         user.font_pref = font_pref
         user.theme_pref = theme
-        user.contrast = theme  # для обратной совместимости
+        user.contrast = theme
         user.color_vision = color_vision
-        user.font_family = font_family
         user.line_height = line_height
         user.contrast_sensitivity = contrast_sensitivity
         user.brightness_preference = brightness_preference
         user.preferred_line_width_ch = preferred_line_width_ch
-        user.has_dyslexia = has_dyslexia
-        user.dyslexia_font = dyslexia_font
         user.light_sensitivity_level = light_sensitivity_level
+        user.has_dyslexia = has_dyslexia
+        user.preferred_font = preferred_font   # сохраняем выбранный шрифт
         
         # Не перезаписываем color_blindness_type, если он уже установлен тестом Ишихары
-        # Можно оставить как есть
         
         db.session.commit()
         return redirect(url_for('profile', user_id=user.id))
@@ -477,11 +476,9 @@ def generate_body_classes(user):
         classes.append(f'theme-{theme}')
 
     # 3. Шрифт
-    if getattr(user, 'has_dyslexia', False) and getattr(user, 'dyslexia_font', False):
-        classes.append('dyslexic-font')
-    else:
-        font_family = getattr(user, 'font_family', 'sans')
-        classes.append(f'font-{font_family}')
+    preferred_font = getattr(user, 'preferred_font', 'Roboto')
+    font_class = f"font-{preferred_font.lower().replace(' ', '-')}"
+    classes.append(font_class)
 
     # 4. Межстрочный интервал
     line_height = getattr(user, 'line_height', 'normal')

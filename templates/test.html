@@ -2,40 +2,41 @@
 
 {% block content %}
 <style>
-    /* Базовые стили демо-блока (по умолчанию) */
+    /* Базовые стили демо-блока */
     .live-preview.theme-normal {
         background: white !important;
         color: black !important;
     }
-    /* Стили для разных тем */
     .live-preview.theme-dark { background: #1e1e1e !important; color: #ddd !important; }
     .live-preview.theme-sepia { background: #f4ecd8 !important; color: #5b4636 !important; }
     .live-preview.theme-high { background: #ffeb3b !important; color: #000 !important; }
-    /* Цветовые схемы для дальтонизма */
     .live-preview.theme-protanopia { background: #f0f0f0 !important; color: #1a1a1a !important; }
     .live-preview.theme-deuteranopia { background: #f8f9fa !important; color: #212529 !important; }
     .live-preview.theme-tritanopia { background: #fff3e0 !important; color: #4a2e00 !important; }
 
-    /* Размер шрифта */
     .live-preview.font-small .preview-text { font-size: 12px; }
     .live-preview.font-medium .preview-text { font-size: 16px; }
     .live-preview.font-large .preview-text { font-size: 24px; }
 
-    /* Межстрочный интервал */
     .live-preview.line-height-normal .preview-text { line-height: 1.5; }
     .live-preview.line-height-large .preview-text { line-height: 2.0; }
 
-    /* Шрифты */
-    .live-preview.font-sans .preview-text { font-family: Arial, sans-serif; }
-    .live-preview.font-serif .preview-text { font-family: 'Times New Roman', serif; }
-    .live-preview.dyslexic-font .preview-text { font-family: 'OpenDyslexic', monospace; }
+    /* классы для каждого из 10 шрифтов */
+    .live-preview.font-pt-serif .preview-text { font-family: 'PT Serif', serif; }
+    .live-preview.font-noto-serif .preview-text { font-family: 'Noto Serif', serif; }
+    .live-preview.font-pt-sans .preview-text { font-family: 'PT Sans', sans-serif; }
+    .live-preview.font-noto-sans .preview-text { font-family: 'Noto Sans', sans-serif; }
+    .live-preview.font-roboto .preview-text { font-family: 'Roboto', sans-serif; }
+    .live-preview.font-arial .preview-text { font-family: Arial, sans-serif; }
+    .live-preview.font-verdana .preview-text { font-family: Verdana, sans-serif; }
+    .live-preview.font-comic-sans-ms .preview-text { font-family: 'Comic Sans MS', cursive; }
+    .live-preview.font-century-gothic .preview-text { font-family: 'Century Gothic', sans-serif; }
+    .live-preview.font-open-sans .preview-text { font-family: 'Open Sans', sans-serif; }
 
-    /* Светочувствительность (только high) */
     .live-preview.light-sensitive {
         filter: brightness(0.85) contrast(0.95);
     }
 
-    /* Основные стили контейнера */
     .test-content-wrapper {
         margin-right: 320px;
     }
@@ -93,6 +94,10 @@
     </div>
 
     <div class="test-content-wrapper">
+        <div class="alert alert-info" role="alert">
+            <strong>Важно:</strong> Этот тест не является медицинским и не может служить основанием для диагностики. Результаты используются только для настройки интерфейса чтения.
+        </div>
+
         <!-- ===== 1. Размер шрифта ===== -->
         <div class="card mb-3">
             <div class="card-body">
@@ -102,7 +107,7 @@
                     <label class="form-check-label" for="vision_small">Мелкий (как в обычных книгах)</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium">
+                    <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium" checked>
                     <label class="form-check-label" for="vision_medium">Средний (чуть крупнее)</label>
                 </div>
                 <div class="form-check">
@@ -117,7 +122,7 @@
             <div class="card-body">
                 <h5 class="card-title">2. Какой вариант контраста вам удобнее?</h5>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="theme" id="contrast_normal" value="normal">
+                    <input class="form-check-input" type="radio" name="theme" id="contrast_normal" value="normal" checked>
                     <label class="form-check-label" for="contrast_normal">Обычный (чёрное на белом)</label>
                 </div>
                 <div class="form-check">
@@ -141,7 +146,7 @@
                 <h5 class="card-title">3. Есть ли у вас особенности цветовосприятия?</h5>
                 <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>.</p>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal" checked>
                     <label class="form-check-label" for="color_normal">Нет, вижу все цвета нормально</label>
                 </div>
                 <div class="form-check">
@@ -220,55 +225,69 @@
                     <label class="form-check-label" for="dyslexia_yes">Да</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_no" value="no">
+                    <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_no" value="no" checked>
                     <label class="form-check-label" for="dyslexia_no">Нет</label>
                 </div>
             </div>
         </div>
 
-        <!-- ===== 9. Сравнение шрифтов (для дислексии) ===== -->
-        <div class="card mb-3" id="dyslexiaFontCard" style="display: none;">
-            <div class="card-body">
-                <h5 class="card-title">9. Какой шрифт вам легче читать?</h5>
-                <p class="small">Ниже показан один и тот же текст разными шрифтами.</p>
-                <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; font-family: Arial, sans-serif;">
-                    <strong>Обычный шрифт (Arial):</strong><br>
-                    Быстрая коричневая лиса прыгает через ленивую собаку.
-                </div>
-                <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; font-family: 'OpenDyslexic', monospace;">
-                    <strong>Шрифт OpenDyslexic:</strong><br>
-                    Быстрая коричневая лиса прыгает через ленивую собаку.
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="dyslexia_font" id="font_standard" value="standard">
-                    <label class="form-check-label" for="font_standard">Обычный шрифт</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="dyslexia_font" id="font_opendyslexic" value="opendyslexic">
-                    <label class="form-check-label" for="font_opendyslexic">OpenDyslexic</label>
-                </div>
-            </div>
-        </div>
-    
-        <!-- ===== 10. Тип шрифта (с засечками/без) ===== -->
+        <!-- ===== 9. Выбор шрифта (с подсказкой) ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">10. Какой тип шрифта вам удобнее?</h5>
+                <h5 class="card-title">9. Какой шрифт вам легче читать?</h5>
+                <div id="dyslexiaHint" class="alert alert-warning" style="display: none;">
+                    <strong>Подсказка:</strong> При дислексии рекомендуются шрифты из группы «Дружественные к дислексии», но вы можете выбрать любой.
+                </div>
+                <h6>Обычные шрифты</h6>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="font_family" id="font_sans" value="sans" checked>
-                    <label class="form-check-label" for="font_sans">Без засечек (Arial, Verdana) — обычно для экрана</label>
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_pt_serif" value="PT Serif">
+                    <label class="form-check-label" for="font_pt_serif">PT Serif (с засечками)</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="font_family" id="font_serif" value="serif">
-                    <label class="form-check-label" for="font_serif">С засечками (Times, Georgia) — для печатного стиля</label>
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_noto_serif" value="Noto Serif">
+                    <label class="form-check-label" for="font_noto_serif">Noto Serif (с засечками)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_pt_sans" value="PT Sans">
+                    <label class="form-check-label" for="font_pt_sans">PT Sans (без засечек)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_noto_sans" value="Noto Sans">
+                    <label class="form-check-label" for="font_noto_sans">Noto Sans (без засечек)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_roboto" value="Roboto" checked>
+                    <label class="form-check-label" for="font_roboto">Roboto (без засечек)</label>
+                </div>
+                <hr>
+                <h6>Шрифты, дружественные к дислексии</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_arial" value="Arial">
+                    <label class="form-check-label" for="font_arial">Arial</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_verdana" value="Verdana">
+                    <label class="form-check-label" for="font_verdana">Verdana</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_comic" value="Comic Sans MS">
+                    <label class="form-check-label" for="font_comic">Comic Sans MS</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_century" value="Century Gothic">
+                    <label class="form-check-label" for="font_century">Century Gothic</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="preferred_font" id="font_open_sans" value="Open Sans">
+                    <label class="form-check-label" for="font_open_sans">Open Sans</label>
                 </div>
             </div>
         </div>
 
-        <!-- ===== 11. Межстрочный интервал ===== -->
+        <!-- ===== 10. Межстрочный интервал ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">11. Какой межстрочный интервал вам комфортен?</h5>
+                <h5 class="card-title">10. Какой межстрочный интервал вам комфортен?</h5>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" checked>
                     <label class="form-check-label" for="line_normal">Обычный (как в книгах)</label>
@@ -285,7 +304,7 @@
 </form>
 
 <script>
-    // --- Элементы ползунков ---
+    // Ползунки (без изменений)
     const contrastSlider = document.getElementById('contrastSlider');
     const contrastValueSpan = document.getElementById('contrastValue');
     const contrastHidden = document.getElementById('contrastSensitivity');
@@ -316,56 +335,50 @@
     if (brightnessSlider) brightnessSlider.addEventListener('input', updateSliders);
     if (lineWidthSlider) lineWidthSlider.addEventListener('input', updateSliders);
 
-    // --- Показ/скрытие блока выбора шрифта при дислексии ---
+    // Показ подсказки при дислексии
     const dyslexiaYes = document.getElementById('dyslexia_yes');
     const dyslexiaNo = document.getElementById('dyslexia_no');
-    const dyslexiaFontCard = document.getElementById('dyslexiaFontCard');
+    const dyslexiaHint = document.getElementById('dyslexiaHint');
 
-    function toggleDyslexiaFont() {
+    function toggleDyslexiaHint() {
         if (dyslexiaYes.checked) {
-            dyslexiaFontCard.style.display = 'block';
+            dyslexiaHint.style.display = 'block';
         } else {
-            dyslexiaFontCard.style.display = 'none';
+            dyslexiaHint.style.display = 'none';
         }
         updatePreview();
     }
-    if (dyslexiaYes) dyslexiaYes.addEventListener('change', toggleDyslexiaFont);
-    if (dyslexiaNo) dyslexiaNo.addEventListener('change', toggleDyslexiaFont);
-    toggleDyslexiaFont();
+    if (dyslexiaYes) dyslexiaYes.addEventListener('change', toggleDyslexiaHint);
+    if (dyslexiaNo) dyslexiaNo.addEventListener('change', toggleDyslexiaHint);
+    toggleDyslexiaHint();
 
+    // Функция получения выбранного значения радиокнопок
     function getSelectedValue(name) {
         const radio = document.querySelector(`input[name="${name}"]:checked`);
         return radio ? radio.value : null;
     }
 
+    // Обновление демо-блока
     function updatePreview() {
         const previewDiv = document.getElementById('livePreview');
         const previewTextDiv = document.getElementById('previewText');
         if (!previewDiv) return;
 
-        // 1. Базовые настройки
         const fontSize = getSelectedValue('vision') || 'medium';
         let theme = getSelectedValue('theme') || getSelectedValue('contrast') || 'normal';
         const colorVision = getSelectedValue('color_vision') || 'normal';
-        const fontFamily = getSelectedValue('font_family') || 'sans';
         const lineHeight = getSelectedValue('line_height') || 'normal';
         const lightSensitive = getSelectedValue('light_sensitivity_level') || 'low';
-        const dyslexia = getSelectedValue('dyslexia') === 'yes';
-        const dyslexiaFont = getSelectedValue('dyslexia_font') === 'opendyslexic';
+        const hasDyslexia = getSelectedValue('dyslexia') === 'yes';
+        const preferredFont = getSelectedValue('preferred_font') || 'Roboto';
 
-        // 2. Ползунки
         const contrastVal = contrastSlider ? parseInt(contrastSlider.value) : 50;
         const brightnessVal = brightnessSlider ? parseInt(brightnessSlider.value) : 50;
         const lineWidthVal = lineWidthSlider ? parseInt(lineWidthSlider.value) : 66;
 
-        // Формулы: при 50 дают 1.0, диапазон 0.5..1.5
-        const contrastFactor = 0.5 + contrastVal / 100;
-        const brightnessFactor = 0.5 + brightnessVal / 100;
-
-        // 3. Формируем классы
         let classes = [`font-${fontSize}`];
 
-        // Цветовая схема: приоритет у цветового зрения
+        // Цветовая схема (приоритет дальтонизма)
         if (colorVision === 'protan') {
             classes.push('theme-protanopia');
         } else if (colorVision === 'deutan') {
@@ -376,32 +389,31 @@
             classes.push(`theme-${theme}`);
         }
 
-        if (fontFamily === 'sans') classes.push('font-sans');
-        else classes.push('font-serif');
-
+        // Межстрочный интервал
         if (lineHeight === 'large') classes.push('line-height-large');
         else classes.push('line-height-normal');
 
+        // Светочувствительность
         if (lightSensitive === 'high') {
             classes.push('light-sensitive');
         }
 
-        if (dyslexia && dyslexiaFont) {
-            classes.push('dyslexic-font');
-        }
+        // Класс шрифта (преобразуем название в нижний регистр, заменяем пробелы на дефисы)
+        const fontClass = `font-${preferredFont.toLowerCase().replace(/ /g, '-')}`;
+        classes.push(fontClass);
 
-        // 4. Применяем классы
         previewDiv.className = 'live-preview ' + classes.join(' ');
 
-        // 5. Применяем фильтры (контраст и яркость) к блоку, только если они не равны 1
+        // Контраст/яркость
+        const contrastFactor = 0.5 + contrastVal / 100;
+        const brightnessFactor = 0.5 + brightnessVal / 100;
         if (contrastFactor !== 1 || brightnessFactor !== 1) {
             previewDiv.style.filter = `contrast(${contrastFactor}) brightness(${brightnessFactor})`;
         } else {
-            previewDiv.style.filter = ''; // сброс, чтобы не было наложения
+            previewDiv.style.filter = '';
         }
 
-        // 6. Длина строки
-        // Длина строки: меняем ширину всего блока
+        // Длина строки
         previewDiv.style.width = 'auto';
         previewDiv.style.maxWidth = lineWidthVal + 'ch';
     }
@@ -415,11 +427,7 @@
             input.addEventListener('input', updatePreview);
         }
     });
-    // Дополнительно для радиокнопок дислексийного шрифта
-    const dyslexiaFontRadios = document.querySelectorAll('input[name="dyslexia_font"]');
-    dyslexiaFontRadios.forEach(radio => radio.addEventListener('change', updatePreview));
 
-    // Инициализация
     updatePreview();
 </script>
 {% endblock %}
