@@ -8,11 +8,10 @@ from epub_parser import extract_text_from_epub, get_epub_title
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import session
 from flask import abort, flash
-from flask import send_from_directory, abort
+from flask import send_from_directory
 from pdf_parser import extract_text_and_images_from_pdf, get_pdf_title
 from docx_parser import extract_text_and_images_from_docx, get_docx_title
 from fb2_parser import get_fb2_title, extract_text_and_images_from_fb2
-from flask import url_for
 
 from ishihara_data import EXPECTED, PLATE_OPTIONS
 
@@ -47,16 +46,14 @@ class User(db.Model):
     color_vision = db.Column(db.String(20))   # 'normal', 'deutan', 'protan', 'tritan'
     font_pref = db.Column(db.String(20))      # 'small', 'medium', 'large'
     theme_pref = db.Column(db.String(20))     # 'light', 'dark', 'sepia', 'high_contrast'
-    
-    # НОВЫЕ ПОЛЯ
-    light_sensitive = db.Column(db.Boolean, default=False)        # чувствительность к свету (да/нет)
+    #light_sensitive = db.Column(db.Boolean, default=False)        # чувствительность к свету (да/нет)
     line_height = db.Column(db.String(20), default='normal')      # 'normal' или 'large'
 
     # еще новые поля (доработка теста)
     color_blindness_type = db.Column(db.String(20), default='none')   # 'none', 'protanopia', 'deuteranopia', 'tritanopia'
     has_dyslexia = db.Column(db.Boolean, default=False)
     light_sensitivity_level = db.Column(db.String(20), default='low')   # 'low', 'medium', 'high'
-    line_width_pref = db.Column(db.String(20), default='medium')        # 'narrow', 'medium', 'wide'
+    # line_width_pref = db.Column(db.String(20), default='medium')        # 'narrow', 'medium', 'wide'
 
     preferred_font = db.Column(db.String(50), default='Roboto')   # новое поле
 
@@ -169,14 +166,13 @@ def edit_profile():
         user.theme_pref = theme
         user.contrast = theme
         user.color_vision = request.form.get('color_vision', user.color_vision)
-        user.font_family = request.form.get('font_family', user.font_family)
         user.line_height = request.form.get('line_height', user.line_height)
         user.contrast_sensitivity = int(request.form.get('contrast_sensitivity', user.contrast_sensitivity or 50))
         user.brightness_preference = int(request.form.get('brightness_preference', user.brightness_preference or 50))
         user.preferred_line_width_ch = int(request.form.get('preferred_line_width_ch', user.preferred_line_width_ch or 66))
         user.has_dyslexia = request.form.get('dyslexia') == 'yes'
-        user.dyslexia_font = request.form.get('dyslexia_font') == 'opendyslexic'
         user.light_sensitivity_level = request.form.get('light_sensitivity_level', user.light_sensitivity_level or 'low')
+        user.preferred_font = request.form.get('preferred_font', user.preferred_font or 'Roboto')
         # Для color_blindness_type не обновляем, его меняет только тест Ишихары
         db.session.commit()
         flash('Настройки обновлены', 'success')
