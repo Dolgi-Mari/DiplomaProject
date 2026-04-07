@@ -181,13 +181,126 @@ def edit_profile():
 
     return render_template('profile_edit.html', user=user)
 
+def process_uploaded_file(file, user, user_folder):
+    """
+    Обрабатывает один загруженный файл: сохраняет, извлекает метаданные,
+    создаёт запись в БД, вызывает парсер.
+    Возвращает (success, message) – успех и сообщение.
+    """
+    filename = secure_filename(file.filename)
+    file_path = os.path.join(user_folder, filename)
+    file.save(file_path)
+    
+    # Определяем расширение
+    file_ext = filename.rsplit('.', 1)[1].lower()
+    
+    # Пытаемся получить название книги
+    book_title = filename  # по умолчанию
+    if file_ext == 'epub':
+        try:
+            title_from_meta = get_epub_title(file_path)
+            if title_from_meta:
+                book_title = title_from_meta
+        except Exception as e:
+            print(f"Ошибка при получении названия EPUB: {e}")
+    elif file_ext == 'pdf':
+        try:
+            title_from_meta = get_pdf_title(file_path)
+            if title_from_meta:
+                book_title = title_from_meta
+        except Exception as e:
+            print(f"Ошибка при получении названия PDF: {e}")
+    elif file_ext == 'docx':
+        try:
+            title_from_meta = get_docx_title(file_path)
+            if title_from_meta:
+                book_title = title_from_meta
+        except Exception as e:
+            print(f"Ошибка при получении названия DOCX: {e}")
+    elif file_ext == 'fb2':
+        try:
+            title_from_meta = get_fb2_title(file_path)
+            if title_from_meta:
+                book_title = title_from_meta
+        except Exception as e:
+            print(f"Ошибка при получении названия FB2: {e}")
+    elif file_ext == 'txt':
+        try:
+            title_from_meta = get_txt_title(file_path)
+            if title_from_meta:
+                book_title = title_from_meta
+        except Exception as e:
+            print(f"Ошибка при получении названия TXT: {e}")
+    elif file_ext == 'rtf':
+        try:
+            title_from_meta = get_rtf_title(file_path)
+            if title_from_meta:
+                book_title = title_from_meta
+            # Предупреждение о возможных проблемах с таблицами/изображениями
+            flash(f'Файл {filename} (RTF) может содержать некорректно отображаемые таблицы или изображения.', 'warning')
+        except Exception as e:
+            print(f"Ошибка при получении названия RTF: {e}")
+
+    # Создаём запись в БД
+    new_book = Book(
+        user_id=user.id,
+        filename=filename,
+        file_path=file_path,
+        title=book_title
+    )
+    db.session.add(new_book)
+    db.session.commit()
+
+    # --- Вызов парсеров ---
+    success = False
+    if file_ext == 'epub':
+        html_folder = os.path.join(user_folder, 'html')
+        os.makedirs(html_folder, exist_ok=True)
+        html_filename = filename.rsplit('.', 1)[0] + '.html'
+        html_path = os.path.join(html_folder, html_filename)
+        success = extract_text_from_epub(file_path, html_path, new_book.id)
+    elif file_ext == 'pdf':
+        html_folder = os.path.join(user_folder, 'html')
+        os.makedirs(html_folder, exist_ok=True)
+        html_filename = filename.rsplit('.', 1)[0] + '.html'
+        html_path = os.path.join(html_folder, html_filename)
+        success = extract_text_and_images_from_pdf(file_path, html_path, new_book.id)
+    elif file_ext == 'docx':
+        html_folder = os.path.join(user_folder, 'html')
+        os.makedirs(html_folder, exist_ok=True)
+        html_filename = filename.rsplit('.', 1)[0] + '.html'
+        html_path = os.path.join(html_folder, html_filename)
+        success = extract_text_and_images_from_docx(file_path, html_path, new_book.id)
+    elif file_ext == 'fb2':
+        html_folder = os.path.join(user_folder, 'html')
+        os.makedirs(html_folder, exist_ok=True)
+        html_filename = filename.rsplit('.', 1)[0] + '.html'
+        html_path = os.path.join(html_folder, html_filename)
+        success = extract_text_and_images_from_fb2(file_path, html_path, new_book.id)
+    elif file_ext == 'txt':
+        html_folder = os.path.join(user_folder, 'html')
+        os.makedirs(html_folder, exist_ok=True)
+        html_filename = filename.rsplit('.', 1)[0] + '.html'
+        html_path = os.path.join(html_folder, html_filename)
+        success = extract_text_from_txt(file_path, html_path, new_book.id)
+    elif file_ext == 'rtf':
+        html_folder = os.path.join(user_folder, 'html')
+        os.makedirs(html_folder, exist_ok=True)
+        html_filename = filename.rsplit('.', 1)[0] + '.html'
+        html_path = os.path.join(html_folder, html_filename)
+        success = extract_text_from_rtf(file_path, html_path, new_book.id)
+
+    if success:
+        new_book.extracted_html_path = html_path
+        db.session.commit()
+        print(f"HTML создан: {html_path}")
+        return True, f"Книга {filename} успешно загружена и обработана."
+    else:
+        print(f"Не удалось извлечь текст из {filename}")
+        return False, f"Ошибка при обработке {filename}. Текст не извлечён."
+
 @app.route('/upload/<int:user_id>', methods=['GET', 'POST'])
 def upload(user_id):
-    """
-    Загрузка книги.
-    Сохраняет файл, создаёт запись в БД.
-    + вызов парсер.
-    """
     if 'user_id' not in session:
         return redirect(url_for('login'))
     if session['user_id'] != user_id:
@@ -195,171 +308,40 @@ def upload(user_id):
     user = User.query.get_or_404(user_id)
     
     if request.method == 'POST':
-        if 'file' not in request.files:
-            return 'Нет файла', 400
-        file = request.files['file']
+        if 'files[]' not in request.files:
+            flash('Нет выбранных файлов', 'error')
+            return redirect(url_for('upload', user_id=user.id))
         
-        if file.filename == '':
-            return 'Файл не выбран', 400
+        files = request.files.getlist('files[]')
+        # Удаляем пустые (если пользователь выбрал, но потом убрал)
+        files = [f for f in files if f and f.filename]
+        if not files:
+            flash('Файлы не выбраны', 'error')
+            return redirect(url_for('upload', user_id=user.id))
         
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            user_folder = os.path.join(app.config['UPLOAD_FOLDER'], str(user_id))
-            os.makedirs(user_folder, exist_ok=True)
-            file_path = os.path.join(user_folder, filename)
-            file.save(file_path)
-            
-            # Определяем расширение файла
-            file_ext = filename.rsplit('.', 1)[1].lower()
-
-            # Пытаемся получить настоящее название книги
-            book_title = filename  # по умолчанию имя файла
-            if file_ext == 'epub':
-                try:
-                    title_from_meta = get_epub_title(file_path)
-                    if title_from_meta:
-                        book_title = title_from_meta
-                except Exception as e:
-                    print(f"Ошибка при получении названия EPUB: {e}")
-            elif file_ext == 'pdf':
-                try:
-                    title_from_meta = get_pdf_title(file_path)
-                    if title_from_meta:
-                        book_title = title_from_meta
-                except Exception as e:
-                    print(f"Ошибка при получении названия PDF: {e}")
-            elif file_ext == 'docx':
-                try:
-                    title_from_meta = get_docx_title(file_path)
-                    if title_from_meta:
-                        book_title = title_from_meta
-                except Exception as e:
-                    print(f"Ошибка при получении названия DOCX: {e}")
-            elif file_ext == 'fb2':
-                try:
-                    title_from_meta = get_fb2_title(file_path)
-                    if title_from_meta:
-                        book_title = title_from_meta
-                except Exception as e:
-                    print(f"Ошибка при получении названия FB2: {e}")
-            elif file_ext == 'txt':
-                try:
-                    title_from_meta = get_txt_title(file_path)
-                    if title_from_meta:
-                        book_title = title_from_meta
-                except Exception as e:
-                    print(f"Ошибка при получении названия TXT: {e}")
-            elif file_ext == 'rtf':
-                try:
-                    title_from_meta = get_rtf_title(file_path)
-                    if title_from_meta:
-                        book_title = title_from_meta
-                except Exception as e:
-                    print(f"Ошибка при получении названия RTF: {e}")
-
-
-            # Создаём запись в БД с полученным названием
-            new_book = Book(
-                user_id=user.id,
-                filename=filename,
-                file_path=file_path,
-                title=book_title
-            )
-            db.session.add(new_book)
-            db.session.commit()
-
-            # --- БЛОК ДЛЯ EPUB (парсинг текста) ---
-            if file_ext == 'epub':
-                html_folder = os.path.join(user_folder, 'html')
-                os.makedirs(html_folder, exist_ok=True)
-                html_filename = filename.rsplit('.', 1)[0] + '.html'
-                html_path = os.path.join(html_folder, html_filename)
-
-                success = extract_text_from_epub(file_path, html_path, new_book.id)
+        user_folder = os.path.join(app.config['UPLOAD_FOLDER'], str(user_id))
+        os.makedirs(user_folder, exist_ok=True)
+        
+        success_count = 0
+        error_messages = []
+        for file in files:
+            if allowed_file(file.filename):
+                success, msg = process_uploaded_file(file, user, user_folder)
                 if success:
-                    new_book.extracted_html_path = html_path
-                    db.session.commit()
-                    print(f"HTML создан: {html_path}")
+                    success_count += 1
                 else:
-                    print(f"Не удалось извлечь текст из EPUB: {filename}")
-
-            # --- БЛОК ДЛЯ PDF ---
-            if file_ext == 'pdf':
-                html_folder = os.path.join(user_folder, 'html')
-                os.makedirs(html_folder, exist_ok=True)
-                html_filename = filename.rsplit('.', 1)[0] + '.html'
-                html_path = os.path.join(html_folder, html_filename)
-
-                success = extract_text_and_images_from_pdf(file_path, html_path, new_book.id)
-                if success:
-                    new_book.extracted_html_path = html_path
-                    db.session.commit()
-                    print(f"HTML создан: {html_path}")
-                else:
-                    print(f"Не удалось извлечь текст из PDF: {filename}")
-
-            # --- БЛОК ДЛЯ DOCX ---
-            if file_ext == 'docx':
-                html_folder = os.path.join(user_folder, 'html')
-                os.makedirs(html_folder, exist_ok=True)
-                html_filename = filename.rsplit('.', 1)[0] + '.html'
-                html_path = os.path.join(html_folder, html_filename)
-
-                success = extract_text_and_images_from_docx(file_path, html_path, new_book.id)
-                if success:
-                    new_book.extracted_html_path = html_path
-                    db.session.commit()
-                    print(f"HTML создан: {html_path}")
-                else:
-                    print(f"Не удалось извлечь текст из DOCX: {filename}")
-            
-            # --- БЛОК ДЛЯ FB2 ---
-            if file_ext == 'fb2':
-                html_folder = os.path.join(user_folder, 'html')
-                os.makedirs(html_folder, exist_ok=True)
-                html_filename = filename.rsplit('.', 1)[0] + '.html'
-                html_path = os.path.join(html_folder, html_filename)
-
-                success = extract_text_and_images_from_fb2(file_path, html_path, new_book.id)
-                if success:
-                    new_book.extracted_html_path = html_path
-                    db.session.commit()
-                    print(f"HTML создан: {html_path}")
-                else:
-                    print(f"Не удалось извлечь текст из FB2: {filename}")
-            
-            # --- БЛОК ДЛЯ TXT ---
-            if file_ext == 'txt':
-                html_folder = os.path.join(user_folder, 'html')
-                os.makedirs(html_folder, exist_ok=True)
-                html_filename = filename.rsplit('.', 1)[0] + '.html'
-                html_path = os.path.join(html_folder, html_filename)
-
-                success = extract_text_from_txt(file_path, html_path, new_book.id)
-                if success:
-                    new_book.extracted_html_path = html_path
-                    db.session.commit()
-                    print(f"HTML создан: {html_path}")
-                else:
-                    print(f"Не удалось извлечь текст из TXT: {filename}")
-
-            # --- БЛОК ДЛЯ RTF ---
-            if file_ext == 'rtf':
-                html_folder = os.path.join(user_folder, 'html')
-                os.makedirs(html_folder, exist_ok=True)
-                html_filename = filename.rsplit('.', 1)[0] + '.html'
-                html_path = os.path.join(html_folder, html_filename)
-
-                success = extract_text_from_rtf(file_path, html_path, new_book.id)
-                if success:
-                    new_book.extracted_html_path = html_path
-                    db.session.commit()
-                    print(f"HTML создан: {html_path}")
-                else:
-                    print(f"Не удалось извлечь текст из RTF: {filename}")
-            
-            return f"Книга {filename} успешно загружена! <a href='/profile/{user.id}'>Вернуться в профиль</a>"
-
+                    error_messages.append(msg)
+            else:
+                error_messages.append(f'Недопустимый формат: {file.filename}')
+        
+        # Формируем итоговое сообщение
+        if success_count > 0:
+            flash(f'Успешно загружено {success_count} книг.', 'success')
+        for err in error_messages:
+            flash(err, 'error')
+        
+        return redirect(url_for('profile', user_id=user.id))
+    
     return render_template('upload.html', user=user)
 
 @app.route('/read/<int:book_id>')
