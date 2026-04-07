@@ -12,7 +12,8 @@ from flask import send_from_directory
 from pdf_parser import extract_text_and_images_from_pdf, get_pdf_title
 from docx_parser import extract_text_and_images_from_docx, get_docx_title
 from fb2_parser import get_fb2_title, extract_text_and_images_from_fb2
-
+from txt_parser import extract_text_from_txt, get_txt_title
+from rtf_parser import extract_text_from_rtf, get_rtf_title
 from ishihara_data import EXPECTED, PLATE_OPTIONS
 
 # ================== КОНФИГУРАЦИЯ ==================
@@ -22,7 +23,7 @@ app = Flask(__name__)
 
 # Настройки загрузки файлов
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'epub', 'pdf', 'fb2', 'docx'}
+ALLOWED_EXTENSIONS = {'epub', 'pdf', 'fb2', 'docx', 'txt', 'rtf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB
 
@@ -241,6 +242,21 @@ def upload(user_id):
                         book_title = title_from_meta
                 except Exception as e:
                     print(f"Ошибка при получении названия FB2: {e}")
+            elif file_ext == 'txt':
+                try:
+                    title_from_meta = get_txt_title(file_path)
+                    if title_from_meta:
+                        book_title = title_from_meta
+                except Exception as e:
+                    print(f"Ошибка при получении названия TXT: {e}")
+            elif file_ext == 'rtf':
+                try:
+                    title_from_meta = get_rtf_title(file_path)
+                    if title_from_meta:
+                        book_title = title_from_meta
+                except Exception as e:
+                    print(f"Ошибка при получении названия RTF: {e}")
+
 
             # Создаём запись в БД с полученным названием
             new_book = Book(
@@ -311,9 +327,39 @@ def upload(user_id):
                     print(f"HTML создан: {html_path}")
                 else:
                     print(f"Не удалось извлечь текст из FB2: {filename}")
+            
+            # --- БЛОК ДЛЯ TXT ---
+            if file_ext == 'txt':
+                html_folder = os.path.join(user_folder, 'html')
+                os.makedirs(html_folder, exist_ok=True)
+                html_filename = filename.rsplit('.', 1)[0] + '.html'
+                html_path = os.path.join(html_folder, html_filename)
 
+                success = extract_text_from_txt(file_path, html_path, new_book.id)
+                if success:
+                    new_book.extracted_html_path = html_path
+                    db.session.commit()
+                    print(f"HTML создан: {html_path}")
+                else:
+                    print(f"Не удалось извлечь текст из TXT: {filename}")
+
+            # --- БЛОК ДЛЯ RTF ---
+            if file_ext == 'rtf':
+                html_folder = os.path.join(user_folder, 'html')
+                os.makedirs(html_folder, exist_ok=True)
+                html_filename = filename.rsplit('.', 1)[0] + '.html'
+                html_path = os.path.join(html_folder, html_filename)
+
+                success = extract_text_from_rtf(file_path, html_path, new_book.id)
+                if success:
+                    new_book.extracted_html_path = html_path
+                    db.session.commit()
+                    print(f"HTML создан: {html_path}")
+                else:
+                    print(f"Не удалось извлечь текст из RTF: {filename}")
+            
             return f"Книга {filename} успешно загружена! <a href='/profile/{user.id}'>Вернуться в профиль</a>"
-    
+
     return render_template('upload.html', user=user)
 
 @app.route('/read/<int:book_id>')
