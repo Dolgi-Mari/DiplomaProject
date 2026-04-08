@@ -2,20 +2,22 @@
 
 {% block content %}
 <style>
-    /* Фиксированный демо-блок (как в тесте) */
+    /* Стили для демо-блока (полностью повторяют логику теста) */
     .demo-fixed {
         position: fixed;
         top: 50%;
         right: 20px;
         transform: translateY(-50%);
-        width: 280px;
-        background: white;
+        min-width: 200px;
+        max-width: 90vw;
         border-radius: 12px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         padding: 20px;
         z-index: 1000;
         border: 1px solid #ddd;
         transition: all 0.2s ease;
+        background: white;
+        color: black;
     }
     .demo-fixed h4 {
         margin-top: 0;
@@ -29,7 +31,42 @@
         overflow-wrap: break-word;
         word-break: break-word;
     }
-    /* Отступ справа для основного контента */
+    /* Базовые стили для тем (дублируем из reader.css) */
+    .demo-fixed.theme-normal { background: white !important; color: black !important; }
+    .demo-fixed.theme-dark { background: #1e1e1e !important; color: #ddd !important; }
+    .demo-fixed.theme-sepia { background: #f4ecd8 !important; color: #5b4636 !important; }
+    .demo-fixed.theme-high { background: #ffeb3b !important; color: #000 !important; }
+    .demo-fixed.theme-protanopia { background: #f0f0f0 !important; color: #1a1a1a !important; }
+    .demo-fixed.theme-deuteranopia { background: #f8f9fa !important; color: #212529 !important; }
+    .demo-fixed.theme-tritanopia { background: #fff3e0 !important; color: #4a2e00 !important; }
+
+    /* Размер шрифта */
+    .demo-fixed.font-small .demo-text { font-size: 12px; }
+    .demo-fixed.font-medium .demo-text { font-size: 16px; }
+    .demo-fixed.font-large .demo-text { font-size: 24px; }
+
+    /* Межстрочный интервал */
+    .demo-fixed.line-height-normal .demo-text { line-height: 1.5; }
+    .demo-fixed.line-height-large .demo-text { line-height: 2.0; }
+
+    /* Шрифты (все 10) */
+    .demo-fixed.font-pt-serif .demo-text { font-family: 'PT Serif', serif; }
+    .demo-fixed.font-noto-serif .demo-text { font-family: 'Noto Serif', serif; }
+    .demo-fixed.font-pt-sans .demo-text { font-family: 'PT Sans', sans-serif; }
+    .demo-fixed.font-noto-sans .demo-text { font-family: 'Noto Sans', sans-serif; }
+    .demo-fixed.font-roboto .demo-text { font-family: 'Roboto', sans-serif; }
+    .demo-fixed.font-arial .demo-text { font-family: Arial, sans-serif; }
+    .demo-fixed.font-verdana .demo-text { font-family: Verdana, sans-serif; }
+    .demo-fixed.font-comic-sans-ms .demo-text { font-family: 'Comic Sans MS', cursive; }
+    .demo-fixed.font-century-gothic .demo-text { font-family: 'Century Gothic', sans-serif; }
+    .demo-fixed.font-open-sans .demo-text { font-family: 'Open Sans', sans-serif; }
+
+    /* Чувствительность к свету (high) */
+    .demo-fixed.light-sensitive {
+        filter: brightness(0.85) contrast(0.95);
+    }
+
+    /* Отступ для основного контента */
     .edit-content-wrapper {
         margin-right: 320px;
     }
@@ -60,7 +97,7 @@
     </div>
 
     <div class="edit-content-wrapper">
-        <!-- Блок изменения учётных данных -->
+        <!-- Блок изменения учётных данных (без изменений) -->
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Учётные данные</h5>
@@ -81,7 +118,7 @@
             </div>
         </div>
 
-        <!-- Настройки чтения (сгруппированы) -->
+        <!-- Настройки чтения (все параметры, как в тесте) -->
         <div class="card mb-4">
             <div class="card-header bg-secondary text-white">
                 <h5 class="mb-0">Настройки чтения</h5>
@@ -270,13 +307,13 @@
 </form>
 
 <script>
-    // Функция для получения выбранного значения радиокнопок
+    // === Функция получения выбранного значения радиокнопок ===
     function getSelectedValue(name) {
         const radio = document.querySelector(`input[name="${name}"]:checked`);
         return radio ? radio.value : null;
     }
 
-    // Элементы
+    // === Элементы DOM ===
     const demoDiv = document.getElementById('demoPreview');
     const demoTextDiv = document.getElementById('demoText');
     const contrastSlider = document.getElementById('contrastSlider');
@@ -292,7 +329,7 @@
     const dyslexiaNo = document.getElementById('dyslexia_no');
     const dyslexiaHint = document.getElementById('dyslexiaHint');
 
-    // Обновление слайдеров
+    // === Обновление значений слайдеров ===
     function updateSliders() {
         if (contrastSlider) {
             contrastValueSpan.textContent = contrastSlider.value;
@@ -309,11 +346,11 @@
         updatePreview();
     }
 
-    contrastSlider.addEventListener('input', updateSliders);
-    brightnessSlider.addEventListener('input', updateSliders);
-    lineWidthSlider.addEventListener('input', updateSliders);
+    if (contrastSlider) contrastSlider.addEventListener('input', updateSliders);
+    if (brightnessSlider) brightnessSlider.addEventListener('input', updateSliders);
+    if (lineWidthSlider) lineWidthSlider.addEventListener('input', updateSliders);
 
-    // Показ/скрытие подсказки при дислексии
+    // === Показ/скрытие подсказки при дислексии ===
     function toggleDyslexiaHint() {
         if (dyslexiaYes && dyslexiaYes.checked) {
             dyslexiaHint.classList.remove('d-none');
@@ -328,8 +365,11 @@
         toggleDyslexiaHint();
     }
 
-    // Обновление демо-блока
+    // === Обновление демо-блока (полностью аналогично тесту) ===
     function updatePreview() {
+        if (!demoDiv) return;
+
+        // 1. Получаем значения всех параметров
         const fontSize = getSelectedValue('vision') || 'medium';
         let theme = getSelectedValue('theme') || getSelectedValue('contrast') || 'normal';
         const colorVision = getSelectedValue('color_vision') || 'normal';
@@ -340,8 +380,10 @@
         const brightnessVal = brightnessSlider ? parseInt(brightnessSlider.value) : 50;
         const lineWidthVal = lineWidthSlider ? parseInt(lineWidthSlider.value) : 66;
 
+        // 2. Формируем классы
         let classes = [`font-${fontSize}`];
 
+        // Цветовая схема с учётом цветовосприятия
         if (colorVision === 'protan') {
             classes.push('theme-protanopia');
         } else if (colorVision === 'deutan') {
@@ -352,18 +394,23 @@
             classes.push(`theme-${theme}`);
         }
 
+        // Межстрочный интервал
         if (lineHeight === 'large') classes.push('line-height-large');
         else classes.push('line-height-normal');
 
+        // Светочувствительность (только high)
         if (lightSensitive === 'high') {
             classes.push('light-sensitive');
         }
 
+        // Шрифт
         const fontClass = `font-${preferredFont.toLowerCase().replace(/ /g, '-')}`;
         classes.push(fontClass);
 
+        // 3. Применяем классы
         demoDiv.className = 'demo-fixed ' + classes.join(' ');
 
+        // 4. Применяем фильтры контраста/яркости
         const contrastFactor = 0.5 + contrastVal / 100;
         const brightnessFactor = 0.5 + brightnessVal / 100;
         if (contrastFactor !== 1 || brightnessFactor !== 1) {
@@ -372,10 +419,11 @@
             demoDiv.style.filter = '';
         }
 
+        // 5. Длина строки (max-width)
         demoTextDiv.style.maxWidth = lineWidthVal + 'ch';
     }
 
-    // Привязываем обработчики
+    // === Привязываем обработчики ко всем элементам формы ===
     const form = document.querySelector('form');
     const inputs = form.querySelectorAll('input, select');
     inputs.forEach(input => {
@@ -385,6 +433,7 @@
         }
     });
 
+    // Инициализация демо-блока
     updatePreview();
 </script>
 {% endblock %}
