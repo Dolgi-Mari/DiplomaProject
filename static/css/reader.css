@@ -11,174 +11,39 @@ body {
     padding: 20px;
 }
 
-/* Увеличенный шрифт */
+/* Размер шрифта */
 body.font-large {
     font-size: 24px;
     line-height: 1.7;
 }
-
 body.font-medium {
     font-size: 20px;
     line-height: 1.6;
 }
-
 body.font-small {
     font-size: 14px;
     line-height: 1.4;
 }
 
-/* Тёмная тема */
+/* Темы (стандартные) */
 body.theme-dark {
     background-color: #1a1a1a;
     color: #e0e0e0;
 }
-
-/* Высокий контраст (жёлтый/чёрный) */
 body.theme-high {
     background-color: #ffeb3b;
     color: #000;
 }
-
-/* Сепия */
 body.theme-sepia {
     background-color: #f4ecd8;
     color: #5b4636;
 }
-
-/* Шрифт с засечками */
-body.serif {
-    font-family: 'Times New Roman', serif;
-}
-
-/* Шрифт без засечек (по умолчанию уже sans, но можно уточнить) */
-body.sans-serif {
-    font-family: Arial, sans-serif;
-}
-
-/* Стили для контента книги */
-#book-content {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-#book-content p {
-    margin-bottom: 1.2em;
-}
-
 body.theme-normal {
     background-color: #fff;
     color: #000;
 }
 
-/* Стили для шрифта */
-body.font-serif {
-    font-family: 'Times New Roman', Georgia, serif;
-}
-
-body.font-sans {
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Стили для межстрочного интервала */
-body.line-height-normal {
-    line-height: 1.5;
-}
-
-body.line-height-large {
-    line-height: 2.0;
-}
-
-/* Для чувствительности к свету — если пользователь отметил, что чувствителен,
-   можно сделать тёмную тему чуть мягче, но это опционально */
-body.light-sensitive {
-    /* Например, можно добавить лёгкую дымку или уменьшить яркость, 
-       но пока оставим как заглушку */
-    filter: brightness(0.95);
-}
-
-/* ===== Адаптация изображений под тему ===== */
-
-/* Обычная тема (базовая) */
-body.theme-normal img {
-    /* можно оставить без изменений или добавить лёгкую настройку, например, небольшой контраст */
-    filter: none;
-}
-
-/* Тёмная тема: чуть уменьшаем яркость и добавляем контраст, чтобы изображения не "выжигали" глаза */
-body.theme-dark img {
-    filter: brightness(0.8) contrast(1.1);
-    opacity: 0.9;
-    transition: filter 0.2s ease;
-}
-
-/* Сепия: добавляем тёплый оттенок, снижаем насыщенность */
-body.theme-sepia img {
-    filter: sepia(0.4) brightness(0.95) contrast(1.05);
-}
-
-/* Высокий контраст: усиливаем контраст и насыщенность */
-body.theme-high img {
-    filter: contrast(1.3) saturate(1.2);
-}
-
-/* Для пользователей с чувствительностью к свету (если включено) — дополнительное затемнение */
-body.light-sensitive img {
-    filter: brightness(0.9); /* применяется вместе с фильтрами темы */
-}
-
-/* Стили для таблиц */
-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 1em 0;
-    background-color: inherit;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-/* Для тёмной темы */
-body.theme-dark table {
-    border-color: #555;
-}
-body.theme-dark th {
-    background-color: #333;
-    color: #ddd;
-}
-body.theme-dark td {
-    border-color: #555;
-}
-
-/* Для сепии */
-body.theme-sepia table {
-    border-color: #c0a16b;
-}
-body.theme-sepia th {
-    background-color: #e5d3b5;
-    color: #5b4636;
-}
-/* CSS-переменные для контраста и яркости */
-body {
-    --text-contrast: 1;
-    --bg-brightness: 1;
-    --line-width: 66ch;
-}
-
-#book-content {
-    max-width: var(--line-width);
-    margin: 0 auto;
-    filter: contrast(var(--text-contrast)) brightness(var(--bg-brightness));
-}
-
-/* Классы для дальтонизма (примерные схемы) */
+/* Темы для дальтонизма */
 body.theme-protanopia {
     background-color: #f0f0f0;
     color: #1a1a1a;
@@ -201,101 +66,90 @@ body.theme-tritanopia a {
     color: #d9534f;
 }
 
-/* Шрифт OpenDyslexic */
-@font-face {
-    font-family: 'OpenDyslexic';
-    src: url('/static/fonts/OpenDyslexic-Regular.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
+/* Межстрочный интервал */
+body.line-height-normal {
+    line-height: 1.5;
 }
-body.dyslexic-font {
-    font-family: 'OpenDyslexic', monospace;
-}
-/* ===== Шрифт OpenDyslexic ===== */
-@font-face {
-    font-family: 'OpenDyslexic';
-    src: url('/static/fonts/OpenDyslexic-Regular.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
+body.line-height-large {
+    line-height: 2.0;
 }
 
-@font-face {
-    font-family: 'OpenDyslexic';
-    src: url('/static/fonts/OpenDyslexic-Italic.otf') format('opentype');
-    font-weight: normal;
-    font-style: italic;
+/* Чувствительность к свету */
+body.light-sensitive {
+    filter: brightness(0.95);
 }
 
-@font-face {
-    font-family: 'OpenDyslexic';
-    src: url('/static/fonts/OpenDyslexic-Bold.otf') format('opentype');
-    font-weight: bold;
-    font-style: normal;
+/* Классы для шрифтов (10 вариантов) */
+body.font-pt-serif { font-family: 'PT Serif', serif; }
+body.font-noto-serif { font-family: 'Noto Serif', serif; }
+body.font-pt-sans { font-family: 'PT Sans', sans-serif; }
+body.font-noto-sans { font-family: 'Noto Sans', sans-serif; }
+body.font-roboto { font-family: 'Roboto', sans-serif; }
+body.font-arial { font-family: Arial, sans-serif; }
+body.font-verdana { font-family: Verdana, sans-serif; }
+body.font-comic-sans-ms { font-family: 'Comic Sans MS', cursive; }
+body.font-century-gothic { font-family: 'Century Gothic', sans-serif; }
+body.font-open-sans { font-family: 'Open Sans', sans-serif; }
+
+/* Стили для контента книги */
+#book-content {
+    max-width: var(--line-width, 66ch);
+    margin: 0 auto;
+    filter: contrast(var(--text-contrast, 1)) brightness(var(--bg-brightness, 1));
+}
+#book-content p {
+    margin-bottom: 1.2em;
 }
 
-@font-face {
-    font-family: 'OpenDyslexic';
-    src: url('/static/fonts/OpenDyslexic-BoldItalic.otf') format('opentype');
-    font-weight: bold;
-    font-style: italic;
+/* Адаптация изображений под тему */
+body.theme-normal img {
+    filter: none;
+}
+body.theme-dark img {
+    filter: brightness(0.8) contrast(1.1);
+    opacity: 0.9;
+    transition: filter 0.2s ease;
+}
+body.theme-sepia img {
+    filter: sepia(0.4) brightness(0.95) contrast(1.05);
+}
+body.theme-high img {
+    filter: contrast(1.3) saturate(1.2);
+}
+body.light-sensitive img {
+    filter: brightness(0.9);
 }
 
-/* Альтернативный вариант OpenDyslexicAlta – можно подключить отдельно, но мы будем использовать основной */
-@font-face {
-    font-family: 'OpenDyslexicAlta';
-    src: url('/static/fonts/OpenDyslexicAlta-Regular.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
+/* Стили для таблиц */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    background-color: inherit;
 }
-
-/* Класс для применения шрифта OpenDyslexic (основного) */
-body.dyslexic-font {
-    font-family: 'OpenDyslexic', 'OpenDyslexicAlta', monospace;
-}
-
-/* классы для каждого из 10 шрифтов */
-.live-preview.font-pt-serif .preview-text { font-family: 'PT Serif', serif; }
-.live-preview.font-noto-serif .preview-text { font-family: 'Noto Serif', serif; }
-.live-preview.font-pt-sans .preview-text { font-family: 'PT Sans', sans-serif; }
-.live-preview.font-noto-sans .preview-text { font-family: 'Noto Sans', sans-serif; }
-.live-preview.font-roboto .preview-text { font-family: 'Roboto', sans-serif; }
-.live-preview.font-arial .preview-text { font-family: Arial, sans-serif; }
-.live-preview.font-verdana .preview-text { font-family: Verdana, sans-serif; }
-.live-preview.font-comic-sans-ms .preview-text { font-family: 'Comic Sans MS', cursive; }
-.live-preview.font-century-gothic .preview-text { font-family: 'Century Gothic', sans-serif; }
-.live-preview.font-open-sans .preview-text { font-family: 'Open Sans', sans-serif; }
-
-/* Стили для демо-блока (используются в profile_edit.html) */
-.demo-preview {
-    background: white;
+th, td {
     border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 30px;
-    transition: all 0.2s ease;
+    padding: 8px;
+    text-align: left;
 }
-.demo-preview.theme-normal { background: white; color: black; }
-.demo-preview.theme-dark { background: #1e1e1e; color: #ddd; }
-.demo-preview.theme-sepia { background: #f4ecd8; color: #5b4636; }
-.demo-preview.theme-high { background: #ffeb3b; color: #000; }
-.demo-preview.theme-protanopia { background: #f0f0f0; color: #1a1a1a; }
-.demo-preview.theme-deuteranopia { background: #f8f9fa; color: #212529; }
-.demo-preview.theme-tritanopia { background: #fff3e0; color: #4a2e00; }
-.demo-preview.font-small .demo-text { font-size: 12px; }
-.demo-preview.font-medium .demo-text { font-size: 16px; }
-.demo-preview.font-large .demo-text { font-size: 24px; }
-.demo-preview.line-height-normal .demo-text { line-height: 1.5; }
-.demo-preview.line-height-large .demo-text { line-height: 2.0; }
-.demo-preview.light-sensitive { filter: brightness(0.85) contrast(0.95); }
-
-/* Классы для шрифтов */
-.demo-preview.font-pt-serif .demo-text { font-family: 'PT Serif', serif; }
-.demo-preview.font-noto-serif .demo-text { font-family: 'Noto Serif', serif; }
-.demo-preview.font-pt-sans .demo-text { font-family: 'PT Sans', sans-serif; }
-.demo-preview.font-noto-sans .demo-text { font-family: 'Noto Sans', sans-serif; }
-.demo-preview.font-roboto .demo-text { font-family: 'Roboto', sans-serif; }
-.demo-preview.font-arial .demo-text { font-family: Arial, sans-serif; }
-.demo-preview.font-verdana .demo-text { font-family: Verdana, sans-serif; }
-.demo-preview.font-comic-sans-ms .demo-text { font-family: 'Comic Sans MS', cursive; }
-.demo-preview.font-century-gothic .demo-text { font-family: 'Century Gothic', sans-serif; }
-.demo-preview.font-open-sans .demo-text { font-family: 'Open Sans', sans-serif; }
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+body.theme-dark table {
+    border-color: #555;
+}
+body.theme-dark th {
+    background-color: #333;
+    color: #ddd;
+}
+body.theme-dark td {
+    border-color: #555;
+}
+body.theme-sepia table {
+    border-color: #c0a16b;
+}
+body.theme-sepia th {
+    background-color: #e5d3b5;
+    color: #5b4636;
+}

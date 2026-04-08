@@ -4,8 +4,8 @@
 
 {% block content %}
 
-<script> //для решения проблемы с передачей стилей пользователя с БД
-    // Устанавливаем классы, переданные сервером, сразу после загрузки DOM
+<script>
+    // Устанавливаем классы и стили, переданные сервером
     document.body.className = "{{ body_classes }}";
 </script>
 
@@ -15,7 +15,7 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap">
             <h5 class="mb-0 me-2">{{ book.title }}</h5>
             <div class="d-flex align-items-center gap-3">
-                <!-- Ползунок размера шрифта (уже есть) -->
+                <!-- Ползунок размера шрифта -->
                 <div class="d-flex align-items-center">
                     <label for="fontSizeRange" class="form-label me-2 mb-0 small">Размер</label>
                     <input type="range" class="form-range" id="fontSizeRange" min="0" max="2" step="1" value="1" style="width: 100px;">
@@ -28,12 +28,6 @@
                     <button type="button" class="btn btn-outline-secondary theme-btn" data-theme="dark">🌙</button>
                     <button type="button" class="btn btn-outline-secondary theme-btn" data-theme="sepia">📜</button>
                     <button type="button" class="btn btn-outline-secondary theme-btn" data-theme="high">🔆</button>
-                </div>
-
-                <!-- Переключатель шрифта -->
-                <div class="btn-group btn-group-sm ms-2" role="group">
-                    <button type="button" class="btn btn-outline-secondary font-family-btn" data-font="sans">Sans</button>
-                    <button type="button" class="btn btn-outline-secondary font-family-btn" data-font="serif">Serif</button>
                 </div>
 
                 <!-- Переключатель интервала -->
@@ -59,14 +53,14 @@
 </div>
 
 <script>
-    // Получаем элементы
     const body = document.body;
     const slider = document.getElementById('fontSizeRange');
     const label = document.getElementById('fontSizeLabel');
     const themeButtons = document.querySelectorAll('.theme-btn');
+    const lineButtons = document.querySelectorAll('.line-height-btn');
     const resetBtn = document.getElementById('resetSettingsBtn');
 
-    // Функция для обновления класса размера шрифта
+    // Обновление размера шрифта
     function updateFontSize(value) {
         body.classList.remove('font-small', 'font-medium', 'font-large');
         if (value == 0) {
@@ -81,84 +75,16 @@
         }
     }
 
-    // Функция для обновления темы
+    // Обновление темы
     function updateTheme(theme) {
-        // Удаляем все классы темы (normal, dark, sepia, high)
         body.classList.remove('theme-normal', 'theme-dark', 'theme-sepia', 'theme-high');
         body.classList.add(`theme-${theme}`);
     }
 
-    // Функция для переключения шрифта
-    const fontButtons = document.querySelectorAll('.font-family-btn');
-    fontButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const font = this.dataset.font; // 'sans' или 'serif'
-            body.classList.remove('font-sans', 'font-serif');
-            body.classList.add(`font-${font}`);
-            // Можно подсвечивать активную кнопку
-            fontButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-
-    // Функция для переключения интервала
-    const lineButtons = document.querySelectorAll('.line-height-btn');
-    lineButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const line = this.dataset.line; // 'normal' или 'large'
-            body.classList.remove('line-height-normal', 'line-height-large');
-            body.classList.add(`line-height-${line}`);
-            lineButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-
-    // При загрузке страницы подсветить активные кнопки на основе текущих классов
-    // (аналогично тому, как мы делали для темы)
-    function highlightActiveButtons() {
-        // Сброс активных кнопок шрифта
-        document.querySelectorAll('.font-family-btn').forEach(btn => btn.classList.remove('active'));
-        // Установка активной кнопки шрифта
-        if (body.classList.contains('font-serif')) {
-            document.querySelector('.font-family-btn[data-font="serif"]').classList.add('active');
-        } else {
-            document.querySelector('.font-family-btn[data-font="sans"]').classList.add('active');
-        }
-
-        // Сброс активных кнопок интервала
-        document.querySelectorAll('.line-height-btn').forEach(btn => btn.classList.remove('active'));
-        // Установка активной кнопки интервала
-        if (body.classList.contains('line-height-large')) {
-            document.querySelector('.line-height-btn[data-line="large"]').classList.add('active');
-        } else {
-            document.querySelector('.line-height-btn[data-line="normal"]').classList.add('active');
-        }
-    }
-
-    // Вызвать при загрузке
-    highlightActiveButtons();
-
-    // Устанавливаем начальное состояние слайдера и темы в соответствии с текущими классами body
-    // Размер
-    if (body.classList.contains('font-large')) {
-        slider.value = 2;
-        label.textContent = 'Крупный';
-    } else if (body.classList.contains('font-small')) {
-        slider.value = 0;
-        label.textContent = 'Маленький';
-    } else {
-        slider.value = 1; // medium
-        label.textContent = 'Средний';
-    }
-
-    // Тема: определяем, какой класс темы есть
-    const currentTheme = Array.from(body.classList).find(cls => cls.startsWith('theme-'));
-    if (currentTheme) {
-        // currentTheme = 'theme-normal' и т.д.
-        // Ничего делать не нужно, кнопки подсветим позже
-    } else {
-        // Если класса темы нет, считаем темой normal и добавляем класс
-        body.classList.add('theme-normal');
+    // Обновление интервала
+    function updateLineHeight(line) {
+        body.classList.remove('line-height-normal', 'line-height-large');
+        body.classList.add(`line-height-${line}`);
     }
 
     // Подсветка активной кнопки темы
@@ -173,33 +99,59 @@
         });
     }
 
-    // Вызываем подсветку при загрузке
+    // Подсветка активной кнопки интервала
+    function highlightActiveLineHeight() {
+        if (body.classList.contains('line-height-large')) {
+            document.querySelector('.line-height-btn[data-line="large"]').classList.add('active');
+            document.querySelector('.line-height-btn[data-line="normal"]').classList.remove('active');
+        } else {
+            document.querySelector('.line-height-btn[data-line="normal"]').classList.add('active');
+            document.querySelector('.line-height-btn[data-line="large"]').classList.remove('active');
+        }
+    }
+
+    // Установка начального состояния слайдера
+    if (body.classList.contains('font-large')) {
+        slider.value = 2;
+        label.textContent = 'Крупный';
+    } else if (body.classList.contains('font-small')) {
+        slider.value = 0;
+        label.textContent = 'Маленький';
+    } else {
+        slider.value = 1;
+        label.textContent = 'Средний';
+    }
+
+    // Если нет класса темы, добавляем normal
+    if (!Array.from(body.classList).some(c => c.startsWith('theme-'))) {
+        body.classList.add('theme-normal');
+    }
+
     highlightActiveTheme();
+    highlightActiveLineHeight();
 
-    // Обработчик для слайдера
-    slider.addEventListener('input', function() {
-        updateFontSize(this.value);
-    });
-
-    // Обработчики для кнопок темы
+    // Обработчики
+    slider.addEventListener('input', () => updateFontSize(slider.value));
     themeButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const theme = this.dataset.theme;
-            updateTheme(theme);
+        btn.addEventListener('click', () => {
+            updateTheme(btn.dataset.theme);
             highlightActiveTheme();
         });
     });
+    lineButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            updateLineHeight(btn.dataset.line);
+            highlightActiveLineHeight();
+        });
+    });
 
-    // Кнопка сброса: возвращаем исходные настройки (изначальные классы, которые прислал сервер)
-    // Для этого сохраним исходные классы при загрузке страницы
-    const originalClasses = body.className; // строка классов
+    // Сброс настроек
+    const originalClasses = body.className;
     const originalStyle = body.getAttribute('style') || '';
-
-    resetBtn.addEventListener('click', function() {
-        body.className = originalClasses; // восстанавливаем исходные классы
+    resetBtn.addEventListener('click', () => {
+        body.className = originalClasses;
         body.setAttribute('style', originalStyle);
-        // Перенастроим слайдер и подсветку под восстановленные классы
-        // Размер
+        // Восстанавливаем активные кнопки и слайдер
         if (body.classList.contains('font-large')) {
             slider.value = 2;
             label.textContent = 'Крупный';
@@ -210,13 +162,8 @@
             slider.value = 1;
             label.textContent = 'Средний';
         }
-        // Тема
         highlightActiveTheme();
-        // Подсветка кнопок шрифта и интервала
-        highlightActiveButtons();
+        highlightActiveLineHeight();
     });
 </script>
-
 {% endblock %}
-
-
