@@ -264,3 +264,38 @@ body.dyslexic-font {
 .live-preview.font-comic-sans-ms .preview-text { font-family: 'Comic Sans MS', cursive; }
 .live-preview.font-century-gothic .preview-text { font-family: 'Century Gothic', sans-serif; }
 .live-preview.font-open-sans .preview-text { font-family: 'Open Sans', sans-serif; }
+
+/* Стили для демо-блока (используются в profile_edit.html) */
+.demo-preview {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    transition: all 0.2s ease;
+}
+.demo-preview.theme-normal { background: white; color: black; }
+.demo-preview.theme-dark { background: #1e1e1e; color: #ddd; }
+.demo-preview.theme-sepia { background: #f4ecd8; color: #5b4636; }
+.demo-preview.theme-high { background: #ffeb3b; color: #000; }
+.demo-preview.theme-protanopia { background: #f0f0f0; color: #1a1a1a; }
+.demo-preview.theme-deuteranopia { background: #f8f9fa; color: #212529; }
+.demo-preview.theme-tritanopia { background: #fff3e0; color: #4a2e00; }
+.demo-preview.font-small .demo-text { font-size: 12px; }
+.demo-preview.font-medium .demo-text { font-size: 16px; }
+.demo-preview.font-large .demo-text { font-size: 24px; }
+.demo-preview.line-height-normal .demo-text { line-height: 1.5; }
+.demo-preview.line-height-large .demo-text { line-height: 2.0; }
+.demo-preview.light-sensitive { filter: brightness(0.85) contrast(0.95); }
+
+/* Классы для шрифтов */
+.demo-preview.font-pt-serif .demo-text { font-family: 'PT Serif', serif; }
+.demo-preview.font-noto-serif .demo-text { font-family: 'Noto Serif', serif; }
+.demo-preview.font-pt-sans .demo-text { font-family: 'PT Sans', sans-serif; }
+.demo-preview.font-noto-sans .demo-text { font-family: 'Noto Sans', sans-serif; }
+.demo-preview.font-roboto .demo-text { font-family: 'Roboto', sans-serif; }
+.demo-preview.font-arial .demo-text { font-family: Arial, sans-serif; }
+.demo-preview.font-verdana .demo-text { font-family: Verdana, sans-serif; }
+.demo-preview.font-comic-sans-ms .demo-text { font-family: 'Comic Sans MS', cursive; }
+.demo-preview.font-century-gothic .demo-text { font-family: 'Century Gothic', sans-serif; }
+.demo-preview.font-open-sans .demo-text { font-family: 'Open Sans', sans-serif; }

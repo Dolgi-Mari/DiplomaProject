@@ -47,16 +47,14 @@ class User(db.Model):
     color_vision = db.Column(db.String(20))   # 'normal', 'deutan', 'protan', 'tritan'
     font_pref = db.Column(db.String(20))      # 'small', 'medium', 'large'
     theme_pref = db.Column(db.String(20))     # 'light', 'dark', 'sepia', 'high_contrast'
-    #light_sensitive = db.Column(db.Boolean, default=False)        # чувствительность к свету (да/нет)
     line_height = db.Column(db.String(20), default='normal')      # 'normal' или 'large'
-
-    # еще новые поля (доработка теста)
     color_blindness_type = db.Column(db.String(20), default='none')   # 'none', 'protanopia', 'deuteranopia', 'tritanopia'
     has_dyslexia = db.Column(db.Boolean, default=False)
     light_sensitivity_level = db.Column(db.String(20), default='low')   # 'low', 'medium', 'high'
-    # line_width_pref = db.Column(db.String(20), default='medium')        # 'narrow', 'medium', 'wide'
-
-    preferred_font = db.Column(db.String(50), default='Roboto')   # новое поле
+    preferred_font = db.Column(db.String(50), default='Roboto') 
+    contrast_sensitivity = db.Column(db.Integer, default=50)
+    brightness_preference = db.Column(db.Integer, default=50)
+    preferred_line_width_ch = db.Column(db.Integer, default=66)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -159,7 +157,28 @@ def edit_profile():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        # Обновляем поля
+        # Изменение имени пользователя
+        new_username = request.form.get('username')
+        if new_username and new_username != user.username:
+            # Проверка на уникальность
+            existing = User.query.filter_by(username=new_username).first()
+            if existing and existing.id != user.id:
+                flash('Имя пользователя уже занято', 'error')
+            else:
+                user.username = new_username
+                flash('Имя пользователя обновлено', 'success')
+        
+        # Изменение пароля
+        new_password = request.form.get('password')
+        password_confirm = request.form.get('password_confirm')
+        if new_password:
+            if new_password == password_confirm:
+                user.password_hash = generate_password_hash(new_password)
+                flash('Пароль обновлён', 'success')
+            else:
+                flash('Пароли не совпадают', 'error')
+        
+        # Обновление настроек чтения (как и раньше)
         user.font_pref = request.form.get('vision', user.font_pref)
         theme = request.form.get('theme')
         if not theme:
@@ -174,9 +193,8 @@ def edit_profile():
         user.has_dyslexia = request.form.get('dyslexia') == 'yes'
         user.light_sensitivity_level = request.form.get('light_sensitivity_level', user.light_sensitivity_level or 'low')
         user.preferred_font = request.form.get('preferred_font', user.preferred_font or 'Roboto')
-        # Для color_blindness_type не обновляем, его меняет только тест Ишихары
+        
         db.session.commit()
-        flash('Настройки обновлены', 'success')
         return redirect(url_for('profile', user_id=user.id))
 
     return render_template('profile_edit.html', user=user)
