@@ -166,6 +166,9 @@
                 <div class="mb-3">
                     <label class="form-label">Цветовосприятие</label>
                     <p class="small">Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}">тест Ишихары</a>. Результаты теста имеют приоритет.</p>
+                    <div id="colorBlindnessWarning" class="alert alert-info mt-2" style="display: none;">
+                        <strong>Примечание:</strong> При выборе типа дальтонизма выбранная вами тема оформления будет заменена на специализированную цветовую схему для лучшей различимости цветов.
+                    </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal" {% if user.color_vision == 'normal' %}checked{% endif %}>
                         <label class="form-check-label" for="color_normal">Нормальное</label>
@@ -432,6 +435,19 @@
             input.addEventListener('input', updatePreview);
         }
     });
+
+    const colorVisionRadios = document.querySelectorAll('input[name="color_vision"]');
+    const colorBlindnessWarning = document.getElementById('colorBlindnessWarning');
+    function toggleColorBlindnessWarning() {
+        const selected = getSelectedValue('color_vision');
+        if (selected && selected !== 'normal') {
+            colorBlindnessWarning.style.display = 'block';
+        } else {
+            colorBlindnessWarning.style.display = 'none';
+        }
+    }
+    colorVisionRadios.forEach(radio => radio.addEventListener('change', toggleColorBlindnessWarning));
+    toggleColorBlindnessWarning();
 
     // Инициализация демо-блока
     updatePreview();
