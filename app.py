@@ -116,7 +116,7 @@ def test():
         has_dyslexia = request.form.get('dyslexia') == 'yes'
         preferred_font = request.form.get('preferred_font', 'Roboto')   # новое поле
 
-        # Обновляем пользователя
+                # Обновляем пользователя
         user.font_pref = font_pref
         user.theme_pref = theme
         user.contrast = theme
@@ -127,9 +127,17 @@ def test():
         user.preferred_line_width_ch = preferred_line_width_ch
         user.light_sensitivity_level = light_sensitivity_level
         user.has_dyslexia = has_dyslexia
-        user.preferred_font = preferred_font   # сохраняем выбранный шрифт
-        
-        # Не перезаписываем color_blindness_type, если он уже установлен тестом Ишихары
+        user.preferred_font = preferred_font
+
+        # Синхронизация color_blindness_type с color_vision
+        if color_vision == 'normal':
+            user.color_blindness_type = 'none'
+        elif color_vision == 'deutan':
+            user.color_blindness_type = 'deuteranopia'
+        elif color_vision == 'protan':
+            user.color_blindness_type = 'protanopia'
+        elif color_vision == 'tritan':
+            user.color_blindness_type = 'tritanopia'
         
         db.session.commit()
         return redirect(url_for('profile', user_id=user.id))
@@ -186,6 +194,16 @@ def edit_profile():
         user.theme_pref = theme
         user.contrast = theme
         user.color_vision = request.form.get('color_vision', user.color_vision)
+        # Синхронизация
+        cv = user.color_vision
+        if cv == 'normal':
+            user.color_blindness_type = 'none'
+        elif cv == 'deutan':
+            user.color_blindness_type = 'deuteranopia'
+        elif cv == 'protan':
+            user.color_blindness_type = 'protanopia'
+        elif cv == 'tritan':
+            user.color_blindness_type = 'tritanopia'
         user.line_height = request.form.get('line_height', user.line_height)
         user.contrast_sensitivity = int(request.form.get('contrast_sensitivity', user.contrast_sensitivity or 50))
         user.brightness_preference = int(request.form.get('brightness_preference', user.brightness_preference or 50))

@@ -9,6 +9,10 @@ body {
     background-color: #fff;
     transition: all 0.2s ease;
     padding: 20px;
+    /* CSS-переменные для контраста и яркости */
+    --text-contrast: 1;
+    --bg-brightness: 1;
+    filter: contrast(var(--text-contrast)) brightness(var(--bg-brightness));
 }
 
 /* Размер шрифта */
@@ -74,10 +78,10 @@ body.line-height-large {
     line-height: 2.0;
 }
 
-/* Чувствительность к свету */
+/* Чувствительность к свету (дополнительное затемнение)
 body.light-sensitive {
     filter: brightness(0.95);
-}
+} */
 
 /* Классы для шрифтов (10 вариантов) */
 body.font-pt-serif { font-family: 'PT Serif', serif; }
@@ -91,11 +95,10 @@ body.font-comic-sans-ms { font-family: 'Comic Sans MS', cursive; }
 body.font-century-gothic { font-family: 'Century Gothic', sans-serif; }
 body.font-open-sans { font-family: 'Open Sans', sans-serif; }
 
-/* Стили для контента книги */
+/* Контент книги – только ширина строки и центрирование */
 #book-content {
     max-width: var(--line-width, 66ch);
     margin: 0 auto;
-    filter: contrast(var(--text-contrast, 1)) brightness(var(--bg-brightness, 1));
 }
 #book-content p {
     margin-bottom: 1.2em;
