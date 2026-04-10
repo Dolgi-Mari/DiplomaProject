@@ -512,18 +512,14 @@ def book_images(book_id, filename):
         abort(404)
 
 def generate_body_classes(user):
-    """
-    Формирует строку классов для body на основе всех параметров пользователя.
-    Возвращает также словарь CSS-переменных для инлайн-стилей.
-    """
     classes = []
     css_vars = {}
 
-    # 1. Размер шрифта
+    # Размер шрифта
     font_size = getattr(user, 'font_pref', 'medium')
     classes.append(f'font-{font_size}')
 
-    # 2. Тема (с учётом дальтонизма)
+    # Тема (с учётом дальтонизма)
     color_blind = getattr(user, 'color_blindness_type', 'none')
     if color_blind == 'protanopia':
         classes.append('theme-protanopia')
@@ -535,43 +531,42 @@ def generate_body_classes(user):
         theme = getattr(user, 'theme_pref', 'normal')
         classes.append(f'theme-{theme}')
 
-    # 3. Шрифт
+    # Шрифт
     preferred_font = getattr(user, 'preferred_font', 'Roboto')
     font_class = f"font-{preferred_font.lower().replace(' ', '-')}"
     classes.append(font_class)
 
-    # 4. Межстрочный интервал
+    # Межстрочный интервал
     line_height = getattr(user, 'line_height', 'normal')
     classes.append(f'line-height-{line_height}')
 
-    # 5. Чувствительность к свету (может добавлять класс)
+    # Уровень светочувствительности
     light_level = getattr(user, 'light_sensitivity_level', 'low')
-    if light_level in ('medium', 'high'):
-        classes.append('light-sensitive')
-    # Для высокой чувствительности можно принудительно включить тёмную тему, но это уже реализовано выше.
-
-    # 6. CSS-переменные для точной настройки
+    
     # Ширина строки
     line_width = getattr(user, 'preferred_line_width_ch', 66)
     css_vars['--line-width'] = f'{line_width}ch'
 
-    # Контраст текста (значение 0..100 -> коэффициент 0.5..2.0)
+    # Контраст (только если не 50 или если light_level не 'low')
     contrast_val = getattr(user, 'contrast_sensitivity', 50)
-    contrast_factor = 0.5 + (contrast_val / 100) * 1.5
+    # Если светочувствительность не 'low', используем предустановки
+    if light_level == 'medium':
+        contrast_factor = 1.2
+        darkness = 0.2
+    elif light_level == 'high':
+        contrast_factor = 1.5
+        darkness = 0.4
+    else:  # 'low' или 'manual'
+        # При ручной настройке используем значения ползунков
+        contrast_factor = 0.5 + (contrast_val / 100) * 1.5
+        brightness_val = getattr(user, 'brightness_preference', 50)
+        darkness = 1 - (brightness_val / 100) * 0.7
+        darkness = max(0, min(darkness, 1))
+    
     css_vars['--text-contrast'] = f'{contrast_factor}'
+    if darkness > 0:
+        css_vars['--bg-darkness'] = f'{darkness}'
 
-    # Яркость фона (0..100 -> 0.3..1.2)
-    brightness_val = getattr(user, 'brightness_preference', 50)
-    brightness_factor = 0.3 + (brightness_val / 100) * 0.9
-    # Если чувствительность к свету высокая, дополнительно уменьшаем яркость
-    if light_level == 'high':
-        brightness_factor *= 0.8
-    css_vars['--bg-brightness'] = f'{brightness_factor}'
-
-    # Дополнительно можно передать цветовую коррекцию для дальтонизма (если нужно)
-    # ...
-
-    # Формируем строку классов и строку стилей
     class_str = ' '.join(classes)
     style_str = '; '.join(f'{k}: {v}' for k, v in css_vars.items())
     return class_str, style_str

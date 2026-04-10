@@ -3,43 +3,6 @@
 {% block content %}
 <style>
     /* Базовые стили демо-блока */
-    .live-preview.theme-normal {
-        background: white !important;
-        color: black !important;
-    }
-    .live-preview.theme-dark { background: #1e1e1e !important; color: #ddd !important; }
-    .live-preview.theme-sepia { background: #f4ecd8 !important; color: #5b4636 !important; }
-    .live-preview.theme-high { background: #ffeb3b !important; color: #000 !important; }
-    .live-preview.theme-protanopia { background: #f0f0f0 !important; color: #1a1a1a !important; }
-    .live-preview.theme-deuteranopia { background: #f8f9fa !important; color: #212529 !important; }
-    .live-preview.theme-tritanopia { background: #fff3e0 !important; color: #4a2e00 !important; }
-
-    .live-preview.font-small .preview-text { font-size: 12px; }
-    .live-preview.font-medium .preview-text { font-size: 16px; }
-    .live-preview.font-large .preview-text { font-size: 24px; }
-
-    .live-preview.line-height-normal .preview-text { line-height: 1.5; }
-    .live-preview.line-height-large .preview-text { line-height: 2.0; }
-
-    /* классы для каждого из 10 шрифтов */
-    .live-preview.font-pt-serif .preview-text { font-family: 'PT Serif', serif; }
-    .live-preview.font-noto-serif .preview-text { font-family: 'Noto Serif', serif; }
-    .live-preview.font-pt-sans .preview-text { font-family: 'PT Sans', sans-serif; }
-    .live-preview.font-noto-sans .preview-text { font-family: 'Noto Sans', sans-serif; }
-    .live-preview.font-roboto .preview-text { font-family: 'Roboto', sans-serif; }
-    .live-preview.font-arial .preview-text { font-family: Arial, sans-serif; }
-    .live-preview.font-verdana .preview-text { font-family: Verdana, sans-serif; }
-    .live-preview.font-comic-sans-ms .preview-text { font-family: 'Comic Sans MS', cursive; }
-    .live-preview.font-century-gothic .preview-text { font-family: 'Century Gothic', sans-serif; }
-    .live-preview.font-open-sans .preview-text { font-family: 'Open Sans', sans-serif; }
-
-    .live-preview.light-sensitive {
-        filter: brightness(0.85) contrast(0.95);
-    }
-
-    .test-content-wrapper {
-        margin-right: 320px;
-    }
     .live-preview {
         position: fixed;
         top: 50%;
@@ -53,6 +16,8 @@
         z-index: 1000;
         border: 1px solid #ddd;
         transition: all 0.2s ease;
+        background: white;
+        color: black;
     }
     .live-preview h4 {
         margin-top: 0;
@@ -65,6 +30,53 @@
         max-width: 100%;
         overflow-wrap: break-word;
         word-break: break-word;
+        filter: contrast(var(--preview-contrast, 1));
+    }
+    /* Псевдоэлемент для затемнения фона */
+    .live-preview::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, var(--preview-darkness, 0));
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    /* Цветовые схемы для тем */
+    .live-preview.theme-normal { background: white !important; color: black !important; }
+    .live-preview.theme-dark { background: #1e1e1e !important; color: #ddd !important; }
+    .live-preview.theme-sepia { background: #f4ecd8 !important; color: #5b4636 !important; }
+    .live-preview.theme-high { background: #ffeb3b !important; color: #000 !important; }
+    .live-preview.theme-protanopia { background: #f0f0f0 !important; color: #1a1a1a !important; }
+    .live-preview.theme-deuteranopia { background: #f8f9fa !important; color: #212529 !important; }
+    .live-preview.theme-tritanopia { background: #fff3e0 !important; color: #4a2e00 !important; }
+
+    /* Размер шрифта */
+    .live-preview.font-small .preview-text { font-size: 12px; }
+    .live-preview.font-medium .preview-text { font-size: 16px; }
+    .live-preview.font-large .preview-text { font-size: 24px; }
+
+    /* Межстрочный интервал */
+    .live-preview.line-height-normal .preview-text { line-height: 1.5; }
+    .live-preview.line-height-large .preview-text { line-height: 2.0; }
+
+    /* Шрифты */
+    .live-preview.font-pt-serif .preview-text { font-family: 'PT Serif', serif; }
+    .live-preview.font-noto-serif .preview-text { font-family: 'Noto Serif', serif; }
+    .live-preview.font-pt-sans .preview-text { font-family: 'PT Sans', sans-serif; }
+    .live-preview.font-noto-sans .preview-text { font-family: 'Noto Sans', sans-serif; }
+    .live-preview.font-roboto .preview-text { font-family: 'Roboto', sans-serif; }
+    .live-preview.font-arial .preview-text { font-family: Arial, sans-serif; }
+    .live-preview.font-verdana .preview-text { font-family: Verdana, sans-serif; }
+    .live-preview.font-comic-sans-ms .preview-text { font-family: 'Comic Sans MS', cursive; }
+    .live-preview.font-century-gothic .preview-text { font-family: 'Century Gothic', sans-serif; }
+    .live-preview.font-open-sans .preview-text { font-family: 'Open Sans', sans-serif; }
+
+    .test-content-wrapper {
+        margin-right: 320px;
     }
     @media (max-width: 768px) {
         .test-content-wrapper {
@@ -307,7 +319,7 @@
 </form>
 
 <script>
-    // Ползунки (без изменений)
+    // Ползунки
     const contrastSlider = document.getElementById('contrastSlider');
     const contrastValueSpan = document.getElementById('contrastValue');
     const contrastHidden = document.getElementById('contrastSensitivity');
@@ -338,7 +350,7 @@
     if (brightnessSlider) brightnessSlider.addEventListener('input', updateSliders);
     if (lineWidthSlider) lineWidthSlider.addEventListener('input', updateSliders);
 
-    // Показ подсказки при дислексии
+    // Подсказка при дислексии
     const dyslexiaYes = document.getElementById('dyslexia_yes');
     const dyslexiaNo = document.getElementById('dyslexia_no');
     const dyslexiaHint = document.getElementById('dyslexiaHint');
@@ -355,13 +367,11 @@
     if (dyslexiaNo) dyslexiaNo.addEventListener('change', toggleDyslexiaHint);
     toggleDyslexiaHint();
 
-    // Функция получения выбранного значения радиокнопок
     function getSelectedValue(name) {
         const radio = document.querySelector(`input[name="${name}"]:checked`);
         return radio ? radio.value : null;
     }
 
-    // Обновление демо-блока
     function updatePreview() {
         const previewDiv = document.getElementById('livePreview');
         const previewTextDiv = document.getElementById('previewText');
@@ -372,7 +382,6 @@
         const colorVision = getSelectedValue('color_vision') || 'normal';
         const lineHeight = getSelectedValue('line_height') || 'normal';
         const lightSensitive = getSelectedValue('light_sensitivity_level') || 'low';
-        const hasDyslexia = getSelectedValue('dyslexia') === 'yes';
         const preferredFont = getSelectedValue('preferred_font') || 'Roboto';
 
         const contrastVal = contrastSlider ? parseInt(contrastSlider.value) : 50;
@@ -381,7 +390,7 @@
 
         let classes = [`font-${fontSize}`];
 
-        // Цветовая схема (приоритет дальтонизма)
+        // Цветовая схема
         if (colorVision === 'protan') {
             classes.push('theme-protanopia');
         } else if (colorVision === 'deutan') {
@@ -392,36 +401,26 @@
             classes.push(`theme-${theme}`);
         }
 
-        // Межстрочный интервал
         if (lineHeight === 'large') classes.push('line-height-large');
         else classes.push('line-height-normal');
 
-        // Светочувствительность
-        if (lightSensitive === 'high') {
-            classes.push('light-sensitive');
-        }
-
-        // Класс шрифта (преобразуем название в нижний регистр, заменяем пробелы на дефисы)
         const fontClass = `font-${preferredFont.toLowerCase().replace(/ /g, '-')}`;
         classes.push(fontClass);
 
         previewDiv.className = 'live-preview ' + classes.join(' ');
 
-        // Контраст/яркость
+        // Контраст текста
         const contrastFactor = 0.5 + contrastVal / 100;
-        const brightnessFactor = 0.5 + brightnessVal / 100;
-        if (contrastFactor !== 1 || brightnessFactor !== 1) {
-            previewDiv.style.filter = `contrast(${contrastFactor}) brightness(${brightnessFactor})`;
-        } else {
-            previewDiv.style.filter = '';
-        }
-
+        // Затемнение фона
+        let darkness = 1 - (brightnessVal / 100) * 0.7;
+        if (lightSensitive === 'high') darkness = Math.min(darkness * 1.2, 1.0);
+        previewDiv.style.setProperty('--preview-contrast', contrastFactor);
+        previewDiv.style.setProperty('--preview-darkness', darkness);
         // Длина строки
-        previewDiv.style.width = 'auto';
-        previewDiv.style.maxWidth = lineWidthVal + 'ch';
+        previewTextDiv.style.maxWidth = lineWidthVal + 'ch';
     }
 
-    // Привязываем обработчики ко всем элементам формы
+    // Обработчики
     const form = document.querySelector('form');
     const inputs = form.querySelectorAll('input, select');
     inputs.forEach(input => {
@@ -431,6 +430,7 @@
         }
     });
 
+    // Предупреждение для дальтонизма
     const colorVisionRadios = document.querySelectorAll('input[name="color_vision"]');
     const colorBlindnessWarning = document.getElementById('colorBlindnessWarning');
     function toggleColorBlindnessWarning() {
@@ -442,7 +442,7 @@
         }
     }
     colorVisionRadios.forEach(radio => radio.addEventListener('change', toggleColorBlindnessWarning));
-    toggleColorBlindnessWarning();    
+    toggleColorBlindnessWarning();
 
     updatePreview();
 </script>

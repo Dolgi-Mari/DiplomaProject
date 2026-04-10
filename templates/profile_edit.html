@@ -2,7 +2,7 @@
 
 {% block content %}
 <style>
-    /* Стили для демо-блока (полностью повторяют логику теста) */
+    /* Стили для демо-блока (аналогично тесту) */
     .demo-fixed {
         position: fixed;
         top: 50%;
@@ -30,8 +30,22 @@
         max-width: 100%;
         overflow-wrap: break-word;
         word-break: break-word;
+        filter: contrast(var(--preview-contrast, 1));
     }
-    /* Базовые стили для тем (дублируем из reader.css) */
+    /* Псевдоэлемент для затемнения фона */
+    .demo-fixed::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, var(--preview-darkness, 0));
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    /* Цветовые схемы */
     .demo-fixed.theme-normal { background: white !important; color: black !important; }
     .demo-fixed.theme-dark { background: #1e1e1e !important; color: #ddd !important; }
     .demo-fixed.theme-sepia { background: #f4ecd8 !important; color: #5b4636 !important; }
@@ -49,7 +63,7 @@
     .demo-fixed.line-height-normal .demo-text { line-height: 1.5; }
     .demo-fixed.line-height-large .demo-text { line-height: 2.0; }
 
-    /* Шрифты (все 10) */
+    /* Шрифты */
     .demo-fixed.font-pt-serif .demo-text { font-family: 'PT Serif', serif; }
     .demo-fixed.font-noto-serif .demo-text { font-family: 'Noto Serif', serif; }
     .demo-fixed.font-pt-sans .demo-text { font-family: 'PT Sans', sans-serif; }
@@ -61,12 +75,6 @@
     .demo-fixed.font-century-gothic .demo-text { font-family: 'Century Gothic', sans-serif; }
     .demo-fixed.font-open-sans .demo-text { font-family: 'Open Sans', sans-serif; }
 
-    /* Чувствительность к свету (high) */
-    .demo-fixed.light-sensitive {
-        filter: brightness(0.85) contrast(0.95);
-    }
-
-    /* Отступ для основного контента */
     .edit-content-wrapper {
         margin-right: 320px;
     }
@@ -87,7 +95,6 @@
 <h1 class="mb-4">Редактирование профиля и настроек</h1>
 
 <form method="POST" action="{{ url_for('edit_profile') }}">
-    <!-- Фиксированный демо-блок -->
     <div class="demo-fixed" id="demoPreview">
         <h4>📖 Пример текста</h4>
         <div class="demo-text" id="demoText">
@@ -97,7 +104,7 @@
     </div>
 
     <div class="edit-content-wrapper">
-        <!-- Блок изменения учётных данных (без изменений) -->
+        <!-- Блок учётных данных (без изменений) -->
         <div class="card mb-4">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Учётные данные</h5>
@@ -118,7 +125,7 @@
             </div>
         </div>
 
-        <!-- Настройки чтения (все параметры, как в тесте) -->
+        <!-- Настройки чтения -->
         <div class="card mb-4">
             <div class="card-header bg-secondary text-white">
                 <h5 class="mb-0">Настройки чтения</h5>
@@ -204,14 +211,14 @@
                     </div>
                 </div>
 
-                <!-- 5. Контраст (слайдер) -->
+                <!-- 5. Контраст текста (слайдер) -->
                 <div class="mb-3">
                     <label class="form-label">Контраст текста: <span id="contrastValue">{{ user.contrast_sensitivity or 50 }}</span>%</label>
                     <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="{{ user.contrast_sensitivity or 50 }}" step="1">
                     <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="{{ user.contrast_sensitivity or 50 }}">
                 </div>
 
-                <!-- 6. Яркость (слайдер) -->
+                <!-- 6. Яркость фона (слайдер) -->
                 <div class="mb-3">
                     <label class="form-label">Яркость фона: <span id="brightnessValue">{{ user.brightness_preference or 50 }}</span>%</label>
                     <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="{{ user.brightness_preference or 50 }}" step="1">
@@ -238,7 +245,7 @@
                     </div>
                 </div>
 
-                <!-- 9. Выбор шрифта с подсказкой -->
+                <!-- 9. Выбор шрифта -->
                 <div class="mb-3">
                     <label class="form-label">Предпочитаемый шрифт</label>
                     <div id="dyslexiaHint" class="alert alert-warning d-none">
@@ -310,12 +317,6 @@
 </form>
 
 <script>
-    // === Функция получения выбранного значения радиокнопок ===
-    function getSelectedValue(name) {
-        const radio = document.querySelector(`input[name="${name}"]:checked`);
-        return radio ? radio.value : null;
-    }
-
     // === Элементы DOM ===
     const demoDiv = document.getElementById('demoPreview');
     const demoTextDiv = document.getElementById('demoText');
@@ -332,7 +333,11 @@
     const dyslexiaNo = document.getElementById('dyslexia_no');
     const dyslexiaHint = document.getElementById('dyslexiaHint');
 
-    // === Обновление значений слайдеров ===
+    function getSelectedValue(name) {
+        const radio = document.querySelector(`input[name="${name}"]:checked`);
+        return radio ? radio.value : null;
+    }
+
     function updateSliders() {
         if (contrastSlider) {
             contrastValueSpan.textContent = contrastSlider.value;
@@ -349,11 +354,11 @@
         updatePreview();
     }
 
-    if (contrastSlider) contrastSlider.addEventListener('input', updateSliders);
-    if (brightnessSlider) brightnessSlider.addEventListener('input', updateSliders);
-    if (lineWidthSlider) lineWidthSlider.addEventListener('input', updateSliders);
+    contrastSlider.addEventListener('input', updateSliders);
+    brightnessSlider.addEventListener('input', updateSliders);
+    lineWidthSlider.addEventListener('input', updateSliders);
 
-    // === Показ/скрытие подсказки при дислексии ===
+    // Подсказка для дислексии
     function toggleDyslexiaHint() {
         if (dyslexiaYes && dyslexiaYes.checked) {
             dyslexiaHint.classList.remove('d-none');
@@ -368,74 +373,7 @@
         toggleDyslexiaHint();
     }
 
-    // === Обновление демо-блока (полностью аналогично тесту) ===
-    function updatePreview() {
-        if (!demoDiv) return;
-
-        // 1. Получаем значения всех параметров
-        const fontSize = getSelectedValue('vision') || 'medium';
-        let theme = getSelectedValue('theme') || getSelectedValue('contrast') || 'normal';
-        const colorVision = getSelectedValue('color_vision') || 'normal';
-        const lineHeight = getSelectedValue('line_height') || 'normal';
-        const lightSensitive = getSelectedValue('light_sensitivity_level') || 'low';
-        const preferredFont = getSelectedValue('preferred_font') || 'Roboto';
-        const contrastVal = contrastSlider ? parseInt(contrastSlider.value) : 50;
-        const brightnessVal = brightnessSlider ? parseInt(brightnessSlider.value) : 50;
-        const lineWidthVal = lineWidthSlider ? parseInt(lineWidthSlider.value) : 66;
-
-        // 2. Формируем классы
-        let classes = [`font-${fontSize}`];
-
-        // Цветовая схема с учётом цветовосприятия
-        if (colorVision === 'protan') {
-            classes.push('theme-protanopia');
-        } else if (colorVision === 'deutan') {
-            classes.push('theme-deuteranopia');
-        } else if (colorVision === 'tritan') {
-            classes.push('theme-tritanopia');
-        } else {
-            classes.push(`theme-${theme}`);
-        }
-
-        // Межстрочный интервал
-        if (lineHeight === 'large') classes.push('line-height-large');
-        else classes.push('line-height-normal');
-
-        // Светочувствительность (только high)
-        if (lightSensitive === 'high') {
-            classes.push('light-sensitive');
-        }
-
-        // Шрифт
-        const fontClass = `font-${preferredFont.toLowerCase().replace(/ /g, '-')}`;
-        classes.push(fontClass);
-
-        // 3. Применяем классы
-        demoDiv.className = 'demo-fixed ' + classes.join(' ');
-
-        // 4. Применяем фильтры контраста/яркости
-        const contrastFactor = 0.5 + contrastVal / 100;
-        const brightnessFactor = 0.5 + brightnessVal / 100;
-        if (contrastFactor !== 1 || brightnessFactor !== 1) {
-            demoDiv.style.filter = `contrast(${contrastFactor}) brightness(${brightnessFactor})`;
-        } else {
-            demoDiv.style.filter = '';
-        }
-
-        // 5. Длина строки (max-width)
-        demoTextDiv.style.maxWidth = lineWidthVal + 'ch';
-    }
-
-    // === Привязываем обработчики ко всем элементам формы ===
-    const form = document.querySelector('form');
-    const inputs = form.querySelectorAll('input, select');
-    inputs.forEach(input => {
-        input.addEventListener('change', updatePreview);
-        if (input.type === 'range') {
-            input.addEventListener('input', updatePreview);
-        }
-    });
-
+    // Предупреждение для дальтонизма
     const colorVisionRadios = document.querySelectorAll('input[name="color_vision"]');
     const colorBlindnessWarning = document.getElementById('colorBlindnessWarning');
     function toggleColorBlindnessWarning() {
@@ -449,7 +387,60 @@
     colorVisionRadios.forEach(radio => radio.addEventListener('change', toggleColorBlindnessWarning));
     toggleColorBlindnessWarning();
 
-    // Инициализация демо-блока
+    function updatePreview() {
+        if (!demoDiv) return;
+
+        const fontSize = getSelectedValue('vision') || 'medium';
+        let theme = getSelectedValue('theme') || getSelectedValue('contrast') || 'normal';
+        const colorVision = getSelectedValue('color_vision') || 'normal';
+        const lineHeight = getSelectedValue('line_height') || 'normal';
+        const lightSensitive = getSelectedValue('light_sensitivity_level') || 'low';
+        const preferredFont = getSelectedValue('preferred_font') || 'Roboto';
+        const contrastVal = contrastSlider ? parseInt(contrastSlider.value) : 50;
+        const brightnessVal = brightnessSlider ? parseInt(brightnessSlider.value) : 50;
+        const lineWidthVal = lineWidthSlider ? parseInt(lineWidthSlider.value) : 66;
+
+        let classes = [`font-${fontSize}`];
+
+        if (colorVision === 'protan') {
+            classes.push('theme-protanopia');
+        } else if (colorVision === 'deutan') {
+            classes.push('theme-deuteranopia');
+        } else if (colorVision === 'tritan') {
+            classes.push('theme-tritanopia');
+        } else {
+            classes.push(`theme-${theme}`);
+        }
+
+        if (lineHeight === 'large') classes.push('line-height-large');
+        else classes.push('line-height-normal');
+
+        const fontClass = `font-${preferredFont.toLowerCase().replace(/ /g, '-')}`;
+        classes.push(fontClass);
+
+        demoDiv.className = 'demo-fixed ' + classes.join(' ');
+
+        // Контраст текста
+        const contrastFactor = 0.5 + contrastVal / 100;
+        // Затемнение фона
+        let darkness = 1 - (brightnessVal / 100) * 0.7;
+        if (lightSensitive === 'high') darkness = Math.min(darkness * 1.2, 1.0);
+        demoDiv.style.setProperty('--preview-contrast', contrastFactor);
+        demoDiv.style.setProperty('--preview-darkness', darkness);
+        // Длина строки
+        demoTextDiv.style.maxWidth = lineWidthVal + 'ch';
+    }
+
+    // Обработчики для всех элементов формы
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('change', updatePreview);
+        if (input.type === 'range') {
+            input.addEventListener('input', updatePreview);
+        }
+    });
+
     updatePreview();
 </script>
 {% endblock %}

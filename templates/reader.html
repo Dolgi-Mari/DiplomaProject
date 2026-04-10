@@ -3,26 +3,20 @@
 {% block body_attributes %}class="{{ body_classes }}" style="{{ style_vars }}"{% endblock %}
 
 {% block content %}
-<!-- Кнопка выхода вверху справа -->
-<div class="text-end mb-3">
-    <a href="/profile/{{ user_id }}" class="btn btn-outline-secondary">← Выйти</a>
-</div>
-
-<!-- Текст книги -->
 <div class="container">
+    <div class="d-flex justify-content-end mb-3">
+        <a href="/profile/{{ user_id }}" class="btn btn-outline-secondary">← Выйти из читалки</a>
+    </div>
     <div id="book-content">
         {{ book_content | safe }}
     </div>
-</div>
-
-<!-- Кнопка выхода внизу (дублируем для удобства) -->
-<div class="text-center mt-4">
-    <a href="/profile/{{ user_id }}" class="btn btn-outline-secondary">Выйти из читалки</a>
+    <div class="d-flex justify-content-center mt-4">
+        <a href="/profile/{{ user_id }}" class="btn btn-outline-secondary">Выйти</a>
+    </div>
 </div>
 
 <script>
-    // Единственная задача: применить классы и стили, переданные сервером.
-    // Никаких дополнительных обработчиков.
+    // Просто применяем классы и стили, переданные сервером (без дополнительных обработчиков)
     document.body.className = "{{ body_classes }}";
 </script>
 {% endblock %}
