@@ -209,20 +209,26 @@
                         <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_high" value="high" {% if user.light_sensitivity_level == 'high' %}checked{% endif %}>
                         <label class="form-check-label" for="light_high">Высокая</label>
                     </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_manual" value="manual">
+                        <label class="form-check-label" for="light_manual">Ручная настройка (самостоятельно задать контраст и яркость)</label>
+                    </div>                    
                 </div>
 
-                <!-- 5. Контраст текста (слайдер) -->
-                <div class="mb-3">
-                    <label class="form-label">Контраст текста: <span id="contrastValue">{{ user.contrast_sensitivity or 50 }}</span>%</label>
-                    <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="{{ user.contrast_sensitivity or 50 }}" step="1">
-                    <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="{{ user.contrast_sensitivity or 50 }}">
-                </div>
+                <div id="manualControls" style="display: none;">
+                    <!-- 5. Контраст текста (слайдер) -->
+                    <div class="mb-3">
+                        <label class="form-label">Контраст текста: <span id="contrastValue">{{ user.contrast_sensitivity or 50 }}</span>%</label>
+                        <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="{{ user.contrast_sensitivity or 50 }}" step="1">
+                        <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="{{ user.contrast_sensitivity or 50 }}">
+                    </div>
 
-                <!-- 6. Яркость фона (слайдер) -->
-                <div class="mb-3">
-                    <label class="form-label">Яркость фона: <span id="brightnessValue">{{ user.brightness_preference or 50 }}</span>%</label>
-                    <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="{{ user.brightness_preference or 50 }}" step="1">
-                    <input type="hidden" name="brightness_preference" id="brightnessPreference" value="{{ user.brightness_preference or 50 }}">
+                    <!-- 6. Яркость фона (слайдер) -->
+                    <div class="mb-3">
+                        <label class="form-label">Яркость фона: <span id="brightnessValue">{{ user.brightness_preference or 50 }}</span>%</label>
+                        <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="{{ user.brightness_preference or 50 }}" step="1">
+                        <input type="hidden" name="brightness_preference" id="brightnessPreference" value="{{ user.brightness_preference or 50 }}">
+                    </div>
                 </div>
 
                 <!-- 7. Длина строки (слайдер) -->
@@ -373,6 +379,35 @@
         toggleDyslexiaHint();
     }
 
+        // Управление видимостью ползунков при выборе чувствительности к свету
+    const lightLow = document.getElementById('light_low');
+    const lightMedium = document.getElementById('light_medium');
+    const lightHigh = document.getElementById('light_high');
+    const lightManual = document.getElementById('light_manual');
+    const manualControls = document.getElementById('manualControls');
+
+    function toggleManualControls() {
+        if (lightManual.checked) {
+            manualControls.style.display = 'block';
+        } else {
+            manualControls.style.display = 'none';
+            // Сбрасываем ползунки на нейтральные значения (50) при выборе предустановленного режима
+            if (contrastSlider) contrastSlider.value = 50;
+            if (brightnessSlider) brightnessSlider.value = 50;
+            // Обновляем скрытые поля и вызываем updatePreview
+            updateSliders();
+        }
+        updatePreview();
+    }
+
+    if (lightLow && lightMedium && lightHigh && lightManual) {
+        lightLow.addEventListener('change', toggleManualControls);
+        lightMedium.addEventListener('change', toggleManualControls);
+        lightHigh.addEventListener('change', toggleManualControls);
+        lightManual.addEventListener('change', toggleManualControls);
+        toggleManualControls(); // установить начальное состояние
+    }
+
     // Предупреждение для дальтонизма
     const colorVisionRadios = document.querySelectorAll('input[name="color_vision"]');
     const colorBlindnessWarning = document.getElementById('colorBlindnessWarning');
@@ -420,11 +455,22 @@
 
         demoDiv.className = 'demo-fixed ' + classes.join(' ');
 
-        // Контраст текста
-        const contrastFactor = 0.5 + contrastVal / 100;
-        // Затемнение фона
-        let darkness = Math.max(0, (50 - brightnessVal) / 50 * 0.7);
-        if (lightSensitive === 'high') darkness = Math.min(darkness * 1.2, 1.0);
+        // Контраст текста и Затемнение фона
+        let contrastFactor;
+        let darkness;
+        if (lightSensitive === 'medium') {
+            contrastFactor = 1.2;
+            darkness = 0.2;
+        } else if (lightSensitive === 'high') {
+            contrastFactor = 1.5;
+            darkness = 0.4;
+        } else if (lightSensitive === 'manual') {
+            contrastFactor = 0.5 + contrastVal / 100;
+            darkness = Math.max(0, (50 - brightnessVal) / 50 * 0.7);
+        } else { // 'low' или что-то ещё
+            contrastFactor = 1.0;
+            darkness = 0;
+        }
         demoDiv.style.setProperty('--preview-contrast', contrastFactor);
         demoDiv.style.setProperty('--preview-darkness', darkness);
         // Длина строки
