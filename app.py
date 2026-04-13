@@ -560,8 +560,9 @@ def generate_body_classes(user):
         # При ручной настройке используем значения ползунков
         contrast_factor = 0.5 + (contrast_val / 100) * 1.5
         brightness_val = getattr(user, 'brightness_preference', 50)
-        darkness = 1 - (brightness_val / 100) * 0.7
-        darkness = max(0, min(darkness, 1))
+        # Новая формула: при 50% яркости darkness = 0, при 0% darkness = 0.7
+        darkness = max(0, (50 - brightness_val) / 50 * 0.7)
+        darkness = min(darkness, 1)  # ограничиваем сверху
     
     css_vars['--text-contrast'] = f'{contrast_factor}'
     if darkness > 0:

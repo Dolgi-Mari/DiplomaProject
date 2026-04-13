@@ -412,7 +412,7 @@
         // Контраст текста
         const contrastFactor = 0.5 + contrastVal / 100;
         // Затемнение фона
-        let darkness = 1 - (brightnessVal / 100) * 0.7;
+        let darkness = Math.max(0, (50 - brightnessVal) / 50 * 0.7);
         if (lightSensitive === 'high') darkness = Math.min(darkness * 1.2, 1.0);
         previewDiv.style.setProperty('--preview-contrast', contrastFactor);
         previewDiv.style.setProperty('--preview-darkness', darkness);
