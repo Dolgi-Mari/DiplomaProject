@@ -205,6 +205,30 @@
             border: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
+
+        /* ===== Стилизация скроллбара (WebKit: Chrome, Edge, Safari) ===== */
+        ::-webkit-scrollbar {
+            width: 14px;          /* ширина вертикального скроллбара */
+            height: 14px;         /* высота горизонтального */
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent, #006BAE);
+            border-radius: 10px;
+            border: 2px solid #f1f1f1;   /* добавим отступ, чтобы не сливался с треком */
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-hover, #005A94);
+        }
+
+        /* ===== Для Firefox ===== */
+        * {
+            scrollbar-width: auto;   /* вместо 'thin' используем 'auto' для более широкой полосы */
+            scrollbar-color: var(--accent, #006BAE) #f1f1f1;
+        }
                 
     </style>
 </head>
