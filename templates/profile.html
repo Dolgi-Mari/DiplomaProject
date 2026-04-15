@@ -1,113 +1,133 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <h1 class="mb-4">Профиль пользователя</h1>
-        
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">{{ user.username }}</h5>
-                <p class="card-text">ID: {{ user.id }}</p>
-                
-                <h6 class="mt-3">Настройки чтения:</h6>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Размер шрифта
-                        <span class="badge bg-primary rounded-pill">
-                            {% if user.font_pref == 'small' %}Мелкий
-                            {% elif user.font_pref == 'medium' %}Средний
-                            {% elif user.font_pref == 'large' %}Крупный
-                            {% else %}Не указан{% endif %}
-                        </span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Цветовая тема
-                        <span class="badge bg-primary rounded-pill">
-                            {% if user.theme_pref == 'normal' %}Обычная
-                            {% elif user.theme_pref == 'high' %}Высокий контраст
-                            {% elif user.theme_pref == 'dark' %}Тёмная
-                            {% elif user.theme_pref == 'sepia' %}Сепия
-                            {% else %}Не указана{% endif %}
-                        </span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Цветовосприятие (дальтонизм)
-                        <span class="badge bg-primary rounded-pill">
-                            {% if user.color_vision == 'normal' %}Нормальное
-                            {% elif user.color_vision == 'deutan' %}Дейтеранопия
-                            {% elif user.color_vision == 'protan' %}Протанопия
-                            {% elif user.color_vision == 'tritan' %}Тританопия
-                            {% else %}Не указано{% endif %}
-                        </span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Предпочитаемый шрифт
-                        <span class="badge bg-primary rounded-pill">{{ user.preferred_font or 'Roboto' }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Межстрочный интервал
-                        <span class="badge bg-primary rounded-pill">
-                            {% if user.line_height == 'large' %}Увеличенный
-                            {% else %}Обычный{% endif %}
-                        </span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Чувствительность к свету
-                        <span class="badge bg-primary rounded-pill">
-                            {% if user.light_sensitivity_level == 'low' %}Низкая
-                            {% elif user.light_sensitivity_level == 'medium' %}Средняя
-                            {% elif user.light_sensitivity_level == 'high' %}Высокая
-                            {% else %}Не указана{% endif %}
-                        </span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Дислексия
-                        <span class="badge bg-primary rounded-pill">{{ 'Да' if user.has_dyslexia else 'Нет' }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Контраст текста
-                        <span class="badge bg-primary rounded-pill">{{ user.contrast_sensitivity or 50 }}%</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Яркость фона
-                        <span class="badge bg-primary rounded-pill">{{ user.brightness_preference or 50 }}%</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        Длина строки
-                        <span class="badge bg-primary rounded-pill">{{ user.preferred_line_width_ch or 66 }} символов</span>
-                    </li>
-                </ul>
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="text-center mb-4">
+            <h1 class="fw-semibold">⭐ Профиль пользователя</h1>
+            <p class="text-muted">Ваши настройки и загруженные книги</p>
+        </div>
 
-                <h6 class="mt-4">Мои книги</h6>
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex flex-wrap justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 class="card-title mb-1 fs-3">{{ user.username }}</h5>
+                        <p class="text-muted mb-0">ID: {{ user.id }}</p>
+                    </div>
+                    <div class="mt-2 mt-sm-0">
+                        <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-primary btn-lg">✎ Редактировать</a>
+                    </div>
+                </div>
+
+                <h6 class="mt-4 mb-3 fs-5 fw-semibold">📖 Настройки чтения</h6>
+                <div class="row g-4">
+                    <!-- Первая колонка -->
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush bg-transparent">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Дислексия
+                                <span class="badge bg-primary rounded-pill">{{ 'Да' if user.has_dyslexia else 'Нет' }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Предпочитаемый шрифт
+                                <span class="badge bg-primary rounded-pill">{{ user.preferred_font or 'Roboto' }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Размер шрифта
+                                <span class="badge bg-primary rounded-pill">
+                                    {% if user.font_pref == 'small' %}Мелкий
+                                    {% elif user.font_pref == 'medium' %}Средний
+                                    {% elif user.font_pref == 'large' %}Крупный
+                                    {% else %}Не указан{% endif %}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Длина строки
+                                <span class="badge bg-primary rounded-pill">{{ user.preferred_line_width_ch or 66 }} символов</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Межстрочный интервал
+                                <span class="badge bg-primary rounded-pill">
+                                    {% if user.line_height == 'large' %}Увеличенный
+                                    {% else %}Обычный{% endif %}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Вторая колонка -->
+                    <div class="col-md-6">
+                        <ul class="list-group list-group-flush bg-transparent">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Цветовая тема
+                                <span class="badge bg-primary rounded-pill">
+                                    {% if user.theme_pref == 'normal' %}Обычная
+                                    {% elif user.theme_pref == 'high' %}Высокий контраст
+                                    {% elif user.theme_pref == 'dark' %}Тёмная
+                                    {% elif user.theme_pref == 'sepia' %}Сепия
+                                    {% else %}Не указана{% endif %}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Цветовосприятие
+                                <span class="badge bg-primary rounded-pill">
+                                    {% if user.color_vision == 'normal' %}Нормальное
+                                    {% elif user.color_vision == 'deutan' %}Дейтеранопия
+                                    {% elif user.color_vision == 'protan' %}Протанопия
+                                    {% elif user.color_vision == 'tritan' %}Тританопия
+                                    {% else %}Не указано{% endif %}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Чувствительность к свету
+                                <span class="badge bg-primary rounded-pill">
+                                    {% if user.light_sensitivity_level == 'low' %}Низкая
+                                    {% elif user.light_sensitivity_level == 'medium' %}Средняя
+                                    {% elif user.light_sensitivity_level == 'high' %}Высокая
+                                    {% else %}Не указана{% endif %}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Контраст текста
+                                <span class="badge bg-primary rounded-pill">{{ user.contrast_sensitivity or 50 }}%</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Яркость фона
+                                <span class="badge bg-primary rounded-pill">{{ user.brightness_preference or 50 }}%</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h6 class="mt-5 mb-3 fs-5 fw-semibold">📚 Мои книги</h6>
                 {% if user.books %}
-                <ul class="list-group">
+                <div class="list-group">
                     {% for book in user.books %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            {{ book.title }}
+                    <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 border">
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <span class="fw-medium">{{ book.title }}</span>
                             {% if book.extracted_html_path %}
-                                <a href="/read/{{ book.id }}" class="btn btn-sm btn-outline-primary ms-2">Читать</a>
+                                <a href="/read/{{ book.id }}" class="btn btn-sm btn-outline-primary">Читать</a>
                             {% else %}
-                                <span class="badge bg-warning text-dark ms-2">HTML не готов</span>
+                                <span class="badge bg-warning text-dark">HTML не готов</span>
                             {% endif %}
-                            <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Удалить книгу? Это действие нельзя отменить.');">
-                                <button type="submit" class="btn btn-sm btn-outline-danger ms-2">Удалить</button>
+                            <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Удалить книгу? Это действие нельзя отменить.');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
                             </form>
                         </div>
-                        <span class="badge bg-secondary">{{ book.uploaded_at.strftime('%d.%m.%Y') }}</span>
-                    </li>
+                        <span class="text-muted small">{{ book.uploaded_at.strftime('%d.%m.%Y') }}</span>
+                    </div>
                     {% endfor %}
-                </ul>
+                </div>
                 {% else %}
-                <p>У вас пока нет загруженных книг.</p>
+                <div class="alert alert-light text-center py-3 rounded-3">
+                    <p class="mb-0">У вас пока нет загруженных книг.</p>
+                </div>
                 {% endif %}
-                
-                <div class="mt-3">
-                    <a href="/upload/{{ user.id }}" class="btn btn-success">Загрузить книгу</a>
-                    <a href="/test" class="btn btn-primary">Пройти тест заново</a>
-                    <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-primary">Редактировать профиль и настройки</a>
-                    <a href="/" class="btn btn-secondary">На главную</a>
+
+                <div class="d-flex flex-wrap justify-content-center gap-3 mt-5">
+                    <a href="/upload/{{ user.id }}" class="btn btn-primary btn-lg px-4">📤 Загрузить книгу</a>
+                    <a href="/test" class="btn btn-primary btn-lg px-4">📝 Пройти тест заново</a>
                 </div>
             </div>
         </div>
