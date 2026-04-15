@@ -5,9 +5,9 @@
     /* Стили для демо-блока (аналогично тесту) */
     .demo-fixed {
         position: fixed;
-        top: 50%;
+        bottom: 20px;
         right: 20px;
-        transform: translateY(-50%);
+        transform: none;
         min-width: 260px;
         max-width: 90vw;
         border-radius: 16px;
@@ -34,7 +34,7 @@
     }
     .demo-fixed::before {
         content: '';
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
@@ -42,7 +42,40 @@
         background-color: rgba(0, 0, 0, var(--preview-darkness, 0));
         pointer-events: none;
         z-index: -1;
+        border-radius: inherit;
     }
+    
+    /* Состояние свёрнутого блока */
+    .demo-fixed.collapsed {
+        min-width: auto;
+        max-width: 260px;
+        padding: 12px 20px;
+    }
+    .demo-fixed.collapsed .demo-text,
+    .demo-fixed.collapsed::before {
+        display: none;
+    }
+    .demo-fixed.collapsed h4 {
+        margin-bottom: 0;
+        border-bottom: none;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .demo-fixed .collapse-btn {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0 5px;
+        margin-left: 10px;
+        color: var(--accent);
+    }
+    .demo-fixed .header-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     /* Цветовые схемы (как в reader.css) */
     .demo-fixed.theme-normal { background: white !important; color: black !important; }
     .demo-fixed.theme-dark { background: #1e1e1e !important; color: #ddd !important; }
@@ -71,19 +104,28 @@
     .demo-fixed.font-open-sans .demo-text { font-family: 'Open Sans', sans-serif; }
 
     .edit-content-wrapper {
-        margin-right: 320px;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 15px;
     }
-    @media (max-width: 768px) {
-        .edit-content-wrapper {
-            margin-right: 0;
-        }
-        .demo-fixed {
-            position: static;
-            transform: none;
-            width: 100%;
-            margin-bottom: 20px;
-            box-shadow: none;
-        }
+    .collapse-btn {
+        background: var(--accent);
+        border: none;
+        font-size: 1.4rem;
+        font-weight: bold;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+        line-height: 1;
+    }
+    .collapse-btn:hover {
+        background: var(--accent-hover);
     }
 </style>
 
@@ -96,7 +138,10 @@
 
         <form method="POST" action="{{ url_for('edit_profile') }}">
             <div class="demo-fixed" id="demoPreview">
-                <h4>📖 Пример текста</h4>
+                <div class="header-wrapper">
+                    <h4>📖 Пример текста</h4>
+                    <button type="button" class="collapse-btn" id="collapseDemoBtn" aria-label="Свернуть">−</button>
+                </div>
                 <div class="demo-text" id="demoText">
                     Пушистый рыжий кот лениво потянулся на подоконнике, провожая взглядом стаю воробьёв за окном. Его хвост медленно двигался из стороны в сторону, выдавая лёгкое любопытство. В комнате пахло свежесваренным кофе и ванилью. Кот прищурился, наслаждаясь тёплым утром, и тихо мурлыкнул, привлекая внимание хозяйки. Этот текст меняет длину строки от 30 до 100 символов — вы видите это прямо сейчас. Шрифт, интервал, размер, цвета, контраст, яркость, режимы для дальтонизма и дислексии — всё можно проверить здесь.
                 </div>
@@ -304,6 +349,7 @@
                     <a href="{{ url_for('profile', user_id=user.id) }}" class="btn btn-outline-secondary btn-lg px-5">❌ Отмена</a>
                 </div>
             </div>
+            <div style="height: 280px;"></div>
         </form>
     </div>
 </div>
@@ -469,5 +515,13 @@
     });
 
     updatePreview();
+
+    // Сворачивание демо-блока
+    const collapseBtn = document.getElementById('collapseDemoBtn');
+    const demoBlock = document.getElementById('demoPreview');
+    collapseBtn.addEventListener('click', () => {
+        demoBlock.classList.toggle('collapsed');
+        collapseBtn.textContent = demoBlock.classList.contains('collapsed') ? '+' : '−';
+    });
 </script>
 {% endblock %}
