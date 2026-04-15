@@ -1,30 +1,77 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Тест на цветовосприятие (таблицы Ишихары)</h1>
-<div class="alert alert-info" role="alert">
-    <strong>Важно:</strong> Этот тест не является медицинским и не может служить основанием для диагностики. Результаты используются только для настройки интерфейса чтения.
-</div>
-<p>Рассмотрите каждую картинку и выберите, что вы видите. Если не видите ничего, выберите "Ничего не вижу".</p>
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="text-center mb-4">
+            <h1 class="fw-semibold">👁️ Тест на цветовосприятие</h1>
+            <p class="text-muted">Таблицы Ишихары для определения типа дальтонизма</p>
+        </div>
 
-<form method="POST" action="{{ url_for('ishihara_test') }}">
-    {% for plate in plates %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Рисунок {{ plate.number }}</h5>
-            <img src="{{ plate.image }}" class="img-fluid mb-2" alt="Таблица {{ plate.number }}">
-            {% for value, label in plate.options %}
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="plate_{{ plate.number }}" id="plate{{ plate.number }}_{{ value }}" value="{{ value }}">
-                <label class="form-check-label" for="plate{{ plate.number }}_{{ value }}">
-                    {{ label }}
-                </label>
+        <!-- Инструкция в стиле карточек (белый фон, тень, скругление) -->
+        <div class="card mb-4 border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <p class="fs-5 mb-0">📋 <strong>Инструкция:</strong> Рассмотрите каждую картинку. Внутри цветных кружков спрятаны цифры или линии. Выберите вариант, который вы видите. Если ничего не видите – выберите «Ничего не вижу». При клике на картинку она увеличится.</p>
+            </div>
+        </div>
+
+        <!-- Предупреждение – теперь в цветах инструкции (голубой alert-info) -->
+        <div class="alert alert-info fs-5" role="alert">
+            <strong>Важно:</strong> Этот тест не является медицинским и не может служить основанием для диагностики. Результаты используются только для настройки интерфейса чтения.
+        </div>
+
+        <form method="POST" action="{{ url_for('ishihara_test') }}">
+            {% for plate in plates %}
+            <div class="card mb-4 border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">Рисунок {{ plate.number }}</h5>
+                    <div class="text-center mb-3">
+                        <img src="{{ plate.image }}" class="img-fluid rounded-3 plate-image" alt="Таблица {{ plate.number }}" style="max-width: 450px; cursor: pointer; border: 1px solid #dee2e6;" data-bs-toggle="modal" data-bs-target="#imageModal" data-img-src="{{ plate.image }}">
+                    </div>
+                    <div>
+                        {% for value, label in plate.options %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="plate_{{ plate.number }}" id="plate{{ plate.number }}_{{ value }}" value="{{ value }}">
+                            <label class="form-check-label fs-5" for="plate{{ plate.number }}_{{ value }}">
+                                {{ label }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
             {% endfor %}
+            
+            <div class="d-flex justify-content-center mt-4 mb-5">
+                <button type="submit" class="btn btn-primary btn-lg px-5">Отправить результаты</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Модальное окно для увеличенного просмотра изображения -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Увеличенное изображение</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Увеличенное изображение" class="img-fluid">
+            </div>
         </div>
     </div>
-    {% endfor %}
-    
-    <button type="submit" class="btn btn-primary">Отправить результаты</button>
-</form>
+</div>
+
+<script>
+    const plateImages = document.querySelectorAll('.plate-image');
+    const modalImage = document.getElementById('modalImage');
+    plateImages.forEach(img => {
+        img.addEventListener('click', function() {
+            const src = this.getAttribute('data-img-src');
+            modalImage.src = src;
+        });
+    });
+</script>
 {% endblock %}
