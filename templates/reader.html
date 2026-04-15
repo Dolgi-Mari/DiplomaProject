@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reader.css') }}">
+{% endblock %}
+
 {% block body_attributes %}class="{{ body_classes }}" style="{{ style_vars }}"{% endblock %}
 
 {% block content %}
