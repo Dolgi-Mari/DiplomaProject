@@ -5,16 +5,16 @@
     /* Базовые стили демо-блока */
     .live-preview {
         position: fixed;
-        top: 50%;
+        bottom: 20px;
         right: 20px;
-        transform: translateY(-50%);
-        min-width: 200px;
+        transform: none;
+        min-width: 260px;
         max-width: 90vw;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         padding: 20px;
         z-index: 1000;
-        border: 1px solid #ddd;
+        border: 1px solid var(--border-light);
         transition: all 0.2s ease;
         background: white;
         color: black;
@@ -35,7 +35,7 @@
     /* Псевдоэлемент для затемнения фона */
     .live-preview::before {
         content: '';
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         width: 100%;
@@ -43,6 +43,7 @@
         background-color: rgba(0, 0, 0, var(--preview-darkness, 0));
         pointer-events: none;
         z-index: -1;
+        border-radius: inherit;
     }
 
     /* Цветовые схемы для тем */
@@ -76,32 +77,69 @@
     .live-preview.font-open-sans .preview-text { font-family: 'Open Sans', sans-serif; }
 
     .test-content-wrapper {
-        margin-right: 320px;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 15px;
     }
-    @media (max-width: 768px) {
-        .test-content-wrapper {
-            margin-right: 0;
-        }
-        .live-preview {
-            position: static;
-            transform: none;
-            width: 100%;
-            margin-bottom: 20px;
-            box-shadow: none;
-            border: 1px solid #ddd;
-        }
+    /* Сворачивание демо-блока */
+    .live-preview.collapsed {
+        min-width: auto;
+        max-width: 260px;
+        padding: 12px 20px;
+    }
+    .live-preview.collapsed .preview-text,
+    .live-preview.collapsed::before {
+        display: none;
+    }
+    .live-preview.collapsed h4 {
+        margin-bottom: 0;
+        border-bottom: none;
+        display: inline-block;
+        margin-right: 10px;
+    }
+    .collapse-btn {
+        background: var(--accent);
+        border: none;
+        font-size: 1.4rem;
+        font-weight: bold;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+        line-height: 1;
+    }
+    .collapse-btn:hover {
+        background: var(--accent-hover);
+    }
+    .header-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .card-title {
+        font-size: 1.3rem;
+        font-weight: 600;
     }
 </style>
 
-<h1 class="mb-4">Тест зрения и восприятия</h1>
-<p>Ответьте на вопросы, чтобы мы подобрали оптимальные настройки чтения. Некоторые параметры можно настроить ползунками.</p>
+<div class="text-center mb-4">
+    <h1 class="fw-semibold">👁️ Тест зрения и восприятия</h1>
+    <p class="text-muted">Ответьте на вопросы, чтобы мы подобрали оптимальные настройки чтения. Некоторые параметры можно настроить ползунками.</p>
+</div>
 
 <form method="POST" action="/test">
     <div class="live-preview" id="livePreview">
-        <h4>📖 Пример текста</h4>
+        <div class="header-wrapper">
+            <h4>📖 Пример текста</h4>
+            <button type="button" class="collapse-btn" id="collapseDemoBtn" aria-label="Свернуть">−</button>
+        </div>
         <div class="preview-text" id="previewText">
-            Быстрая коричневая лиса прыгает через ленивую собаку.<br>
-            Это демонстрационный текст, который покажет, как будут выглядеть ваши настройки. Длина строки, контраст, шрифт и тема применятся прямо здесь.
+            Пушистый рыжий кот лениво потянулся на подоконнике, провожая взглядом стаю воробьёв за окном. Его хвост медленно двигался из стороны в сторону, выдавая лёгкое любопытство. В комнате пахло свежесваренным кофе и ванилью. Кот прищурился, наслаждаясь тёплым утром, и тихо мурлыкнул, привлекая внимание хозяйки. За окном начинался новый день, полный маленьких радостей и уютных мгновений.
         </div>
     </div>
 
@@ -110,137 +148,10 @@
             <strong>Важно:</strong> Этот тест не является медицинским и не может служить основанием для диагностики. Результаты используются только для настройки интерфейса чтения.
         </div>
 
-        <!-- ===== 1. Размер шрифта ===== -->
+        <!-- ===== Дислексия ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">1. Какой размер шрифта вам комфортен?</h5>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small">
-                    <label class="form-check-label" for="vision_small">Мелкий (как в обычных книгах)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium" checked>
-                    <label class="form-check-label" for="vision_medium">Средний (чуть крупнее)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large">
-                    <label class="form-check-label" for="vision_large">Крупный (нужно увеличение)</label>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== 2. Контрастность ===== -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">2. Какой вариант контраста вам удобнее?</h5>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="theme" id="contrast_normal" value="normal" checked>
-                    <label class="form-check-label" for="contrast_normal">Обычный (чёрное на белом)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="theme" id="contrast_high" value="high">
-                    <label class="form-check-label" for="contrast_high">Высокий контраст (жёлтый/чёрный)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="theme" id="contrast_dark" value="dark">
-                    <label class="form-check-label" for="contrast_dark">Тёмная тема (белое на чёрном)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="theme" id="contrast_sepia" value="sepia">
-                    <label class="form-check-label" for="contrast_sepia">Сепия (мягкий фон)</label>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== 3. Цветовосприятие ===== -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">3. Есть ли у вас особенности цветовосприятия?</h5>
-                <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>.</p>
-                <div id="colorBlindnessWarning" class="alert alert-info mt-2" style="display: none;">
-                    <strong>Примечание:</strong> При выборе типа дальтонизма выбранная вами тема оформления будет заменена на специализированную цветовую схему для лучшей различимости цветов.
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal" checked>
-                    <label class="form-check-label" for="color_normal">Нет, вижу все цвета нормально</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan">
-                    <label class="form-check-label" for="color_deutan">Не различаю оттенки красного/зелёного</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan">
-                    <label class="form-check-label" for="color_protan">Плохо вижу красный</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan">
-                    <label class="form-check-label" for="color_tritan">Плохо вижу синий/жёлтый</label>
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== 4. Чувствительность к свету ===== -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">4. Ваша чувствительность к яркому свету</h5>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_low" value="low" checked>
-                    <label class="form-check-label" for="light_low">Низкая (яркий свет не мешает)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_medium" value="medium">
-                    <label class="form-check-label" for="light_medium">Средняя (предпочитаю приглушённый свет)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_high" value="high">
-                    <label class="form-check-label" for="light_high">Высокая (яркий свет вызывает дискомфорт)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_manual" value="manual">
-                    <label class="form-check-label" for="light_manual">Ручная настройка (самостоятельно задать контраст и яркость)</label>
-                </div>                
-            </div>
-        </div>
-        
-        <div id="manualControls" style="display: none;">
-            <!-- ===== 5. Ползунок контрастной чувствительности ===== -->
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">5. Подберите комфортный уровень контраста текста</h5>
-                    <p class="small">Двигайте ползунок, пока текст в демо-блоке не станет удобным.</p>
-                    <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="50" step="1">
-                    <span id="contrastValue">50</span>%
-                    <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="50">
-                </div>
-            </div>
-
-            <!-- ===== 6. Ползунок яркости фона ===== -->
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">6. Подберите комфортную яркость фона</h5>
-                    <p class="small">Двигайте ползунок, чтобы изменить яркость фона.</p>
-                    <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="50" step="1">
-                    <span id="brightnessValue">50</span>%
-                    <input type="hidden" name="brightness_preference" id="brightnessPreference" value="50">
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== 7. Ползунок длины строки ===== -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">7. Подберите комфортную длину строки</h5>
-                <p class="small">Двигайте ползунок, чтобы изменить ширину текстового блока (в символах).</p>
-                <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="66" step="1">
-                <span id="lineWidthValue">66</span> символов
-                <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="66">
-            </div>
-        </div>
-
-        <!-- ===== 8. Дислексия ===== -->
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">8. Есть ли у вас диагностированная дислексия?</h5>
+                <h5 class="card-title">Есть ли у вас диагностированная дислексия?</h5>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes">
                     <label class="form-check-label" for="dyslexia_yes">Да</label>
@@ -252,10 +163,10 @@
             </div>
         </div>
 
-        <!-- ===== 9. Выбор шрифта (с подсказкой) ===== -->
+        <!-- ===== Предпочитаемый шрифт ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">9. Какой шрифт вам легче читать?</h5>
+                <h5 class="card-title">Какой шрифт вам легче читать?</h5>
                 <div id="dyslexiaHint" class="alert alert-warning" style="display: none;">
                     <strong>Подсказка:</strong> При дислексии рекомендуются шрифты из группы «Дружественные к дислексии», но вы можете выбрать любой.
                 </div>
@@ -305,10 +216,40 @@
             </div>
         </div>
 
-        <!-- ===== 10. Межстрочный интервал ===== -->
+        <!-- ===== Размер шрифта ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">10. Какой межстрочный интервал вам комфортен?</h5>
+                <h5 class="card-title">Какой размер шрифта вам комфортен?</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small">
+                    <label class="form-check-label" for="vision_small">Мелкий (как в обычных книгах)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium" checked>
+                    <label class="form-check-label" for="vision_medium">Средний (чуть крупнее)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large">
+                    <label class="form-check-label" for="vision_large">Крупный (нужно увеличение)</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Длина строки ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Подберите комфортную длину строки</h5>
+                <p class="small">Двигайте ползунок, чтобы изменить ширину текстового блока (в символах).</p>
+                <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="66" step="1">
+                <span id="lineWidthValue">66</span> символов
+                <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="66">
+            </div>
+        </div>
+
+        <!-- ===== Межстрочный интервал ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Какой межстрочный интервал вам комфортен?</h5>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" checked>
                     <label class="form-check-label" for="line_normal">Обычный (как в книгах)</label>
@@ -320,8 +261,107 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Сохранить и продолжить</button>
+        <!-- ===== Цветовая тема ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Какой вариант контраста вам удобнее?</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="theme" id="contrast_normal" value="normal" checked>
+                    <label class="form-check-label" for="contrast_normal">Обычный (чёрное на белом)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="theme" id="contrast_high" value="high">
+                    <label class="form-check-label" for="contrast_high">Высокий контраст (жёлтый/чёрный)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="theme" id="contrast_dark" value="dark">
+                    <label class="form-check-label" for="contrast_dark">Тёмная тема (белое на чёрном)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="theme" id="contrast_sepia" value="sepia">
+                    <label class="form-check-label" for="contrast_sepia">Сепия (мягкий фон)</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Цветовосприятие ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Есть ли у вас особенности цветовосприятия?</h5>
+                <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>.</p>
+                <div id="colorBlindnessWarning" class="alert alert-info mt-2" style="display: none;">
+                    <strong>Примечание:</strong> При выборе типа дальтонизма выбранная вами тема оформления будет заменена на специализированную цветовую схему для лучшей различимости цветов.
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal" checked>
+                    <label class="form-check-label" for="color_normal">Нет, вижу все цвета нормально</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan">
+                    <label class="form-check-label" for="color_deutan">Не различаю оттенки красного/зелёного</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan">
+                    <label class="form-check-label" for="color_protan">Плохо вижу красный</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan">
+                    <label class="form-check-label" for="color_tritan">Плохо вижу синий/жёлтый</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Чувствительность к свету ===== -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Ваша чувствительность к яркому свету</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_low" value="low" checked>
+                    <label class="form-check-label" for="light_low">Низкая (яркий свет не мешает)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_medium" value="medium">
+                    <label class="form-check-label" for="light_medium">Средняя (предпочитаю приглушённый свет)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_high" value="high">
+                    <label class="form-check-label" for="light_high">Высокая (яркий свет вызывает дискомфорт)</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_manual" value="manual">
+                    <label class="form-check-label" for="light_manual">Ручная настройка (самостоятельно задать контраст и яркость)</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Блок ручных настроек (показывается при выборе "Ручная настройка") -->
+        <div id="manualControls" style="display: none;">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Подберите комфортный уровень контраста текста</h5>
+                    <p class="small">Двигайте ползунок, пока текст в демо-блоке не станет удобным.</p>
+                    <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="50" step="1">
+                    <span id="contrastValue">50</span>%
+                    <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="50">
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Подберите комфортную яркость фона</h5>
+                    <p class="small">Двигайте ползунок, чтобы изменить яркость фона.</p>
+                    <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="50" step="1">
+                    <span id="brightnessValue">50</span>%
+                    <input type="hidden" name="brightness_preference" id="brightnessPreference" value="50">
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center mt-4 mb-5">
+            <button type="submit" class="btn btn-primary btn-lg px-5">💾 Сохранить и продолжить</button>
+        </div>
     </div>
+    <div style="height: 200px;"></div>
 </form>
 
 <script>
@@ -492,5 +532,13 @@
     toggleColorBlindnessWarning();
 
     updatePreview();
+
+    // Сворачивание демо-блока
+    const collapseBtn = document.getElementById('collapseDemoBtn');
+    const livePreview = document.getElementById('livePreview');
+    collapseBtn.addEventListener('click', () => {
+        livePreview.classList.toggle('collapsed');
+        collapseBtn.textContent = livePreview.classList.contains('collapsed') ? '+' : '−';
+    });
 </script>
 {% endblock %}
