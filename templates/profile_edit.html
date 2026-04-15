@@ -8,13 +8,13 @@
         top: 50%;
         right: 20px;
         transform: translateY(-50%);
-        min-width: 200px;
+        min-width: 260px;
         max-width: 90vw;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         padding: 20px;
         z-index: 1000;
-        border: 1px solid #ddd;
+        border: 1px solid var(--border-light);
         transition: all 0.2s ease;
         background: white;
         color: black;
@@ -22,9 +22,9 @@
     .demo-fixed h4 {
         margin-top: 0;
         margin-bottom: 15px;
-        font-size: 1.2rem;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 5px;
+        font-size: 1.3rem;
+        border-bottom: 1px solid var(--border-light);
+        padding-bottom: 8px;
     }
     .demo-text {
         max-width: 100%;
@@ -32,7 +32,6 @@
         word-break: break-word;
         filter: contrast(var(--preview-contrast, 1));
     }
-    /* Псевдоэлемент для затемнения фона */
     .demo-fixed::before {
         content: '';
         position: fixed;
@@ -44,8 +43,7 @@
         pointer-events: none;
         z-index: -1;
     }
-
-    /* Цветовые схемы */
+    /* Цветовые схемы (как в reader.css) */
     .demo-fixed.theme-normal { background: white !important; color: black !important; }
     .demo-fixed.theme-dark { background: #1e1e1e !important; color: #ddd !important; }
     .demo-fixed.theme-sepia { background: #f4ecd8 !important; color: #5b4636 !important; }
@@ -53,16 +51,13 @@
     .demo-fixed.theme-protanopia { background: #f0f0f0 !important; color: #1a1a1a !important; }
     .demo-fixed.theme-deuteranopia { background: #f8f9fa !important; color: #212529 !important; }
     .demo-fixed.theme-tritanopia { background: #fff3e0 !important; color: #4a2e00 !important; }
-
     /* Размер шрифта */
     .demo-fixed.font-small .demo-text { font-size: 12px; }
     .demo-fixed.font-medium .demo-text { font-size: 16px; }
     .demo-fixed.font-large .demo-text { font-size: 24px; }
-
     /* Межстрочный интервал */
     .demo-fixed.line-height-normal .demo-text { line-height: 1.5; }
     .demo-fixed.line-height-large .demo-text { line-height: 2.0; }
-
     /* Шрифты */
     .demo-fixed.font-pt-serif .demo-text { font-family: 'PT Serif', serif; }
     .demo-fixed.font-noto-serif .demo-text { font-family: 'Noto Serif', serif; }
@@ -92,235 +87,226 @@
     }
 </style>
 
-<h1 class="mb-4">Редактирование профиля и настроек</h1>
-
-<form method="POST" action="{{ url_for('edit_profile') }}">
-    <div class="demo-fixed" id="demoPreview">
-        <h4>📖 Пример текста</h4>
-        <div class="demo-text" id="demoText">
-            Быстрая коричневая лиса прыгает через ленивую собаку.<br>
-            Это демонстрационный текст, который покажет, как будут выглядеть ваши настройки.
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="text-center mb-4">
+            <h1 class="fw-semibold">✏️ Редактирование профиля и настроек</h1>
+            <p class="text-muted">Измените учётные данные или параметры чтения</p>
         </div>
+
+        <form method="POST" action="{{ url_for('edit_profile') }}">
+            <div class="demo-fixed" id="demoPreview">
+                <h4>📖 Пример текста</h4>
+                <div class="demo-text" id="demoText">
+                    Пушистый рыжий кот лениво потянулся на подоконнике, провожая взглядом стаю воробьёв за окном. Его хвост медленно двигался из стороны в сторону, выдавая лёгкое любопытство. В комнате пахло свежесваренным кофе и ванилью. Кот прищурился, наслаждаясь тёплым утром, и тихо мурлыкнул, привлекая внимание хозяйки. Этот текст меняет длину строки от 30 до 100 символов — вы видите это прямо сейчас. Шрифт, интервал, размер, цвета, контраст, яркость, режимы для дальтонизма и дислексии — всё можно проверить здесь.
+                </div>
+            </div>
+
+            <div class="edit-content-wrapper">
+                <!-- Блок учётных данных -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-primary text-white rounded-top-4">
+                        <h5 class="mb-0">🔐 Учётные данные</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label for="username" class="form-label fw-semibold">Имя пользователя</label>
+                            <input type="text" class="form-control form-control-lg" id="username" name="username" value="{{ user.username }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold">Новый пароль</label>
+                            <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Оставьте пустым, если не хотите менять">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password_confirm" class="form-label fw-semibold">Подтверждение пароля</label>
+                            <input type="password" class="form-control form-control-lg" id="password_confirm" name="password_confirm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Настройки чтения -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-secondary text-white rounded-top-4">
+                        <h5 class="mb-0">⚙️ Настройки чтения</h5>
+                    </div>
+                    <div class="card-body p-4">
+                         <!-- 1. Дислексия -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold fs-5">Дислексия</label>
+                            <div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes" {% if user.has_dyslexia %}checked{% endif %}>
+                                    <label class="form-check-label" for="dyslexia_yes">Да</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_no" value="no" {% if not user.has_dyslexia %}checked{% endif %}>
+                                    <label class="form-check-label" for="dyslexia_no">Нет</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Предпочитаемый шрифт -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold fs-5">Предпочитаемый шрифт</label>
+                            <div id="dyslexiaHint" class="alert alert-warning d-none py-2 mb-3">
+                                <strong>Подсказка:</strong> При дислексии рекомендуются шрифты из группы «Дружественные к дислексии», но вы можете выбрать любой.
+                            </div>
+                            <h6 class="mt-2">Обычные шрифты</h6>
+                            <div class="mb-3">
+                                <div class="form-check mb-2"><input class="form-check-input" type="radio" name="preferred_font" id="font_pt_serif" value="PT Serif" {% if user.preferred_font == 'PT Serif' %}checked{% endif %}><label class="form-check-label" for="font_pt_serif">PT Serif</label></div>
+                                <div class="form-check mb-2"><input class="form-check-input" type="radio" name="preferred_font" id="font_noto_serif" value="Noto Serif" {% if user.preferred_font == 'Noto Serif' %}checked{% endif %}><label class="form-check-label" for="font_noto_serif">Noto Serif</label></div>
+                                <div class="form-check mb-2"><input class="form-check-input" type="radio" name="preferred_font" id="font_pt_sans" value="PT Sans" {% if user.preferred_font == 'PT Sans' %}checked{% endif %}><label class="form-check-label" for="font_pt_sans">PT Sans</label></div>
+                                <div class="form-check mb-2"><input class="form-check-input" type="radio" name="preferred_font" id="font_noto_sans" value="Noto Sans" {% if user.preferred_font == 'Noto Sans' %}checked{% endif %}><label class="form-check-label" for="font_noto_sans">Noto Sans</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="preferred_font" id="font_roboto" value="Roboto" {% if user.preferred_font == 'Roboto' %}checked{% endif %}><label class="form-check-label" for="font_roboto">Roboto</label></div>
+                            </div>
+                            <h6>Шрифты, дружественные к дислексии</h6>
+                            <div>
+                                <div class="form-check mb-2"><input class="form-check-input" type="radio" name="preferred_font" id="font_arial" value="Arial" {% if user.preferred_font == 'Arial' %}checked{% endif %}><label class="form-check-label" for="font_arial">Arial</label></div>
+                                <div class="form-check mb-2"><input class="form-check-input" type="radio" name="preferred_font" id="font_verdana" value="Verdana" {% if user.preferred_font == 'Verdana' %}checked{% endif %}><label class="form-check-label" for="font_verdana">Verdana</label></div>
+                                <div class="form-check mb-2"><input class="form-check-input" type="radio" name="preferred_font" id="font_comic" value="Comic Sans MS" {% if user.preferred_font == 'Comic Sans MS' %}checked{% endif %}><label class="form-check-label" for="font_comic">Comic Sans MS</label></div>
+                                <div class="form-check mb-2"><input class="form-check-input" type="radio" name="preferred_font" id="font_century" value="Century Gothic" {% if user.preferred_font == 'Century Gothic' %}checked{% endif %}><label class="form-check-label" for="font_century">Century Gothic</label></div>
+                                <div class="form-check"><input class="form-check-input" type="radio" name="preferred_font" id="font_open_sans" value="Open Sans" {% if user.preferred_font == 'Open Sans' %}checked{% endif %}><label class="form-check-label" for="font_open_sans">Open Sans</label></div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Размер шрифта -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold fs-5">Размер шрифта</label>
+                            <div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small" {% if user.font_pref == 'small' %}checked{% endif %}>
+                                    <label class="form-check-label" for="vision_small">Мелкий</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium" {% if user.font_pref == 'medium' or not user.font_pref %}checked{% endif %}>
+                                    <label class="form-check-label" for="vision_medium">Средний</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large" {% if user.font_pref == 'large' %}checked{% endif %}>
+                                    <label class="form-check-label" for="vision_large">Крупный</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Длина строки (слайдер) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold fs-5">Длина строки: <span id="lineWidthValue">{{ user.preferred_line_width_ch or 66 }}</span> символов</label>
+                            <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="{{ user.preferred_line_width_ch or 66 }}" step="1">
+                            <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="{{ user.preferred_line_width_ch or 66 }}">
+                        </div>
+
+                        <!-- 5. Межстрочный интервал -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold fs-5">Межстрочный интервал</label>
+                            <div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" {% if user.line_height == 'normal' or not user.line_height %}checked{% endif %}>
+                                    <label class="form-check-label" for="line_normal">Обычный</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="line_height" id="line_large" value="large" {% if user.line_height == 'large' %}checked{% endif %}>
+                                    <label class="form-check-label" for="line_large">Увеличенный</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Цветовая тема -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold fs-5">Цветовая тема</label>
+                            <div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="theme" id="theme_normal" value="normal" {% if user.theme_pref == 'normal' %}checked{% endif %}>
+                                    <label class="form-check-label" for="theme_normal">Обычная</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="theme" id="theme_high" value="high" {% if user.theme_pref == 'high' %}checked{% endif %}>
+                                    <label class="form-check-label" for="theme_high">Высокий контраст</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="theme" id="theme_dark" value="dark" {% if user.theme_pref == 'dark' %}checked{% endif %}>
+                                    <label class="form-check-label" for="theme_dark">Тёмная</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="theme" id="theme_sepia" value="sepia" {% if user.theme_pref == 'sepia' %}checked{% endif %}>
+                                    <label class="form-check-label" for="theme_sepia">Сепия</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 7. Цветовосприятие -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold fs-5">Цветовосприятие</label>
+                            <p class="small text-muted">Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="text-decoration-none">тест Ишихары</a>. Результаты теста имеют приоритет.</p>
+                            <div id="colorBlindnessWarning" class="alert alert-info mt-2 py-2" style="display: none;">
+                                <strong>Примечание:</strong> При выборе типа дальтонизма выбранная вами тема оформления будет заменена на специализированную цветовую схему.
+                            </div>
+                            <div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal" {% if user.color_vision == 'normal' %}checked{% endif %}>
+                                    <label class="form-check-label" for="color_normal">Нормальное</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan" {% if user.color_vision == 'deutan' %}checked{% endif %}>
+                                    <label class="form-check-label" for="color_deutan">Дейтеранопия</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan" {% if user.color_vision == 'protan' %}checked{% endif %}>
+                                    <label class="form-check-label" for="color_protan">Протанопия</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan" {% if user.color_vision == 'tritan' %}checked{% endif %}>
+                                    <label class="form-check-label" for="color_tritan">Тританопия</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 8. Чувствительность к свету -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold fs-5">Чувствительность к свету</label>
+                            <div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_low" value="low" {% if user.light_sensitivity_level == 'low' %}checked{% endif %}>
+                                    <label class="form-check-label" for="light_low">Низкая</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_medium" value="medium" {% if user.light_sensitivity_level == 'medium' %}checked{% endif %}>
+                                    <label class="form-check-label" for="light_medium">Средняя</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_high" value="high" {% if user.light_sensitivity_level == 'high' %}checked{% endif %}>
+                                    <label class="form-check-label" for="light_high">Высокая</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_manual" value="manual">
+                                    <label class="form-check-label" for="light_manual">Ручная настройка</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Контейнер для ручных ползунков (контраст и яркость) -->
+                        <div id="manualControls" style="display: none;">
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold fs-5">Контраст текста: <span id="contrastValue">{{ user.contrast_sensitivity or 50 }}</span>%</label>
+                                <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="{{ user.contrast_sensitivity or 50 }}" step="1">
+                                <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="{{ user.contrast_sensitivity or 50 }}">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold fs-5">Яркость фона: <span id="brightnessValue">{{ user.brightness_preference or 50 }}</span>%</label>
+                                <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="{{ user.brightness_preference or 50 }}" step="1">
+                                <input type="hidden" name="brightness_preference" id="brightnessPreference" value="{{ user.brightness_preference or 50 }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 mt-4 mb-5">
+                    <button type="submit" class="btn btn-primary btn-lg px-5">💾 Сохранить изменения</button>
+                    <a href="{{ url_for('profile', user_id=user.id) }}" class="btn btn-outline-secondary btn-lg px-5">❌ Отмена</a>
+                </div>
+            </div>
+        </form>
     </div>
-
-    <div class="edit-content-wrapper">
-        <!-- Блок учётных данных (без изменений) -->
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Учётные данные</h5>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Имя пользователя</label>
-                    <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}">
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Новый пароль (оставьте пустым, если не хотите менять)</label>
-                    <input type="password" class="form-control" id="password" name="password">
-                </div>
-                <div class="mb-3">
-                    <label for="password_confirm" class="form-label">Подтверждение пароля</label>
-                    <input type="password" class="form-control" id="password_confirm" name="password_confirm">
-                </div>
-            </div>
-        </div>
-
-        <!-- Настройки чтения -->
-        <div class="card mb-4">
-            <div class="card-header bg-secondary text-white">
-                <h5 class="mb-0">Настройки чтения</h5>
-            </div>
-            <div class="card-body">
-                <!-- 1. Размер шрифта -->
-                <div class="mb-3">
-                    <label class="form-label">Размер шрифта</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small" {% if user.font_pref == 'small' %}checked{% endif %}>
-                        <label class="form-check-label" for="vision_small">Мелкий</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium" {% if user.font_pref == 'medium' or not user.font_pref %}checked{% endif %}>
-                        <label class="form-check-label" for="vision_medium">Средний</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large" {% if user.font_pref == 'large' %}checked{% endif %}>
-                        <label class="form-check-label" for="vision_large">Крупный</label>
-                    </div>
-                </div>
-
-                <!-- 2. Тема -->
-                <div class="mb-3">
-                    <label class="form-label">Цветовая тема</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="theme" id="theme_normal" value="normal" {% if user.theme_pref == 'normal' %}checked{% endif %}>
-                        <label class="form-check-label" for="theme_normal">Обычная</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="theme" id="theme_high" value="high" {% if user.theme_pref == 'high' %}checked{% endif %}>
-                        <label class="form-check-label" for="theme_high">Высокий контраст</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="theme" id="theme_dark" value="dark" {% if user.theme_pref == 'dark' %}checked{% endif %}>
-                        <label class="form-check-label" for="theme_dark">Тёмная</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="theme" id="theme_sepia" value="sepia" {% if user.theme_pref == 'sepia' %}checked{% endif %}>
-                        <label class="form-check-label" for="theme_sepia">Сепия</label>
-                    </div>
-                </div>
-
-                <!-- 3. Цветовосприятие -->
-                <div class="mb-3">
-                    <label class="form-label">Цветовосприятие</label>
-                    <p class="small">Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}">тест Ишихары</a>. Результаты теста имеют приоритет.</p>
-                    <div id="colorBlindnessWarning" class="alert alert-info mt-2" style="display: none;">
-                        <strong>Примечание:</strong> При выборе типа дальтонизма выбранная вами тема оформления будет заменена на специализированную цветовую схему для лучшей различимости цветов.
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal" {% if user.color_vision == 'normal' %}checked{% endif %}>
-                        <label class="form-check-label" for="color_normal">Нормальное</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan" {% if user.color_vision == 'deutan' %}checked{% endif %}>
-                        <label class="form-check-label" for="color_deutan">Дейтеранопия</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan" {% if user.color_vision == 'protan' %}checked{% endif %}>
-                        <label class="form-check-label" for="color_protan">Протанопия</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan" {% if user.color_vision == 'tritan' %}checked{% endif %}>
-                        <label class="form-check-label" for="color_tritan">Тританопия</label>
-                    </div>
-                </div>
-
-                <!-- 4. Чувствительность к свету -->
-                <div class="mb-3">
-                    <label class="form-label">Чувствительность к свету</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_low" value="low" {% if user.light_sensitivity_level == 'low' %}checked{% endif %}>
-                        <label class="form-check-label" for="light_low">Низкая</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_medium" value="medium" {% if user.light_sensitivity_level == 'medium' %}checked{% endif %}>
-                        <label class="form-check-label" for="light_medium">Средняя</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_high" value="high" {% if user.light_sensitivity_level == 'high' %}checked{% endif %}>
-                        <label class="form-check-label" for="light_high">Высокая</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_manual" value="manual">
-                        <label class="form-check-label" for="light_manual">Ручная настройка (самостоятельно задать контраст и яркость)</label>
-                    </div>                    
-                </div>
-
-                <div id="manualControls" style="display: none;">
-                    <!-- 5. Контраст текста (слайдер) -->
-                    <div class="mb-3">
-                        <label class="form-label">Контраст текста: <span id="contrastValue">{{ user.contrast_sensitivity or 50 }}</span>%</label>
-                        <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="{{ user.contrast_sensitivity or 50 }}" step="1">
-                        <input type="hidden" name="contrast_sensitivity" id="contrastSensitivity" value="{{ user.contrast_sensitivity or 50 }}">
-                    </div>
-
-                    <!-- 6. Яркость фона (слайдер) -->
-                    <div class="mb-3">
-                        <label class="form-label">Яркость фона: <span id="brightnessValue">{{ user.brightness_preference or 50 }}</span>%</label>
-                        <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="{{ user.brightness_preference or 50 }}" step="1">
-                        <input type="hidden" name="brightness_preference" id="brightnessPreference" value="{{ user.brightness_preference or 50 }}">
-                    </div>
-                </div>
-
-                <!-- 7. Длина строки (слайдер) -->
-                <div class="mb-3">
-                    <label class="form-label">Длина строки: <span id="lineWidthValue">{{ user.preferred_line_width_ch or 66 }}</span> символов</label>
-                    <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="{{ user.preferred_line_width_ch or 66 }}" step="1">
-                    <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="{{ user.preferred_line_width_ch or 66 }}">
-                </div>
-
-                <!-- 8. Дислексия -->
-                <div class="mb-3">
-                    <label class="form-label">Дислексия</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes" {% if user.has_dyslexia %}checked{% endif %}>
-                        <label class="form-check-label" for="dyslexia_yes">Да</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_no" value="no" {% if not user.has_dyslexia %}checked{% endif %}>
-                        <label class="form-check-label" for="dyslexia_no">Нет</label>
-                    </div>
-                </div>
-
-                <!-- 9. Выбор шрифта -->
-                <div class="mb-3">
-                    <label class="form-label">Предпочитаемый шрифт</label>
-                    <div id="dyslexiaHint" class="alert alert-warning d-none">
-                        <strong>Подсказка:</strong> При дислексии рекомендуются шрифты из группы «Дружественные к дислексии», но вы можете выбрать любой.
-                    </div>
-                    <h6>Обычные шрифты</h6>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_pt_serif" value="PT Serif" {% if user.preferred_font == 'PT Serif' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_pt_serif">PT Serif</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_noto_serif" value="Noto Serif" {% if user.preferred_font == 'Noto Serif' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_noto_serif">Noto Serif</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_pt_sans" value="PT Sans" {% if user.preferred_font == 'PT Sans' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_pt_sans">PT Sans</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_noto_sans" value="Noto Sans" {% if user.preferred_font == 'Noto Sans' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_noto_sans">Noto Sans</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_roboto" value="Roboto" {% if user.preferred_font == 'Roboto' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_roboto">Roboto</label>
-                    </div>
-                    <hr>
-                    <h6>Шрифты, дружественные к дислексии</h6>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_arial" value="Arial" {% if user.preferred_font == 'Arial' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_arial">Arial</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_verdana" value="Verdana" {% if user.preferred_font == 'Verdana' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_verdana">Verdana</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_comic" value="Comic Sans MS" {% if user.preferred_font == 'Comic Sans MS' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_comic">Comic Sans MS</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_century" value="Century Gothic" {% if user.preferred_font == 'Century Gothic' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_century">Century Gothic</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="preferred_font" id="font_open_sans" value="Open Sans" {% if user.preferred_font == 'Open Sans' %}checked{% endif %}>
-                        <label class="form-check-label" for="font_open_sans">Open Sans</label>
-                    </div>
-                </div>
-
-                <!-- 10. Межстрочный интервал -->
-                <div class="mb-3">
-                    <label class="form-label">Межстрочный интервал</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" {% if user.line_height == 'normal' or not user.line_height %}checked{% endif %}>
-                        <label class="form-check-label" for="line_normal">Обычный</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="line_height" id="line_large" value="large" {% if user.line_height == 'large' %}checked{% endif %}>
-                        <label class="form-check-label" for="line_large">Увеличенный</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-        <a href="{{ url_for('profile', user_id=user.id) }}" class="btn btn-secondary">Отмена</a>
-    </div>
-</form>
+</div>
 
 <script>
     // === Элементы DOM ===
@@ -379,7 +365,7 @@
         toggleDyslexiaHint();
     }
 
-        // Управление видимостью ползунков при выборе чувствительности к свету
+    // Управление видимостью ползунков при выборе чувствительности к свету
     const lightLow = document.getElementById('light_low');
     const lightMedium = document.getElementById('light_medium');
     const lightHigh = document.getElementById('light_high');
@@ -391,10 +377,8 @@
             manualControls.style.display = 'block';
         } else {
             manualControls.style.display = 'none';
-            // Сбрасываем ползунки на нейтральные значения (50) при выборе предустановленного режима
             if (contrastSlider) contrastSlider.value = 50;
             if (brightnessSlider) brightnessSlider.value = 50;
-            // Обновляем скрытые поля и вызываем updatePreview
             updateSliders();
         }
         updatePreview();
@@ -405,7 +389,7 @@
         lightMedium.addEventListener('change', toggleManualControls);
         lightHigh.addEventListener('change', toggleManualControls);
         lightManual.addEventListener('change', toggleManualControls);
-        toggleManualControls(); // установить начальное состояние
+        toggleManualControls();
     }
 
     // Предупреждение для дальтонизма
@@ -455,7 +439,6 @@
 
         demoDiv.className = 'demo-fixed ' + classes.join(' ');
 
-        // Контраст текста и Затемнение фона
         let contrastFactor;
         let darkness;
         if (lightSensitive === 'medium') {
@@ -467,17 +450,15 @@
         } else if (lightSensitive === 'manual') {
             contrastFactor = 0.5 + contrastVal / 100;
             darkness = Math.max(0, (50 - brightnessVal) / 50 * 0.7);
-        } else { // 'low' или что-то ещё
+        } else {
             contrastFactor = 1.0;
             darkness = 0;
         }
         demoDiv.style.setProperty('--preview-contrast', contrastFactor);
         demoDiv.style.setProperty('--preview-darkness', darkness);
-        // Длина строки
         demoTextDiv.style.maxWidth = lineWidthVal + 'ch';
     }
 
-    // Обработчики для всех элементов формы
     const form = document.querySelector('form');
     const inputs = form.querySelectorAll('input, select');
     inputs.forEach(input => {
