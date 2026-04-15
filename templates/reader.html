@@ -4,23 +4,18 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/reader.css') }}">
 {% endblock %}
 
-{% block body_attributes %}class="{{ body_classes }}" style="{{ style_vars }}"{% endblock %}
+{% block body_attributes %}class="reader-page {{ body_classes }}" style="{{ style_vars }}"{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="d-flex justify-content-end mb-3">
-        <a href="/profile/{{ user_id }}" class="btn btn-outline-secondary">← Выйти из читалки</a>
-    </div>
+<div class="container py-4">
     <div id="book-content">
         {{ book_content | safe }}
     </div>
-    <div class="d-flex justify-content-center mt-4">
-        <a href="/profile/{{ user_id }}" class="btn btn-outline-secondary">Выйти</a>
-    </div>
 </div>
 
+<a href="/profile/{{ user_id }}" class="btn-exit">← Выйти</a>
+
 <script>
-    // Просто применяем классы и стили, переданные сервером (без дополнительных обработчиков)
-    document.body.className = "{{ body_classes }}";
+    document.body.className = "reader-page {{ body_classes }}";
 </script>
 {% endblock %}

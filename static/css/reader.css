@@ -162,3 +162,31 @@ body.theme-sepia th {
     background-color: #e5d3b5;
     color: #5b4636;
 }
+/* Стили для шапки на странице читалки */
+.reader-page .navbar {
+    border-radius: 16px 16px 16px 16px;
+    overflow: hidden;
+}
+/* Фиксированная кнопка выхода в стиле шапки */
+.btn-exit {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+    background-color: #FFF8F0;  /* тёплый бежевый (цвет шапки) */
+    color: #191940;;              /* фирменный синий текст */
+    border: 2px solid #191940;;   /* синяя обводка */
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+}
+.btn-exit:hover {
+    background-color: #191940;;
+    color: #FFF8F0;
+    transform: scale(1.02);
+    text-decoration: none;
+}
