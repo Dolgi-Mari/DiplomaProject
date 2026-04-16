@@ -177,7 +177,10 @@
                     <div class="card-body p-4">
                          <!-- 1. Дислексия -->
                         <div class="mb-4">
-                            <label class="form-label fw-semibold fs-5">Дислексия</label>
+                            <label class="form-label fw-semibold fs-5">
+                                Дислексия
+                                <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Дислексия влияет на способность распознавать буквы и следить за строкой. Дружественные шрифты и увеличенный межстрочный интервал облегчают чтение."></i>
+                            </label>
                             <div>
                                 <div class="form-check mb-2">
                                     <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes" {% if user.has_dyslexia %}checked{% endif %}>
