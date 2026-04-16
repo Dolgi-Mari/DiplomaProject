@@ -151,7 +151,10 @@
         <!-- ===== Дислексия ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Есть ли у вас диагностированная дислексия?</h5>
+                <h5 class="card-title">
+                    Есть ли у вас диагностированная дислексия?
+                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Дислексия влияет на способность распознавать буквы и следить за строкой. Дружественные шрифты и увеличенный межстрочный интервал облегчают чтение."></i>
+                </h5>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="dyslexia" id="dyslexia_yes" value="yes">
                     <label class="form-check-label" for="dyslexia_yes">Да</label>
@@ -166,7 +169,10 @@
         <!-- ===== Предпочитаемый шрифт ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Какой шрифт вам легче читать?</h5>
+                <h5 class="card-title">
+                    Какой шрифт вам легче читать?
+                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Шрифты без засечек и дружественные к дислексии повышают читаемость при когнитивных нарушениях. С засечками подходят для нормального зрения."></i>
+                </h5>
                 <div id="dyslexiaHint" class="alert alert-warning" style="display: none;">
                     <strong>Подсказка:</strong> При дислексии рекомендуются шрифты из группы «Дружественные к дислексии», но вы можете выбрать любой.
                 </div>
@@ -219,7 +225,10 @@
         <!-- ===== Размер шрифта ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Какой размер шрифта вам комфортен?</h5>
+                <h5 class="card-title">
+                    Какой размер шрифта вам комфортен?
+                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Крупный шрифт необходим при сниженной остроте зрения (пресбиопия, миопия). Мелкий подходит для коротких сеансов чтения."></i>
+                </h5>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small">
                     <label class="form-check-label" for="vision_small">Мелкий (как в обычных книгах)</label>
@@ -238,7 +247,10 @@
         <!-- ===== Длина строки ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Подберите комфортную длину строки</h5>
+                <h5 class="card-title">
+                    Подберите комфортную длину строки
+                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Оптимальная длина строки для комфортного чтения — 50–75 символов. При дислексии лучше 40–60, при высокой скорости чтения — до 100."></i>
+                </h5>
                 <p class="small">Двигайте ползунок, чтобы изменить ширину текстового блока (в символах).</p>
                 <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="66" step="1">
                 <span id="lineWidthValue">66</span> символов
@@ -249,7 +261,10 @@
         <!-- ===== Межстрочный интервал ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Какой межстрочный интервал вам комфортен?</h5>
+                <h5 class="card-title">
+                    Какой межстрочный интервал вам комфортен?
+                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Увеличенный интервал облегчает слежение за строкой при дислексии и возрастных изменениях зрения."></i>
+                </h5>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="line_height" id="line_normal" value="normal" checked>
                     <label class="form-check-label" for="line_normal">Обычный (как в книгах)</label>
@@ -264,7 +279,10 @@
         <!-- ===== Цветовая тема ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Какой вариант контраста вам удобнее?</h5>
+                <h5 class="card-title">
+                    Какой вариант контраста вам удобнее?
+                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Тёмная тема снижает нагрузку при фотофобии. Высокий контраст (жёлтый/чёрный) помогает при низкой контрастной чувствительности (катаракта, глаукома)."></i>
+                </h5>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="theme" id="contrast_normal" value="normal" checked>
                     <label class="form-check-label" for="contrast_normal">Обычный (чёрное на белом)</label>
@@ -287,7 +305,10 @@
         <!-- ===== Цветовосприятие ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Есть ли у вас особенности цветовосприятия?</h5>
+                <h5 class="card-title">
+                    Есть ли у вас особенности цветовосприятия?
+                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Дейтеранопия и протанопия требуют замены красного/зелёного на синий/оранжевый. Тританопия — замена синего на жёлтый."></i>
+                </h5>
                 <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>.</p>
                 <div id="colorBlindnessWarning" class="alert alert-info mt-2" style="display: none;">
                     <strong>Примечание:</strong> При выборе типа дальтонизма выбранная вами тема оформления будет заменена на специализированную цветовую схему для лучшей различимости цветов.
@@ -314,7 +335,10 @@
         <!-- ===== Чувствительность к свету ===== -->
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Ваша чувствительность к яркому свету</h5>
+                <h5 class="card-title">
+                    Ваша чувствительность к яркому свету
+                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="При высокой светочувствительности (мигрень, астигматизм) рекомендуется тёмная тема и пониженная яркость фона. Ручная настройка позволяет точно подобрать контраст и яркость."></i>
+                </h5>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="light_sensitivity_level" id="light_low" value="low" checked>
                     <label class="form-check-label" for="light_low">Низкая (яркий свет не мешает)</label>
@@ -338,7 +362,10 @@
         <div id="manualControls" style="display: none;">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Подберите комфортный уровень контраста текста</h5>
+                    <h5 class="card-title">
+                        Подберите комфортный уровень контраста текста
+                        <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Низкий контраст (серая градация) подходит для повышенной чувствительности к яркости. Высокий контраст (чёрный на белом) необходим при глаукоме и катаракте."></i>
+                    </h5>
                     <p class="small">Двигайте ползунок, пока текст в демо-блоке не станет удобным.</p>
                     <input type="range" class="form-range" id="contrastSlider" min="0" max="100" value="50" step="1">
                     <span id="contrastValue">50</span>%
@@ -348,7 +375,10 @@
 
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Подберите комфортную яркость фона</h5>
+                    <h5 class="card-title">
+                        Подберите комфортную яркость фона
+                        <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Уменьшение яркости фона снижает нагрузку при фотофобии и мигрени. Ползунок позволяет подобрать индивидуальный уровень."></i>
+                    </h5>
                     <p class="small">Двигайте ползунок, чтобы изменить яркость фона.</p>
                     <input type="range" class="form-range" id="brightnessSlider" min="0" max="100" value="50" step="1">
                     <span id="brightnessValue">50</span>%
