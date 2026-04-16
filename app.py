@@ -84,8 +84,7 @@ def inject_user():
 
 @app.route('/')
 def home():
-    """Главная страница перенаправляет на тест."""
-    return redirect(url_for('test'))
+    return render_template('index.html')
 
 @app.route('/test', methods=['GET', 'POST'])
 def test():
