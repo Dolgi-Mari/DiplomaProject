@@ -69,6 +69,7 @@ class Book(db.Model):
     extracted_html_path = db.Column(db.String(300))  # путь к сгенерированному HTML
     title = db.Column(db.String(200))  # будет извлечено из метаданных
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_position = db.Column(db.Integer, default=0)
 
     user = db.relationship('User', backref=db.backref('books', lazy=True))
 
@@ -403,7 +404,23 @@ def read_book(book_id):
                            book_content=book_content,
                            user_id=book.user_id,
                            body_classes=body_classes,
-                           style_vars=style_vars)
+                           style_vars=style_vars,
+                           last_position=book.last_position)
+
+@app.route('/save_position/<int:book_id>', methods=['POST'])
+def save_position(book_id):
+    """Сохраняет позицию чтения (количество прочитанных символов)."""
+    if 'user_id' not in session:
+        return 'Unauthorized', 401
+    book = Book.query.get_or_404(book_id)
+    if book.user_id != session['user_id']:
+        return 'Forbidden', 403
+    data = request.get_json()
+    if data and 'position' in data:
+        book.last_position = int(data['position'])
+        db.session.commit()
+        return 'OK', 200
+    return 'Bad request', 400
     
 @app.route('/delete_book/<int:book_id>', methods=['POST'])
 def delete_book(book_id):
