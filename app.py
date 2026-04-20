@@ -421,6 +421,31 @@ def save_position(book_id):
         db.session.commit()
         return 'OK', 200
     return 'Bad request', 400
+
+@app.route('/update_reader_settings', methods=['POST'])
+def update_reader_settings():
+    if 'user_id' not in session:
+        return 'Unauthorized', 401
+    user = User.query.get(session['user_id'])
+    if not user:
+        return 'Not found', 404
+    data = request.get_json()
+    if 'preferred_font' in data:
+        user.preferred_font = data['preferred_font']
+    if 'font_pref' in data:
+        user.font_pref = data['font_pref']
+    if 'line_height' in data:
+        user.line_height = data['line_height']
+    if 'light_sensitivity_level' in data:
+        user.light_sensitivity_level = data['light_sensitivity_level']
+    if 'contrast_sensitivity' in data:
+        user.contrast_sensitivity = data['contrast_sensitivity']
+    if 'brightness_preference' in data:
+        user.brightness_preference = data['brightness_preference']
+    if 'preferred_line_width_ch' in data:
+        user.preferred_line_width_ch = data['preferred_line_width_ch']
+    db.session.commit()
+    return 'OK', 200
     
 @app.route('/delete_book/<int:book_id>', methods=['POST'])
 def delete_book(book_id):

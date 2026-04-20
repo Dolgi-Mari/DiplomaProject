@@ -190,3 +190,85 @@ body.theme-sepia th {
     transform: scale(1.02);
     text-decoration: none;
 }
+
+/* Кнопка-шестерёнка и панель настроек */
+.btn-gear {
+    position: fixed;
+    bottom: 80px;
+    right: 20px; /* левее кнопки выхода */
+    z-index: 1050;
+    background-color: #FFF8F0;
+    color: #191940;
+    border: 2px solid #191940;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.btn-gear:hover {
+    background-color: #191940;
+    color: #FFF8F0;
+    transform: scale(1.02);
+}
+
+.settings-panel {
+    position: fixed;
+    bottom: 120px;
+    right: 20px;
+    width: 400px;
+    max-width: calc(100vw - 40px);
+    max-height: 70vh;           /* фиксируем максимальную высоту */
+    overflow-y: auto;           /* включаем вертикальную прокрутку при необходимости */
+    background-color: #FFF8F0;
+    border: 2px solid #191940;
+    border-radius: 16px;
+    padding: 20px;
+    z-index: 1040;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+.settings-panel h6 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+.settings-panel .form-label {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+.settings-panel .form-range {
+    width: 100%;
+}
+.settings-panel .btn-group-sm .btn {
+    font-size: 0.8rem;
+}
+
+/* Стилизация скроллбара внутри панели настроек (убираем фон трека) */
+.settings-panel::-webkit-scrollbar {
+    width: 6px;
+}
+.settings-panel::-webkit-scrollbar-track {
+    background: transparent; /* убираем фон дорожки */
+    margin: 4px 0;
+}
+.settings-panel::-webkit-scrollbar-thumb {
+    background: var(--accent, #006BAE);
+    border-radius: 6px;
+}
+.settings-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover, #005A94);
+}
+/* Для Firefox */
+.settings-panel {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent, #006BAE) transparent;
+}
