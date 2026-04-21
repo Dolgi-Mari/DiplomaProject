@@ -146,15 +146,18 @@ def test():
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
-    """Профиль пользователя с его настройками и списком книг."""
-    
     if 'user_id' not in session:
         return redirect(url_for('login'))
     if session['user_id'] != user_id:
         return "Доступ запрещён", 403
-    
     user = User.query.get_or_404(user_id)
-    return render_template('profile.html', user=user)
+    
+    # Пагинация книг (10 на страницу)
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    books_pagination = Book.query.filter_by(user_id=user.id).order_by(Book.uploaded_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
+    
+    return render_template('profile.html', user=user, books=books_pagination)
 
 @app.route('/profile/edit', methods=['GET', 'POST'])
 def edit_profile():
@@ -476,7 +479,9 @@ def delete_book(book_id):
     db.session.commit()
     
     flash('Книга успешно удалена', 'success')
-    return redirect(url_for('profile', user_id=session['user_id']))
+    # Возвращаемся на ту же страницу с сохранением номера страницы
+    page = request.args.get('page', 1, type=int)
+    return redirect(url_for('profile', user_id=session['user_id'], page=page))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

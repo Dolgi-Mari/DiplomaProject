@@ -230,6 +230,60 @@
             scrollbar-width: auto;   /* вместо 'thin' используем 'auto' для более широкой полосы */
             scrollbar-color: var(--accent, #006BAE) #f1f1f1;
         }
+
+
+
+        /* Адаптивность для мобильных устройств (общие) */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            .navbar-brand img {
+                height: 40px;
+            }
+            .navbar-collapse {
+                text-align: left;   /* выравнивание меню по левому краю */
+            }
+            .navbar-nav {
+                flex-direction: column;
+                width: 100%;
+            }
+            .navbar-nav .nav-item {
+                width: 100%;
+                margin: 0.25rem 0;
+            }
+            .navbar-nav .btn {
+                width: 100%;
+                text-align: center;
+                margin-left: 0 !important;
+            }
+            .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23006BAE' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+            }
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            .btn-lg {
+                font-size: 1rem;
+                padding: 0.5rem 1rem;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .display-1 {
+                font-size: 2.5rem;
+            }
+            .display-3 {
+                font-size: 2rem;
+            }
+            .fs-3 {
+                font-size: 1.2rem;
+            }
+        }
                 
     </style>
 </head>

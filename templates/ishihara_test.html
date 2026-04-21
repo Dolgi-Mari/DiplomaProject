@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    @media (max-width: 768px) {
+        .card-body img {
+            max-width: 90% !important;
+            height: auto;
+        }
+        .form-check {
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
 <div class="row justify-content-center">
     <div class="col-lg-10">
         <div class="text-center mb-4">
