@@ -13,6 +13,19 @@ body {
     z-index: 0;
 }
 
+/* Шапка на странице читалки – использует переменные темы */
+.reader-page .navbar {
+    background-color: var(--bg-light) !important;
+    border-bottom: 1px solid var(--border-light);
+}
+.reader-page .navbar-brand,
+.reader-page .nav-link {
+    color: var(--text-dark) !important;
+}
+.reader-page .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%23006BAE' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
 /* Псевдоэлемент для регулировки яркости фона (накладывается поверх фона body) */
 body::before {
     content: '';
@@ -173,9 +186,9 @@ body.theme-sepia th {
     bottom: 20px;
     right: 20px;
     z-index: 1050;
-    background-color: #FFF8F0;  /* тёплый бежевый (цвет шапки) */
-    color: #191940;;              /* фирменный синий текст */
-    border: 2px solid #191940;;   /* синяя обводка */
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    border: 2px solid var(--accent);
     padding: 10px 20px;
     border-radius: 40px;
     font-size: 1.1rem;
@@ -185,8 +198,8 @@ body.theme-sepia th {
     transition: all 0.2s ease;
 }
 .btn-exit:hover {
-    background-color: #191940;;
-    color: #FFF8F0;
+    background-color: var(--accent);
+    color: var(--btn-text);
     transform: scale(1.02);
     text-decoration: none;
 }
@@ -194,12 +207,12 @@ body.theme-sepia th {
 /* Кнопка-шестерёнка и панель настроек */
 .btn-gear {
     position: fixed;
-    bottom: 80px;
-    right: 20px; /* левее кнопки выхода */
+    bottom: 90px;
+    right: 20px;
     z-index: 1050;
-    background-color: #FFF8F0;
-    color: #191940;
-    border: 2px solid #191940;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    border: 2px solid var(--accent);
     border-radius: 50%;
     width: 48px;
     height: 48px;
@@ -212,8 +225,8 @@ body.theme-sepia th {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .btn-gear:hover {
-    background-color: #191940;
-    color: #FFF8F0;
+    background-color: var(--accent);
+    color: var(--btn-text);
     transform: scale(1.02);
 }
 
@@ -221,18 +234,18 @@ body.theme-sepia th {
     position: fixed;
     bottom: 120px;
     right: 20px;
-    width: 400px;
+    width: 380px;
     max-width: calc(100vw - 40px);
-    max-height: 70vh;           /* фиксируем максимальную высоту */
-    overflow-y: auto;           /* включаем вертикальную прокрутку при необходимости */
-    background-color: #FFF8F0;
-    border: 2px solid #191940;
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: var(--bg-light);
+    border: 2px solid var(--accent);
     border-radius: 16px;
     padding: 20px;
     z-index: 1040;
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    transition: all 0.3s ease;
     font-size: 0.95rem;
+    color: var(--text-dark);
 }
 .settings-panel h6 {
     margin-top: 0;
@@ -242,14 +255,21 @@ body.theme-sepia th {
     padding-bottom: 5px;
 }
 .settings-panel .form-label {
-    font-weight: 500;
-    margin-bottom: 5px;
+    color: var(--text-dark);
 }
 .settings-panel .form-range {
     width: 100%;
 }
 .settings-panel .btn-group-sm .btn {
     font-size: 0.8rem;
+}
+.settings-panel .btn-outline-secondary {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.settings-panel .btn-outline-secondary:hover {
+    background-color: var(--accent);
+    color: var(--btn-text);
 }
 
 /* Стилизация скроллбара внутри панели настроек (убираем фон трека) */

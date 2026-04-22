@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="text-center mb-4">
+            <h1 class="fw-semibold">⚙️ Настройки интерфейса</h1>
+            <p class="text-muted">Измените внешний вид сайта</p>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <form method="POST" action="{{ url_for('settings') }}">
+                    <input type="hidden" name="next" value="{{ request.referrer or url_for('profile', user_id=session.user_id) }}">
+                    <!-- Цветовая тема -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold fs-5">Цветовая тема</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="ui_theme" id="theme_light" value="light" {% if user.ui_theme == 'light' %}checked{% endif %}>
+                            <label class="form-check-label" for="theme_light">Светлая (по умолчанию)</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="ui_theme" id="theme_dark" value="dark" {% if user.ui_theme == 'dark' %}checked{% endif %}>
+                            <label class="form-check-label" for="theme_dark">Тёмная</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="ui_theme" id="theme_mono" value="mono" {% if user.ui_theme == 'mono' %}checked{% endif %}>
+                            <label class="form-check-label" for="theme_mono">Монохромная (высокий контраст)</label>
+                        </div>
+                    </div>
+
+                    <!-- Размер текста интерфейса -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold fs-5">Размер текста интерфейса</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="ui_font_size" id="font_small" value="small" {% if user.ui_font_size == 'small' %}checked{% endif %}>
+                            <label class="form-check-label" for="font_small">Мелкий</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="ui_font_size" id="font_medium" value="medium" {% if user.ui_font_size == 'medium' %}checked{% endif %}>
+                            <label class="form-check-label" for="font_medium">Средний (по умолчанию)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="ui_font_size" id="font_large" value="large" {% if user.ui_font_size == 'large' %}checked{% endif %}>
+                            <label class="form-check-label" for="font_large">Крупный</label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg px-4">💾 Сохранить</button>
+                        <a href="{{ url_for('profile', user_id=user.id) }}" class="btn btn-outline-secondary btn-lg px-4">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

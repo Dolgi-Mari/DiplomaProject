@@ -56,6 +56,9 @@ class User(db.Model):
     brightness_preference = db.Column(db.Integer, default=50)
     preferred_line_width_ch = db.Column(db.Integer, default=66)
 
+    ui_theme = db.Column(db.String(20), default='light')      # 'light', 'dark', 'mono'
+    ui_font_size = db.Column(db.String(20), default='medium') # 'small', 'medium', 'large'
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -80,8 +83,15 @@ def allowed_file(filename):
 
 # ================== МАРШРУТЫ ==================
 @app.context_processor
-def inject_user():
-    return dict(session=session)
+def inject_ui_settings():
+    ui_theme = 'light'
+    ui_font_size = 'medium'
+    if 'user_id' in session:
+        user = User.query.get(session['user_id'])
+        if user:
+            ui_theme = getattr(user, 'ui_theme', 'light')
+            ui_font_size = getattr(user, 'ui_font_size', 'medium')
+    return dict(ui_theme=ui_theme, ui_font_size=ui_font_size)
 
 @app.route('/')
 def home():
@@ -219,6 +229,28 @@ def edit_profile():
         return redirect(url_for('profile', user_id=user.id))
 
     return render_template('profile_edit.html', user=user)
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    user = User.query.get(session['user_id'])
+    if not user:
+        return redirect(url_for('login'))
+    
+    if request.method == 'POST':
+        # сохраняем настройки
+        user.ui_theme = request.form.get('ui_theme', 'light')
+        user.ui_font_size = request.form.get('ui_font_size', 'medium')
+        db.session.commit()
+        flash('Настройки интерфейса сохранены', 'success')
+        next_page = request.form.get('next')
+        if next_page:
+            return redirect(next_page)
+        else:
+            return redirect(url_for('profile', user_id=user.id))
+    
+    return render_template('settings.html', user=user)
 
 def process_uploaded_file(file, user, user_folder):
     """

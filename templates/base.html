@@ -26,7 +26,170 @@
             --btn-secondary-bg: #61BEE7; /* голубой фон второстепенных кнопок */
             --btn-secondary-text: #191940; /* текст на голубых кнопках */
         }
-        
+        /* Тёмная тема интерфейса */
+        body.ui-theme-dark {
+            --bg-light: #12122a;
+            --text-dark: #e8e8f0;
+            --text-secondary: #a0a0c0;
+            --accent: #3a8cbb;
+            --accent-hover: #5aa9dd;
+            --border-light: #2a2a4a;
+            --warning-bg: #4a0d3f;
+            --warning-text: #f0e6f0;
+            --btn-text: #ffffff;
+            --btn-secondary-bg: #1e4a6e;
+            --btn-secondary-text: #e0e0f0;
+        }
+        body.ui-theme-dark .card {
+            background-color: #1e1e38;
+        }
+        body.ui-theme-dark .form-control,
+        body.ui-theme-dark .form-select {
+            background-color: #2a2a4a;
+            color: var(--text-dark);
+            border-color: var(--border-light);
+        }
+        body.ui-theme-dark .card-header {
+            background-color: #2a2a4a;
+        }
+
+        /* Монохромная тема интерфейса */
+        body.ui-theme-mono {
+            --bg-light: #000000;
+            --text-dark: #ffffff;
+            --text-secondary: #cccccc;
+            --accent: #aaaaaa;
+            --accent-hover: #dddddd;
+            --border-light: #444444;
+            --warning-bg: #333333;
+            --warning-text: #ffffff;
+            --btn-text: #ffffff;
+            --btn-secondary-bg: #666666;
+            --btn-secondary-text: #ffffff;
+        }
+        body.ui-theme-mono .card {
+            background-color: #111111;
+        }
+        body.ui-theme-mono .form-control,
+        body.ui-theme-mono .form-select {
+            background-color: #222222;
+            color: var(--text-dark);
+            border-color: var(--border-light);
+        }
+        body.ui-theme-mono .card-header {
+            background-color: #222222;
+        }
+
+        /* Тёмная тема – дополнительные стили для элементов интерфейса */
+        body.ui-theme-dark .card,
+        body.ui-theme-dark .list-group-item {
+            background-color: #1e1e38 !important;
+            border-color: var(--border-light);
+            color: var(--text-dark);
+        }
+        body.ui-theme-dark .list-group-item {
+            background-color: #1e1e38 !important;
+        }
+        body.ui-theme-dark .card-header {
+            background-color: #2a2a4a !important;
+            color: var(--text-dark);
+        }
+        body.ui-theme-dark .text-muted {
+            color: var(--text-secondary) !important;
+        }
+        body.ui-theme-dark .badge.bg-primary {
+            background-color: var(--accent) !important;
+            color: var(--btn-text);
+        }
+        body.ui-theme-dark .badge.bg-secondary {
+            background-color: #4a4a6a !important;
+            color: #e0e0e0;
+        }
+        body.ui-theme-dark .btn-outline-primary {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        body.ui-theme-dark .btn-outline-primary:hover {
+            background-color: var(--accent);
+            color: var(--btn-text);
+        }
+        body.ui-theme-dark .alert-light {
+            background-color: #2a2a4a;
+            color: var(--text-dark);
+            border-color: var(--border-light);
+        }
+        body.ui-theme-dark .form-control,
+        body.ui-theme-dark .form-select {
+            background-color: #2a2a4a;
+            color: var(--text-dark);
+        }
+        body.ui-theme-dark .form-control:focus,
+        body.ui-theme-dark .form-select:focus {
+            background-color: #2a2a4a;
+        }
+
+        /* Монохромная тема */
+        body.ui-theme-mono .card,
+        body.ui-theme-mono .list-group-item {
+            background-color: #111111 !important;
+            border-color: var(--border-light);
+            color: var(--text-dark);
+        }
+        body.ui-theme-mono .list-group-item {
+            background-color: #111111 !important;
+        }
+        body.ui-theme-mono .card-header {
+            background-color: #222222 !important;
+            color: var(--text-dark);
+        }
+        body.ui-theme-mono .text-muted {
+            color: var(--text-secondary) !important;
+        }
+        body.ui-theme-mono .badge.bg-primary {
+            background-color: var(--accent) !important;
+            color: var(--btn-text);
+        }
+        body.ui-theme-mono .badge.bg-secondary {
+            background-color: #555555 !important;
+            color: #ffffff;
+        }
+        body.ui-theme-mono .btn-outline-primary {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        body.ui-theme-mono .btn-outline-primary:hover {
+            background-color: var(--accent);
+            color: var(--btn-text);
+        }
+        body.ui-theme-mono .alert-light {
+            background-color: #222222;
+            color: var(--text-dark);
+            border-color: var(--border-light);
+        }
+        body.ui-theme-mono .form-control,
+        body.ui-theme-mono .form-select {
+            background-color: #222222;
+            color: var(--text-dark);
+        }
+
+        /* Размер текста интерфейса */
+        body.ui-font-small {
+            font-size: 14px;
+        }
+        body.ui-font-small .btn,
+        body.ui-font-small .form-label,
+        body.ui-font-small .nav-link {
+            font-size: 0.9rem;
+        }
+        body.ui-font-large {
+            font-size: 18px;
+        }
+        body.ui-font-large .btn,
+        body.ui-font-large .form-label,
+        body.ui-font-large .nav-link {
+            font-size: 1.1rem;
+        }
+
         body {
             background-color: var(--bg-light);
             color: var(--text-dark);
@@ -219,7 +382,7 @@
         ::-webkit-scrollbar-thumb {
             background: var(--accent, #006BAE);
             border-radius: 10px;
-            border: 2px solid #f1f1f1;   /* добавим отступ, чтобы не сливался с треком */
+            border: none;   /* добавим отступ, чтобы не сливался с треком */
         }
         ::-webkit-scrollbar-thumb:hover {
             background: var(--accent-hover, #005A94);
@@ -227,8 +390,8 @@
 
         /* ===== Для Firefox ===== */
         * {
-            scrollbar-width: auto;   /* вместо 'thin' используем 'auto' для более широкой полосы */
-            scrollbar-color: var(--accent, #006BAE) #f1f1f1;
+            scrollbar-width: auto;
+            scrollbar-color: var(--accent, #006BAE) transparent;
         }
 
 
@@ -287,11 +450,11 @@
                 
     </style>
 </head>
-<body {% block body_attributes %}{% endblock %}>
+<body {% block body_attributes %}{% endblock %} class="{% if ui_theme == 'dark' %}ui-theme-dark{% elif ui_theme == 'mono' %}ui-theme-mono{% endif %} {% if ui_font_size == 'small' %}ui-font-small{% elif ui_font_size == 'large' %}ui-font-large{% endif %}">
     <nav class="navbar navbar-expand-lg mb-4">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="{{ url_for('static', filename='logo/Logo_VisiBook.svg') }}" alt="VisiBook logo">
+                <img src="{{ url_for('static', filename='logo/Logo_VisiBook' + ('_mood_dark' if ui_theme == 'dark' else '_monochrome' if ui_theme == 'mono' else '') + '.svg') }}" alt="VisiBook logo">
                 VisiBook
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -300,6 +463,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if session.user_id %}
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary ms-2" href="{{ url_for('settings') }}">⚙️</a>
+                        </li>
                         <li class="nav-item">
                             <a class="btn btn-outline-primary ms-2"  href="/profile/{{ session.user_id }}">Профиль</a>
                         </li>

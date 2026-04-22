@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container text-center py-4">
     <div class="mb-4">
-        <img src="{{ url_for('static', filename='logo/Logo_VisiBook.svg') }}" alt="VisiBook logo" style="height: 150px; width: auto;">
+        <img src="{{ url_for('static', filename='logo/Logo_VisiBook' + ('_mood_dark' if ui_theme == 'dark' else '_monochrome' if ui_theme == 'mono' else '') + '.svg') }}" alt="VisiBook logo" style="height: 150px; width: auto;">
     </div>
     <h1 class="display-3 fw-bold mb-3">VisiBook</h1>
     <p class="lead fs-4 text-muted mb-4">Адаптивное чтение для каждого</p>
