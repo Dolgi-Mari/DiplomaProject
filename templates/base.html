@@ -53,31 +53,80 @@
             background-color: #2a2a4a;
         }
 
-        /* Монохромная тема интерфейса */
+        /* Монохромная тема интерфейса (светло-серый фон, чёрно-белые элементы) */
         body.ui-theme-mono {
-            --bg-light: #000000;
-            --text-dark: #ffffff;
-            --text-secondary: #cccccc;
-            --accent: #aaaaaa;
-            --accent-hover: #dddddd;
-            --border-light: #444444;
-            --warning-bg: #333333;
-            --warning-text: #ffffff;
-            --btn-text: #ffffff;
-            --btn-secondary-bg: #666666;
-            --btn-secondary-text: #ffffff;
+            --bg-light: #e0e0e0;          /* светло-серый фон */
+            --text-dark: #000000;          /* чёрный текст */
+            --text-secondary: #333333;     /* тёмно-серый */
+            --accent: #444444;             /* тёмно-серый для акцентов */
+            --accent-hover: #666666;       /* серый при наведении */
+            --border-light: #aaaaaa;       /* светло-серая граница */
+            --warning-bg: #888888;         /* серый фон предупреждений */
+            --warning-text: #ffffff;       /* белый текст */
+            --btn-text: #ffffff;           /* белый текст на кнопках */
+            --btn-secondary-bg: #999999;   /* светло-серый фон второстепенных кнопок */
+            --btn-secondary-text: #000000; /* чёрный текст */
         }
         body.ui-theme-mono .card {
-            background-color: #111111;
+            background-color: #f5f5f5;
         }
         body.ui-theme-mono .form-control,
         body.ui-theme-mono .form-select {
-            background-color: #222222;
-            color: var(--text-dark);
-            border-color: var(--border-light);
+            background-color: #ffffff;
+            color: #000000;
+            border-color: #cccccc;
         }
         body.ui-theme-mono .card-header {
+            background-color: #dddddd;
+        }
+        body.ui-theme-mono .list-group-item {
+            background-color: #f5f5f5 !important;
+            color: #000000;
+            border-color: #cccccc;
+        }
+        body.ui-theme-mono .btn-danger,
+        body.ui-theme-mono .btn-outline-danger {
+            background-color: #666666;
+            border-color: #666666;
+            color: white;
+        }
+        body.ui-theme-mono .btn-danger:hover,
+        body.ui-theme-mono .btn-outline-danger:hover {
+            background-color: #444444;
+        }
+        body.ui-theme-mono .btn-outline-info {
+            border-color: #666666;
+            color: #666666;
+        }
+        body.ui-theme-mono .btn-outline-info:hover {
+            background-color: #666666;
+            color: white;
+        }
+        body.ui-theme-mono .bg-primary,
+        body.ui-theme-mono .feature-icon {
+            background-color: #666666 !important;
+        }
+        body.ui-theme-mono .btn-primary,
+        body.ui-theme-mono .btn-success {
+            background-color: #444444;
+            border-color: #444444;
+        }
+        body.ui-theme-mono .btn-primary:hover,
+        body.ui-theme-mono .btn-success:hover {
             background-color: #222222;
+        }
+        body.ui-theme-mono a:not(.btn) {
+            color: #000000;
+            text-decoration: underline;
+        }
+        body.ui-theme-mono a:not(.btn):hover {
+            color: #444444;
+        }
+        body.ui-theme-mono .bi {
+            filter: grayscale(100%);
+        }
+        body.ui-theme-mono .navbar-toggler-icon {
+            filter: grayscale(100%);
         }
 
         /* Тёмная тема – дополнительные стили для элементов интерфейса */
@@ -128,66 +177,30 @@
             background-color: #2a2a4a;
         }
 
-        /* Монохромная тема */
-        body.ui-theme-mono .card,
-        body.ui-theme-mono .list-group-item {
-            background-color: #111111 !important;
-            border-color: var(--border-light);
-            color: var(--text-dark);
-        }
-        body.ui-theme-mono .list-group-item {
-            background-color: #111111 !important;
-        }
-        body.ui-theme-mono .card-header {
-            background-color: #222222 !important;
-            color: var(--text-dark);
-        }
-        body.ui-theme-mono .text-muted {
-            color: var(--text-secondary) !important;
-        }
-        body.ui-theme-mono .badge.bg-primary {
-            background-color: var(--accent) !important;
-            color: var(--btn-text);
-        }
-        body.ui-theme-mono .badge.bg-secondary {
-            background-color: #555555 !important;
-            color: #ffffff;
-        }
-        body.ui-theme-mono .btn-outline-primary {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        body.ui-theme-mono .btn-outline-primary:hover {
-            background-color: var(--accent);
-            color: var(--btn-text);
-        }
-        body.ui-theme-mono .alert-light {
-            background-color: #222222;
-            color: var(--text-dark);
-            border-color: var(--border-light);
-        }
-        body.ui-theme-mono .form-control,
-        body.ui-theme-mono .form-select {
-            background-color: #222222;
-            color: var(--text-dark);
-        }
-
         /* Размер текста интерфейса */
         body.ui-font-small {
-            font-size: 14px;
+            font-size: 15px;
         }
         body.ui-font-small .btn,
         body.ui-font-small .form-label,
         body.ui-font-small .nav-link {
-            font-size: 0.9rem;
+            font-size: 1rem;
+        }
+        body.ui-font-medium {
+            font-size: 20px;
+        }
+        body.ui-font-medium .btn,
+        body.ui-font-medium .form-label,
+        body.ui-font-medium .nav-link {
+            font-size: 1.1rem;
         }
         body.ui-font-large {
-            font-size: 18px;
+            font-size: 25px;
         }
         body.ui-font-large .btn,
         body.ui-font-large .form-label,
         body.ui-font-large .nav-link {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
 
         body {
@@ -450,7 +463,7 @@
                 
     </style>
 </head>
-<body {% block body_attributes %}{% endblock %} class="{% if ui_theme == 'dark' %}ui-theme-dark{% elif ui_theme == 'mono' %}ui-theme-mono{% endif %} {% if ui_font_size == 'small' %}ui-font-small{% elif ui_font_size == 'large' %}ui-font-large{% endif %}">
+<body {% block body_attributes %}class="{% if ui_theme == 'dark' %}ui-theme-dark{% elif ui_theme == 'mono' %}ui-theme-mono{% endif %} {% if ui_font_size == 'small' %}ui-font-small{% elif ui_font_size == 'large' %}ui-font-large{% else %}ui-font-medium{% endif %}"{% endblock %}>
     <nav class="navbar navbar-expand-lg mb-4">
         <div class="container">
             <a class="navbar-brand" href="/">
