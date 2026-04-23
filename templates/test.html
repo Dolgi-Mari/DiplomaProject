@@ -55,10 +55,10 @@
     .live-preview.theme-deuteranopia { background: #f8f9fa !important; color: #212529 !important; }
     .live-preview.theme-tritanopia { background: #fff3e0 !important; color: #4a2e00 !important; }
 
-    /* Размер шрифта */
-    .live-preview.font-small .preview-text { font-size: 12px; }
-    .live-preview.font-medium .preview-text { font-size: 16px; }
-    .live-preview.font-large .preview-text { font-size: 24px; }
+    /* Размер шрифта (через переменную) */
+    .live-preview .preview-text {
+        font-size: var(--preview-font-size, 16px);
+    }
 
     /* Межстрочный интервал */
     .live-preview.line-height-normal .preview-text { line-height: 1.5; }
@@ -227,19 +227,39 @@
             <div class="card-body">
                 <h5 class="card-title">
                     Какой размер шрифта вам комфортен?
-                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Крупный шрифт необходим при сниженной остроте зрения (пресбиопия, миопия). Мелкий подходит для коротких сеансов чтения."></i>
+                    <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Выберите размер в пикселях. Крупный шрифт необходим при сниженной остроте зрения (пресбиопия, миопия)."></i>
                 </h5>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small">
-                    <label class="form-check-label" for="vision_small">Мелкий (как в обычных книгах)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium" checked>
-                    <label class="form-check-label" for="vision_medium">Средний (чуть крупнее)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large">
-                    <label class="form-check-label" for="vision_large">Крупный (нужно увеличение)</label>
+                <div class="row g-2">
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="font_size_px" id="size_12" value="12">
+                            <label class="form-check-label" for="size_12">12px</label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="font_size_px" id="size_16" value="16" checked>
+                            <label class="form-check-label" for="size_16">16px</label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="font_size_px" id="size_20" value="20">
+                            <label class="form-check-label" for="size_20">20px</label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="font_size_px" id="size_24" value="24">
+                            <label class="form-check-label" for="size_24">24px</label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="font_size_px" id="size_28" value="28">
+                            <label class="form-check-label" for="size_28">28px</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -477,12 +497,12 @@
         return radio ? radio.value : null;
     }
 
-    function updatePreview() {
+        function updatePreview() {
         const previewDiv = document.getElementById('livePreview');
         const previewTextDiv = document.getElementById('previewText');
         if (!previewDiv) return;
 
-        const fontSize = getSelectedValue('vision') || 'medium';
+        const fontSizePx = getSelectedValue('font_size_px') ? parseInt(getSelectedValue('font_size_px')) : 16;
         let theme = getSelectedValue('theme') || getSelectedValue('contrast') || 'normal';
         const colorVision = getSelectedValue('color_vision') || 'normal';
         const lineHeight = getSelectedValue('line_height') || 'normal';
@@ -493,7 +513,7 @@
         const brightnessVal = brightnessSlider ? parseInt(brightnessSlider.value) : 50;
         const lineWidthVal = lineWidthSlider ? parseInt(lineWidthSlider.value) : 66;
 
-        let classes = [`font-${fontSize}`];
+        let classes = [];
 
         // Цветовая схема
         if (colorVision === 'protan') {
@@ -526,13 +546,14 @@
         } else if (lightSensitive === 'manual') {
             contrastFactor = 0.5 + contrastVal / 100;
             darkness = Math.max(0, (50 - brightnessVal) / 50 * 0.7);
-        } else { // 'low' или что-то ещё
+        } else { // 'low'
             contrastFactor = 1.0;
             darkness = 0;
         }
-        // Дополнительно, если выбран 'low', ползунки скрыты, но пользователь мог изменить их ранее? Не важно, используем нейтральные.
         previewDiv.style.setProperty('--preview-contrast', contrastFactor);
         previewDiv.style.setProperty('--preview-darkness', darkness);
+        // Размер шрифта
+        previewDiv.style.setProperty('--preview-font-size', fontSizePx + 'px');
         // Длина строки
         previewTextDiv.style.maxWidth = lineWidthVal + 'ch';
     }

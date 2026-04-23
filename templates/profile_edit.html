@@ -84,10 +84,10 @@
     .demo-fixed.theme-protanopia { background: #f0f0f0 !important; color: #1a1a1a !important; }
     .demo-fixed.theme-deuteranopia { background: #f8f9fa !important; color: #212529 !important; }
     .demo-fixed.theme-tritanopia { background: #fff3e0 !important; color: #4a2e00 !important; }
-    /* Размер шрифта */
-    .demo-fixed.font-small .demo-text { font-size: 12px; }
-    .demo-fixed.font-medium .demo-text { font-size: 16px; }
-    .demo-fixed.font-large .demo-text { font-size: 24px; }
+    /* Размер шрифта (через переменную) */
+    .demo-fixed .demo-text {
+        font-size: var(--preview-font-size, 16px);
+    }
     /* Межстрочный интервал */
     .demo-fixed.line-height-normal .demo-text { line-height: 1.5; }
     .demo-fixed.line-height-large .demo-text { line-height: 2.0; }
@@ -224,20 +224,38 @@
                     <div class="mb-4">
                         <label class="form-label fw-semibold fs-5">
                             Размер шрифта
-                            <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Крупный шрифт необходим при сниженной остроте зрения (пресбиопия, миопия). Мелкий подходит для коротких сеансов чтения."></i>
+                            <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Выберите размер в пикселях. Крупный шрифт необходим при сниженной остроте зрения (пресбиопия, миопия)."></i>
                         </label>
-                        <div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="vision" id="vision_small" value="small" {% if user.font_pref == 'small' %}checked{% endif %}>
-                                <label class="form-check-label" for="vision_small">Мелкий</label>
+                        <div class="row g-2">
+                            <div class="col-auto">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="font_size_px" id="size_12" value="12" {% if user.font_size_px == 12 %}checked{% endif %}>
+                                    <label class="form-check-label" for="size_12">12px</label>
+                                </div>
                             </div>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="vision" id="vision_medium" value="medium" {% if user.font_pref == 'medium' or not user.font_pref %}checked{% endif %}>
-                                <label class="form-check-label" for="vision_medium">Средний</label>
+                            <div class="col-auto">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="font_size_px" id="size_16" value="16" {% if user.font_size_px == 16 or not user.font_size_px %}checked{% endif %}>
+                                    <label class="form-check-label" for="size_16">16px</label>
+                                </div>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="vision" id="vision_large" value="large" {% if user.font_pref == 'large' %}checked{% endif %}>
-                                <label class="form-check-label" for="vision_large">Крупный</label>
+                            <div class="col-auto">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="font_size_px" id="size_20" value="20" {% if user.font_size_px == 20 %}checked{% endif %}>
+                                    <label class="form-check-label" for="size_20">20px</label>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="font_size_px" id="size_24" value="24" {% if user.font_size_px == 24 %}checked{% endif %}>
+                                    <label class="form-check-label" for="size_24">24px</label>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="font_size_px" id="size_28" value="28" {% if user.font_size_px == 28 %}checked{% endif %}>
+                                    <label class="form-check-label" for="size_28">28px</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -483,7 +501,7 @@
     function updatePreview() {
         if (!demoDiv) return;
 
-        const fontSize = getSelectedValue('vision') || 'medium';
+        const fontSizePx = getSelectedValue('font_size_px') ? parseInt(getSelectedValue('font_size_px')) : 16;
         let theme = getSelectedValue('theme') || getSelectedValue('contrast') || 'normal';
         const colorVision = getSelectedValue('color_vision') || 'normal';
         const lineHeight = getSelectedValue('line_height') || 'normal';
@@ -493,7 +511,7 @@
         const brightnessVal = brightnessSlider ? parseInt(brightnessSlider.value) : 50;
         const lineWidthVal = lineWidthSlider ? parseInt(lineWidthSlider.value) : 66;
 
-        let classes = [`font-${fontSize}`];
+        let classes = [];
 
         if (colorVision === 'protan') {
             classes.push('theme-protanopia');
@@ -530,6 +548,7 @@
         }
         demoDiv.style.setProperty('--preview-contrast', contrastFactor);
         demoDiv.style.setProperty('--preview-darkness', darkness);
+        demoDiv.style.setProperty('--preview-font-size', fontSizePx + 'px');
         demoTextDiv.style.maxWidth = lineWidthVal + 'ch';
     }
 

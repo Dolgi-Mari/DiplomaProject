@@ -43,12 +43,14 @@
     </div>
     <!-- Размер шрифта -->
     <div class="mb-3">
-        <label class="form-label">Размер шрифта</label>
-        <div class="btn-group w-100" role="group">
-            <button type="button" class="btn btn-outline-secondary" data-font="small">Мелкий</button>
-            <button type="button" class="btn btn-outline-secondary" data-font="medium">Средний</button>
-            <button type="button" class="btn btn-outline-secondary" data-font="large">Крупный</button>
-        </div>
+        <label class="form-label">Размер шрифта (px)</label>
+        <select class="form-select" id="fontSizeSelect">
+            <option value="12">12</option>
+            <option value="16" selected>16</option>
+            <option value="20">20</option>
+            <option value="24">24</option>
+            <option value="28">28</option>
+        </select>
     </div>
     <!-- Длина строки (ползунок) -->
     <div class="mb-3">
@@ -138,6 +140,7 @@
     const brightnessSlider = document.getElementById('brightnessSlider');
     const brightnessValueDisplay = document.getElementById('brightnessValueDisplay');
     const manualControls = document.getElementById('manualControls');
+    const fontSizeSelect = document.getElementById('fontSizeSelect');
 
     // Открыть/закрыть панель
     gearBtn.addEventListener('click', () => {
@@ -158,13 +161,9 @@
         const fontClass = `font-${selectedFont.toLowerCase().replace(/ /g, '-')}`;
         body.classList.add(fontClass);
 
-        // Размер шрифта – из активной кнопки
-        const activeFontBtn = document.querySelector('.btn[data-font].active');
-        if (activeFontBtn) {
-            const fontSize = activeFontBtn.getAttribute('data-font');
-            body.classList.remove('font-small', 'font-medium', 'font-large');
-            body.classList.add(`font-${fontSize}`);
-        }
+        // Размер шрифта (выпадающий список)
+        const fontSizeVal = fontSizeSelect.value;
+        body.style.setProperty('--base-font-size', fontSizeVal + 'px');
 
         // Межстрочный интервал
         const activeLineBtn = document.querySelector('.btn[data-line].active');
@@ -207,13 +206,6 @@
 
     // Обработчики для элементов тулбара
     fontSelect.addEventListener('change', applySettings);
-    document.querySelectorAll('.btn[data-font]').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.btn[data-font]').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            applySettings();
-        });
-    });
     document.querySelectorAll('.btn[data-line]').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.btn[data-line]').forEach(b => b.classList.remove('active'));
@@ -221,6 +213,7 @@
             applySettings();
         });
     });
+    fontSizeSelect.addEventListener('change', applySettings);
     document.querySelectorAll('.btn[data-light]').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.btn[data-light]').forEach(b => b.classList.remove('active'));
@@ -253,14 +246,9 @@
 
     // Инициализация панели из текущих настроек body
     function initFromBody() {
-        // Размер шрифта
-        if (body.classList.contains('font-small')) {
-            document.querySelector('.btn[data-font="small"]').classList.add('active');
-        } else if (body.classList.contains('font-large')) {
-            document.querySelector('.btn[data-font="large"]').classList.add('active');
-        } else {
-            document.querySelector('.btn[data-font="medium"]').classList.add('active');
-        }
+        // Размер шрифта (select)
+        const currentFontSize = parseFloat(getComputedStyle(body).getPropertyValue('--base-font-size').trim()) || 16;
+        fontSizeSelect.value = currentFontSize;
         // Межстрочный интервал
         if (body.classList.contains('line-height-large')) {
             document.querySelector('.btn[data-line="large"]').classList.add('active');
@@ -325,9 +313,7 @@
     if (saveBtn) {
         saveBtn.addEventListener('click', function() {
             const preferred_font = fontSelect.value;
-            let font_pref = 'medium';
-            const activeFont = document.querySelector('.btn[data-font].active');
-            if (activeFont) font_pref = activeFont.getAttribute('data-font');
+            const font_size_px = parseInt(fontSizeSelect.value);
             let line_height = 'normal';
             const activeLine = document.querySelector('.btn[data-line].active');
             if (activeLine) line_height = activeLine.getAttribute('data-line');
@@ -343,7 +329,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     preferred_font: preferred_font,
-                    font_pref: font_pref,
+                    font_size_px: font_size_px,
                     line_height: line_height,
                     light_sensitivity_level: light_sensitivity_level,
                     contrast_sensitivity: contrast_sensitivity,

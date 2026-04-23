@@ -46,6 +46,8 @@ class User(db.Model):
     contrast = db.Column(db.String(20))       # 'high', 'medium', 'low'
     color_vision = db.Column(db.String(20))   # 'normal', 'deutan', 'protan', 'tritan'
     font_pref = db.Column(db.String(20))      # 'small', 'medium', 'large'
+    font_size_px = db.Column(db.Integer, default=16)
+
     theme_pref = db.Column(db.String(20))     # 'light', 'dark', 'sepia', 'high_contrast'
     line_height = db.Column(db.String(20), default='normal')      # 'normal' или 'large'
     color_blindness_type = db.Column(db.String(20), default='none')   # 'none', 'protanopia', 'deuteranopia', 'tritanopia'
@@ -124,9 +126,10 @@ def test():
 
         # Дислексия и выбор шрифта
         has_dyslexia = request.form.get('dyslexia') == 'yes'
-        preferred_font = request.form.get('preferred_font', 'Roboto')   # новое поле
+        preferred_font = request.form.get('preferred_font', 'Roboto')# новое поле
+        font_size_px = int(request.form.get('font_size_px', 16))
 
-                # Обновляем пользователя
+        # Обновляем пользователя
         user.font_pref = font_pref
         user.theme_pref = theme
         user.contrast = theme
@@ -138,6 +141,7 @@ def test():
         user.light_sensitivity_level = light_sensitivity_level
         user.has_dyslexia = has_dyslexia
         user.preferred_font = preferred_font
+        user.font_size_px = font_size_px
 
         # Синхронизация color_blindness_type с color_vision
         if color_vision == 'normal':
@@ -224,7 +228,8 @@ def edit_profile():
         user.has_dyslexia = request.form.get('dyslexia') == 'yes'
         user.light_sensitivity_level = request.form.get('light_sensitivity_level', user.light_sensitivity_level or 'low')
         user.preferred_font = request.form.get('preferred_font', user.preferred_font or 'Roboto')
-        
+        user.font_size_px = int(request.form.get('font_size_px', 16))
+
         db.session.commit()
         return redirect(url_for('profile', user_id=user.id))
 
@@ -467,8 +472,8 @@ def update_reader_settings():
     data = request.get_json()
     if 'preferred_font' in data:
         user.preferred_font = data['preferred_font']
-    if 'font_pref' in data:
-        user.font_pref = data['font_pref']
+    if 'font_size_px' in data:
+        user.font_size_px = data['font_size_px']
     if 'line_height' in data:
         user.line_height = data['line_height']
     if 'light_sensitivity_level' in data:
@@ -593,9 +598,9 @@ def generate_body_classes(user):
     classes = []
     css_vars = {}
 
-    # Размер шрифта
-    font_size = getattr(user, 'font_pref', 'medium')
-    classes.append(f'font-{font_size}')
+    # Размер шрифта (в пикселях)
+    font_size_px = getattr(user, 'font_size_px', 16)
+    css_vars['--base-font-size'] = f'{font_size_px}px'
 
     # Тема (с учётом дальтонизма)
     color_blind = getattr(user, 'color_blindness_type', 'none')

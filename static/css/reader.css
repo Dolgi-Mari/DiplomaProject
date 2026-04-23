@@ -3,7 +3,7 @@
 /* Базовые стили (по умолчанию) */
 body {
     font-family: Arial, sans-serif;
-    font-size: 16px;
+    font-size: var(--base-font-size, 16px);
     line-height: 1.5;
     color: #000;
     background-color: #fff;
@@ -39,7 +39,7 @@ body::before {
     z-index: -1;
 }
 
-/* Размер шрифта */
+/* Размер шрифта
 body.font-large {
     font-size: 24px;
     line-height: 1.7;
@@ -51,7 +51,7 @@ body.font-medium {
 body.font-small {
     font-size: 14px;
     line-height: 1.4;
-}
+} */
 
 /* Темы (стандартные) */
 body.theme-dark {
