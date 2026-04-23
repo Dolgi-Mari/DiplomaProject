@@ -1,19 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6 offset-md-3">
-        <div class="card">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-4 p-md-5">
                 <h1 class="mb-4 text-center display-5">Регистрация</h1>
                 <form method="POST" action="/register">
                     <div class="mb-4">
-                        <label for="username" class="form-label form-label-lg fs-5">Имя пользователя</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                        <label for="username" class="form-label fw-semibold">Имя пользователя</label>
+                        <input type="text" class="form-control form-control-lg" id="username" name="username" value="{{ username }}" required>
                     </div>
                     <div class="mb-4">
-                        <label for="password" class="form-label form-label-lg fs-5">Пароль</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <label for="password" class="form-label fw-semibold">Пароль</label>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="captcha" class="form-label fw-semibold">Сколько будет {{ num1 }} + {{ num2 }}?</label>
+                        <input type="number" class="form-control form-control-lg" id="captcha" name="captcha" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-lg w-100 py-2">Зарегистрироваться</button>
                     <a href="/login" class="btn btn-link w-100 text-center mt-3 fs-5">Уже есть аккаунт? Войти</a>

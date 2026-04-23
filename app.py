@@ -551,31 +551,48 @@ def delete_book(book_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    import random
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        user_captcha = request.form.get('captcha')
+        correct_result = session.get('captcha_result')
         
-        # Проверяем, не занято ли имя
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
-            return "Пользователь с таким именем уже существует. <a href='/register'>Попробуйте другое имя</a>"
+        error = None
+        if not username or not password:
+            error = "Заполните все поля"
+        elif not user_captcha or not correct_result or int(user_captcha) != int(correct_result):
+            error = "Неверный ответ на капчу. Попробуйте ещё раз."
+            session.pop('captcha_result', None)  # старый результат больше не нужен
+        else:
+            existing_user = User.query.filter_by(username=username).first()
+            if existing_user:
+                error = "Пользователь с таким именем уже существует."
         
-        # Создаём нового пользователя с пустыми настройками
+        if error:
+            flash(error, 'danger')
+            # Генерируем новый пример капчи для повторной попытки
+            num1 = random.randint(1, 9)
+            num2 = random.randint(1, 9)
+            session['captcha_result'] = num1 + num2
+            return render_template('register.html', num1=num1, num2=num2, username=username)
+        
+        # Успешная регистрация
         hashed_password = generate_password_hash(password)
-        new_user = User(
-            username=username,
-            password_hash=hashed_password,
-            # поля настроек пока пустые, их заполнит тест
-        )
+        new_user = User(username=username, password_hash=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        
-        # Сразу логиним пользователя
         session['user_id'] = new_user.id
-        
+        session.pop('captcha_result', None)
+        flash('Регистрация успешна!', 'success')
         return redirect(url_for('test'))
     
-    return render_template('register.html')
+    # GET-запрос
+    num1 = random.randint(1, 9)
+    num2 = random.randint(1, 9)
+    session['captcha_result'] = num1 + num2
+    username = session.pop('reg_username', '')  # если было сохранено после ошибки
+    return render_template('register.html', num1=num1, num2=num2, username=username)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

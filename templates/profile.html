@@ -114,7 +114,10 @@
                                         <i class="bi bi-book fs-1 text-secondary"></i>
                                     </div>
                                 {% endif %}
-                                <div class="book-title" title="{{ book.title }}">{{ book.title[:30] }}{% if book.title|length > 30 %}...{% endif %}</div>
+                                <div class="book-title" title="{{ book.title }} (файл: {{ book.filename }})">
+                                    {{ book.title[:20] }}{% if book.title|length > 20 %}...{% endif %}
+                                    <span class="text-muted small">({{ book.filename[:15] }}{% if book.filename|length > 15 %}...{% endif %})</span>
+                                </div>
                                 <div class="book-actions">
                                     {% if book.extracted_html_path %}
                                         <a href="/read/{{ book.id }}" class="btn btn-sm btn-outline-primary">Читать</a>
@@ -135,7 +138,7 @@
                             {% for book in books.items %}
                             <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 border">
                                 <div class="d-flex flex-wrap align-items-center gap-2">
-                                    <span class="fw-medium">{{ book.title[:50] }}{% if book.title|length > 50 %}...{% endif %}</span>
+                                    <span class="fw-medium" title="{{ book.filename }}">{{ book.title[:40] }}{% if book.title|length > 40 %}...{% endif %} <span class="text-muted small">({{ book.filename[:30] }}{% if book.filename|length > 30 %}...{% endif %})</span></span>
                                     {% if book.extracted_html_path %}
                                         <a href="/read/{{ book.id }}" class="btn btn-sm btn-outline-primary">Читать</a>
                                     {% else %}
