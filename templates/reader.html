@@ -97,9 +97,14 @@
     document.body.className = "reader-page {{ body_classes }}";
 
     // Восстановление позиции при загрузке
-    var lastPosition = {{ last_position | tojson }};
-    if (lastPosition && lastPosition > 0) {
-        window.scrollTo(0, lastPosition);
+    var lastPosition = {{ last_position if last_position is not none else 0 }};
+    if (typeof lastPosition === 'string') {
+        lastPosition = parseInt(lastPosition, 10);
+    }
+    if (lastPosition > 0) {
+        setTimeout(function() {
+            window.scrollTo(0, lastPosition);
+        }, 100); // небольшая задержка для полной загрузки DOM
     }
 
     // Обновление полоски прогресса
@@ -114,6 +119,7 @@
     // Сохранение позиции
     var saveTimeout;
     function savePosition() {
+        console.log('savePosition called, scrollY=' + window.scrollY);
         var position = window.scrollY;
         fetch('/save_position/{{ book.id }}', {
             method: 'POST',

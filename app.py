@@ -471,7 +471,7 @@ def read_book(book_id):
                            user_id=book.user_id,
                            body_classes=body_classes,
                            style_vars=style_vars,
-                           last_position=book.last_position)
+                           last_position=book.last_position or 0)
 
 @app.route('/save_position/<int:book_id>', methods=['POST'])
 def save_position(book_id):
