@@ -9,11 +9,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask import session
 from flask import abort, flash
 from flask import send_from_directory
-from pdf_parser import extract_text_and_images_from_pdf, get_pdf_title
-from docx_parser import extract_text_and_images_from_docx, get_docx_title
-from fb2_parser import get_fb2_title, extract_text_and_images_from_fb2
+from docx_parser import extract_text_and_images_from_docx, get_docx_title, get_docx_cover
 from txt_parser import extract_text_from_txt, get_txt_title
 from rtf_parser import extract_text_from_rtf, get_rtf_title
+from epub_parser import extract_text_from_epub, get_epub_title, get_epub_cover
+from pdf_parser import extract_text_and_images_from_pdf, get_pdf_title, get_pdf_cover
+from fb2_parser import get_fb2_title, extract_text_and_images_from_fb2, get_fb2_cover
 from ishihara_data import EXPECTED, PLATE_OPTIONS
 
 # ================== КОНФИГУРАЦИЯ ==================
@@ -75,6 +76,7 @@ class Book(db.Model):
     title = db.Column(db.String(200))  # будет извлечено из метаданных
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_position = db.Column(db.Integer, default=0)
+    cover_path = db.Column(db.String(300), nullable=True)  # путь к обложке
 
     user = db.relationship('User', backref=db.backref('books', lazy=True))
 
@@ -235,6 +237,7 @@ def edit_profile():
 
     return render_template('profile_edit.html', user=user)
 
+
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     if 'user_id' not in session:
@@ -258,20 +261,13 @@ def settings():
     return render_template('settings.html', user=user)
 
 def process_uploaded_file(file, user, user_folder):
-    """
-    Обрабатывает один загруженный файл: сохраняет, извлекает метаданные,
-    создаёт запись в БД, вызывает парсер.
-    Возвращает (success, message) – успех и сообщение.
-    """
     filename = secure_filename(file.filename)
     file_path = os.path.join(user_folder, filename)
     file.save(file_path)
-    
-    # Определяем расширение
     file_ext = filename.rsplit('.', 1)[1].lower()
     
     # Пытаемся получить название книги
-    book_title = filename  # по умолчанию
+    book_title = filename
     if file_ext == 'epub':
         try:
             title_from_meta = get_epub_title(file_path)
@@ -312,12 +308,11 @@ def process_uploaded_file(file, user, user_folder):
             title_from_meta = get_rtf_title(file_path)
             if title_from_meta:
                 book_title = title_from_meta
-            # Предупреждение о возможных проблемах с таблицами/изображениями
             flash(f'Файл {filename} (RTF) может содержать некорректно отображаемые таблицы или изображения.', 'warning')
         except Exception as e:
             print(f"Ошибка при получении названия RTF: {e}")
 
-    # Создаём запись в БД
+    # Создаём запись в БД (без обложки)
     new_book = Book(
         user_id=user.id,
         filename=filename,
@@ -326,6 +321,24 @@ def process_uploaded_file(file, user, user_folder):
     )
     db.session.add(new_book)
     db.session.commit()
+
+    # Извлечение обложки (переменная cover_path создаётся для всех)
+    covers_dir = os.path.join(user_folder, 'covers')
+    os.makedirs(covers_dir, exist_ok=True)
+    cover_filename = filename.rsplit('.', 1)[0] + '.jpg'
+    cover_path = os.path.join(covers_dir, cover_filename)
+    cover_saved = False
+    if file_ext == 'epub':
+        cover_saved = get_epub_cover(file_path, cover_path)
+    elif file_ext == 'pdf':
+        cover_saved = get_pdf_cover(file_path, cover_path)
+    elif file_ext == 'fb2':
+        cover_saved = get_fb2_cover(file_path, cover_path)
+    elif file_ext == 'docx':
+        cover_saved = get_docx_cover(file_path, cover_path)
+    if cover_saved:
+        new_book.cover_path = cover_path
+        db.session.commit()
 
     # --- Вызов парсеров ---
     success = False
@@ -374,6 +387,19 @@ def process_uploaded_file(file, user, user_folder):
     else:
         print(f"Не удалось извлечь текст из {filename}")
         return False, f"Ошибка при обработке {filename}. Текст не извлечён."
+    
+@app.route('/toggle_books_view')
+def toggle_books_view():
+    current = session.get('books_view', 'list')
+    session['books_view'] = 'grid' if current == 'list' else 'list'
+    return redirect(request.referrer or url_for('profile', user_id=session['user_id']))
+@app.route('/book_cover/<int:book_id>')
+def book_cover(book_id):
+    """Отдаёт обложку книги."""
+    book = Book.query.get_or_404(book_id)
+    if not book.cover_path or not os.path.exists(book.cover_path):
+        abort(404)
+    return send_from_directory(os.path.dirname(book.cover_path), os.path.basename(book.cover_path))
 
 @app.route('/upload/<int:user_id>', methods=['GET', 'POST'])
 def upload(user_id):
@@ -508,6 +534,9 @@ def delete_book(book_id):
             html_dir = os.path.dirname(book.extracted_html_path)
             if os.path.exists(html_dir):
                 shutil.rmtree(html_dir)
+        # Удаляем обложку, если она есть
+        if book.cover_path and os.path.exists(book.cover_path):
+            os.remove(book.cover_path)
     except Exception as e:
         flash(f'Ошибка при удалении файлов: {e}', 'error')
     

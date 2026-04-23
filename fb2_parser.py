@@ -134,3 +134,28 @@ if __name__ == "__main__":
         print(f"Успех: {success}, файл сохранён: {test_output}")
     else:
         print(f"Файл не найден: {test_fb2}")
+
+def get_fb2_cover(fb2_path, cover_save_path):
+    """Извлекает обложку из FB2 (тег coverpage) и сохраняет."""
+    try:
+        with open(fb2_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        soup = BeautifulSoup(content, 'xml')
+        coverpage = soup.find('coverpage')
+        if coverpage:
+            image = coverpage.find('image')
+            if image:
+                href = image.get('l:href') or image.get('href')
+                if href and href.startswith('#'):
+                    binary_id = href[1:]
+                    binary = soup.find('binary', id=binary_id)
+                    if binary:
+                        data = binary.get_text(strip=True)
+                        img_data = base64.b64decode(data)
+                        with open(cover_save_path, 'wb') as f:
+                            f.write(img_data)
+                        return True
+        return False
+    except Exception as e:
+        print(f"Ошибка при извлечении обложки FB2: {e}")
+        return False

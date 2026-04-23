@@ -169,3 +169,32 @@ if __name__ == "__main__":
         print(f"Успех: {success}, файл сохранён: {test_output}")
     else:
         print(f"Файл не найден: {test_docx}")
+
+def get_docx_cover(docx_path, cover_save_path):
+    """
+    Извлекает первое изображение из DOCX и сохраняет его как обложку.
+    Возвращает True, если изображение найдено и сохранено.
+    """
+    import zipfile
+    import shutil
+    import tempfile
+    try:
+        temp_dir = tempfile.mkdtemp()
+        with zipfile.ZipFile(docx_path, 'r') as zip_ref:
+            zip_ref.extractall(temp_dir)
+        media_dir = os.path.join(temp_dir, 'word', 'media')
+        if os.path.exists(media_dir):
+            images = [f for f in os.listdir(media_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp'))]
+            if images:
+                # Берём первый найденный файл (можно отсортировать по имени)
+                img_file = images[0]
+                src = os.path.join(media_dir, img_file)
+                shutil.copy2(src, cover_save_path)
+                return True
+        return False
+    except Exception as e:
+        print(f"Ошибка при извлечении обложки из DOCX: {e}")
+        return False
+    finally:
+        if os.path.exists(temp_dir):
+            shutil.rmtree(temp_dir)

@@ -104,3 +104,17 @@ if __name__ == "__main__":
         print(f"Успех: {success}, файл сохранён: {test_output}")
     else:
         print(f"Файл не найден: {test_pdf}")
+
+def get_pdf_cover(pdf_path, cover_save_path):
+    """Извлекает первую страницу PDF как изображение и сохраняет. Требует PyMuPDF."""
+    try:
+        doc = fitz.open(pdf_path)
+        if len(doc) == 0:
+            return False
+        page = doc[0]
+        pix = page.get_pixmap(dpi=100)  # dpi можно уменьшить для экономии места
+        pix.save(cover_save_path)
+        return True
+    except Exception as e:
+        print(f"Ошибка при извлечении обложки PDF: {e}")
+        return False

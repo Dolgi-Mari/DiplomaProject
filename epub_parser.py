@@ -95,3 +95,27 @@ if __name__ == "__main__":
         print(f"Успех: {success}, файл сохранён: {test_output}")
     else:
         print("Укажите правильный путь к EPUB для теста.")
+
+def get_epub_cover(epub_path, cover_save_path):
+    """Извлекает обложку из EPUB и сохраняет по указанному пути. Возвращает True/False."""
+    try:
+        book = epub.read_epub(epub_path)
+        # Ищем элемент с типом 'cover' или 'cover-image'
+        for item in book.get_items():
+            if item.get_type() == epub.ITEM_COVER or 'cover' in item.get_name().lower():
+                with open(cover_save_path, 'wb') as f:
+                    f.write(item.get_content())
+                return True
+        # Альтернативный способ: ищем мета-тег cover
+        cover_meta = book.get_metadata('OPF', 'cover')
+        if cover_meta:
+            cover_id = cover_meta[0][0]
+            for item in book.get_items():
+                if item.get_name() == cover_id or item.id == cover_id:
+                    with open(cover_save_path, 'wb') as f:
+                        f.write(item.get_content())
+                    return True
+        return False
+    except Exception as e:
+        print(f"Ошибка при извлечении обложки EPUB: {e}")
+        return False

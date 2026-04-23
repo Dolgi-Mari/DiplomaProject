@@ -36,10 +36,7 @@
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 Размер шрифта
                                 <span class="badge bg-primary rounded-pill">
-                                    {% if user.font_pref == 'small' %}Мелкий
-                                    {% elif user.font_pref == 'medium' %}Средний
-                                    {% elif user.font_pref == 'large' %}Крупный
-                                    {% else %}Не указан{% endif %}
+                                    {{ user.font_size_px or 16 }}px
                                 </span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
@@ -99,26 +96,60 @@
                     </div>
                 </div>
 
-                <h6 class="mt-5 mb-3 fs-5 fw-semibold">📚 Мои книги</h6>
-                {% if books.items %}
-                <div class="list-group">
-                    {% for book in books.items %}
-                    <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 border">
-                        <div class="d-flex flex-wrap align-items-center gap-2">
-                            <span class="fw-medium">{{ book.title }}</span>
-                            {% if book.extracted_html_path %}
-                                <a href="/read/{{ book.id }}" class="btn btn-sm btn-outline-primary">Читать</a>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">HTML не готов</span>
-                            {% endif %}
-                            <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Удалить книгу? Это действие нельзя отменить.');">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
-                            </form>
-                        </div>
-                        <span class="text-muted small">{{ book.uploaded_at.strftime('%d.%m.%Y') }}</span>
-                    </div>
-                    {% endfor %}
+                <div class="d-flex justify-content-between align-items-center mt-5 mb-3">
+                    <h6 class="fs-5 fw-semibold">📚 Мои книги</h6>
+                    <a href="{{ url_for('toggle_books_view') }}" class="btn btn-sm btn-outline-secondary">
+                        {% if session.books_view == 'grid' %}В виде списка{% else %}В виде сетки{% endif %}
+                    </a>
                 </div>
+                {% if books.items %}
+                    {% if session.books_view == 'grid' %}
+                        <div class="books-grid">
+                            {% for book in books.items %}
+                            <div class="book-card">
+                                {% if book.cover_path %}
+                                    <img src="{{ url_for('book_cover', book_id=book.id) }}" class="book-cover" alt="Обложка">
+                                {% else %}
+                                    <div class="book-cover bg-light d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-book fs-1 text-secondary"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="book-title" title="{{ book.title }}">{{ book.title[:30] }}{% if book.title|length > 30 %}...{% endif %}</div>
+                                <div class="book-actions">
+                                    {% if book.extracted_html_path %}
+                                        <a href="/read/{{ book.id }}" class="btn btn-sm btn-outline-primary">Читать</a>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">HTML не готов</span>
+                                    {% endif %}
+                                    <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Удалить книгу? Это действие нельзя отменить.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                                    </form>
+                                </div>
+                                <div class="text-muted small text-center pb-2">{{ book.uploaded_at.strftime('%d.%m.%Y') }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <!-- старый список -->
+                        <div class="list-group">
+                            {% for book in books.items %}
+                            <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 border">
+                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                    <span class="fw-medium">{{ book.title[:50] }}{% if book.title|length > 50 %}...{% endif %}</span>
+                                    {% if book.extracted_html_path %}
+                                        <a href="/read/{{ book.id }}" class="btn btn-sm btn-outline-primary">Читать</a>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">HTML не готов</span>
+                                    {% endif %}
+                                    <form action="{{ url_for('delete_book', book_id=book.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Удалить книгу? Это действие нельзя отменить.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                                    </form>
+                                </div>
+                                <span class="text-muted small">{{ book.uploaded_at.strftime('%d.%m.%Y') }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
 
                 <!-- Пагинация -->
                 <nav aria-label="Навигация по книгам">
