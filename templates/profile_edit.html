@@ -127,6 +127,24 @@
     .collapse-btn:hover {
         background: var(--accent-hover);
     }
+    @media (max-width: 768px) {
+        .test-content-wrapper, .edit-content-wrapper {
+            margin-bottom: 100px; /* отступ, чтобы кнопка не перекрывалась */
+        }
+        .live-preview, .demo-fixed {
+            max-width: 90vw;
+            max-height: 50vh;
+            overflow-y: auto; /* добавить прокрутку, если блок слишком высокий */
+        }
+        .edit-content-wrapper .d-flex.justify-content-center.gap-3 {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .edit-content-wrapper .btn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    }
 </style>
 
 <div class="row justify-content-center">
@@ -268,6 +286,10 @@
                         </label>
                         <input type="range" class="form-range" id="lineWidthSlider" min="30" max="100" value="{{ user.preferred_line_width_ch or 66 }}" step="1">
                         <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="{{ user.preferred_line_width_ch or 66 }}">
+                    </div>
+                    <div class="alert alert-info mt-2 py-2 small" role="alert">
+                        <i class="bi bi-info-circle"></i> 
+                        Количество символов в строке, которое вы сможете увидеть, зависит от ширины вашего экрана и размера шрифта. На мобильных устройствах максимальная отображаемая длина может быть меньше выбранной.
                     </div>
 
                     <!-- 5. Межстрочный интервал -->

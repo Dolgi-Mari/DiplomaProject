@@ -125,6 +125,16 @@
         font-size: 1.3rem;
         font-weight: 600;
     }
+    @media (max-width: 768px) {
+        .test-content-wrapper, .edit-content-wrapper {
+            margin-bottom: 250px; /* отступ, чтобы кнопка не перекрывалась */
+        }
+        .live-preview, .demo-fixed {
+            max-width: 90vw;
+            max-height: 50vh;
+            overflow-y: auto; /* добавить прокрутку, если блок слишком высокий */
+        }
+    }
 </style>
 
 <div class="text-center mb-4">
@@ -276,6 +286,10 @@
                 <span id="lineWidthValue">66</span> символов
                 <input type="hidden" name="preferred_line_width_ch" id="preferredLineWidth" value="66">
             </div>
+        </div>
+        <div class="alert alert-info mt-2 py-2 small" role="alert">
+            <i class="bi bi-info-circle"></i> 
+            Количество символов в строке, которое вы сможете увидеть, зависит от ширины вашего экрана и размера шрифта. На мобильных устройствах максимальная отображаемая длина может быть меньше выбранной.
         </div>
 
         <!-- ===== Межстрочный интервал ===== -->
@@ -463,7 +477,7 @@
     if (dyslexiaNo) dyslexiaNo.addEventListener('change', toggleDyslexiaHint);
     toggleDyslexiaHint();
 
-        // Управление видимостью ползунков при выборе чувствительности к свету
+    // Управление видимостью ползунков при выборе чувствительности к свету
     const lightLow = document.getElementById('light_low');
     const lightMedium = document.getElementById('light_medium');
     const lightHigh = document.getElementById('light_high');
