@@ -596,28 +596,33 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Получаем параметр next из URL (если есть)
     next_page = request.args.get('next')
     
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        # Также получаем next из скрытого поля формы
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
         next_page = request.form.get('next') or next_page
         
+        error = None
         user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password_hash, password):
-            session['user_id'] = user.id
-            # Если есть next_page, редиректим туда, иначе в профиль
-            if next_page:
-                return redirect(next_page)
-            else:
-                return redirect(url_for('profile', user_id=user.id))
+        if not user or not check_password_hash(user.password_hash, password):
+            error = "Неверное имя пользователя или пароль."
+        
+        if error:
+            flash(error, 'danger')
+            # Возвращаемся на страницу входа с сохранённым именем
+            return render_template('login.html', next=next_page, username=username)
+        
+        # Успешный вход
+        session['user_id'] = user.id
+        if next_page:
+            return redirect(next_page)
         else:
-            return "Неверное имя пользователя или пароль. <a href='/login'>Попробуйте снова</a>"
+            return redirect(url_for('profile', user_id=user.id))
     
-    # GET-запрос: передаём next в шаблон
-    return render_template('login.html', next=next_page)
+    # GET-запрос
+    username = request.args.get('username', '')  # если передан параметром, можно подставить
+    return render_template('login.html', next=next_page, username=username)
     
 
 @app.route('/logout')
