@@ -293,6 +293,17 @@ body.theme-sepia th {
     scrollbar-color: var(--accent, #006BAE) transparent;
 }
 
+/* Переопределение стилей активных кнопок в панели быстрых настроек */
+.settings-panel .btn-group .btn.active {
+    background-color: var(--accent, #006BAE) !important;
+    color: #ffffff !important;
+    border-color: var(--accent, #006BAE) !important;
+}
+
+.settings-panel .btn-group .btn.active:hover {
+    background-color: var(--accent-hover, #005A94) !important;
+    color: #ffffff !important;
+}
 
 /* Адаптивность для мобильных устройств (читалка) */
 @media (max-width: 768px) {
