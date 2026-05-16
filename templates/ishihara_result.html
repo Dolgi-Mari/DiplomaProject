@@ -2,6 +2,12 @@
 
 {% block content %}
 <h1>Результаты теста Ишихары</h1>
+{% if error %}
+<div class="alert alert-danger" role="alert">
+    {{ error }}
+</div>
+<a href="{{ url_for('ishihara_test') }}" class="btn btn-secondary">Пройти тест заново</a>
+{% else %}
 <p>На основе ваших ответов определён следующий тип цветовосприятия:</p>
 {% if diagnosis == 'normal' %}
     <div class="alert alert-success">Нормальное цветовосприятие (трихромазия).</div>
@@ -19,4 +25,5 @@
 
 <p><a href="{{ url_for('ishihara_test') }}" class="btn btn-secondary">Пройти тест заново</a></p>
 <p><a href="{{ url_for('test') }}" class="btn btn-primary">Вернуться к основному тесту</a></p>
+{% endif %}
 {% endblock %}

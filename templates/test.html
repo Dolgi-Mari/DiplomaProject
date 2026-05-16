@@ -348,19 +348,19 @@
                     <strong>Примечание:</strong> При выборе типа дальтонизма выбранная вами тема оформления будет заменена на специализированную цветовую схему для лучшей различимости цветов.
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal" checked>
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_normal" value="normal" {% if current_color_vision == 'normal' %}checked{% endif %}>
                     <label class="form-check-label" for="color_normal">Нет, вижу все цвета нормально</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_deutan" value="deutan" {% if current_color_vision == 'deutan' %}checked{% endif %}>
                     <label class="form-check-label" for="color_deutan">Не различаю оттенки красного/зелёного</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_protan" value="protan" {% if current_color_vision == 'protan' %}checked{% endif %}>
                     <label class="form-check-label" for="color_protan">Плохо вижу красный</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan">
+                    <input class="form-check-input" type="radio" name="color_vision" id="color_tritan" value="tritan" {% if current_color_vision == 'tritan' %}checked{% endif %}>
                     <label class="form-check-label" for="color_tritan">Плохо вижу синий/жёлтый</label>
                 </div>
             </div>
@@ -605,5 +605,105 @@
         livePreview.classList.toggle('collapsed');
         collapseBtn.textContent = livePreview.classList.contains('collapsed') ? '+' : '−';
     });
+
+    // ========== СОХРАНЕНИЕ И ВОССТАНОВЛЕНИЕ НАСТРОЕК ПЕРЕД ТЕСТОМ ИШИХАРЫ ==========
+    (function() {
+        // Функция сохранения текущих значений формы в localStorage
+        function saveTestSettings() {
+            const settings = {};
+            // Ползунки
+            const contrastSlider = document.getElementById('contrastSlider');
+            const brightnessSlider = document.getElementById('brightnessSlider');
+            const lineWidthSlider = document.getElementById('lineWidthSlider');
+            if (contrastSlider) settings.contrast = contrastSlider.value;
+            if (brightnessSlider) settings.brightness = brightnessSlider.value;
+            if (lineWidthSlider) settings.lineWidth = lineWidthSlider.value;
+            
+            // Радиокнопки и select'ы
+            const allInputs = document.querySelectorAll('input, select');
+            allInputs.forEach(el => {
+                // Пропускаем поле color_vision (оно будет восстановлено из БД)
+                if (el.name === 'color_vision') return;
+                if (el.type === 'radio') {
+                    if (el.checked) settings[el.name] = el.value;
+                } else if (el.type === 'checkbox') {
+                    settings[el.name] = el.checked;
+                } else if (el.tagName === 'SELECT') {
+                    settings[el.name] = el.value;
+                } else if (el.type !== 'range' && el.type !== 'hidden' && el.type !== 'submit' && el.type !== 'button') {
+                    // обычные поля (текст, пароль и т.д.) – их нет в тесте, но на всякий случай
+                    if (el.value) settings[el.name] = el.value;
+                }
+            });
+            localStorage.setItem('testSettings', JSON.stringify(settings));
+        }
+        
+        // Функция восстановления настроек из localStorage
+        function restoreTestSettings() {
+            const saved = localStorage.getItem('testSettings');
+            if (!saved) return;
+            const settings = JSON.parse(saved);
+            
+            // Восстанавливаем ползунки
+            if (settings.contrast) {
+                const contrastSlider = document.getElementById('contrastSlider');
+                if (contrastSlider) contrastSlider.value = settings.contrast;
+            }
+            if (settings.brightness) {
+                const brightnessSlider = document.getElementById('brightnessSlider');
+                if (brightnessSlider) brightnessSlider.value = settings.brightness;
+            }
+            if (settings.lineWidth) {
+                const lineWidthSlider = document.getElementById('lineWidthSlider');
+                if (lineWidthSlider) lineWidthSlider.value = settings.lineWidth;
+            }
+            
+            // Восстанавливаем радиокнопки, select'ы
+            for (const [name, value] of Object.entries(settings)) {
+                const elements = document.querySelectorAll(`[name="${name}"]`);
+                elements.forEach(el => {
+                    if (el.type === 'radio') {
+                        if (el.value == value) el.checked = true;
+                    } else if (el.type === 'checkbox') {
+                        el.checked = value === true;
+                    } else if (el.tagName === 'SELECT') {
+                        el.value = value;
+                    } else if (el.type !== 'range') {
+                        el.value = value;
+                    }
+                });
+            }
+            
+            // После восстановления обновляем демо-блок (вызываем функцию updatePreview)
+            if (typeof updatePreview === 'function') updatePreview();
+            
+            // Очищаем localStorage, чтобы при следующей загрузке без перехода не восстанавливалось старое
+            // Но не очищаем сразу, потому что может быть возврат из теста Ишихары.
+            // Очистим только после сохранения в БД или если пользователь явно нажмёт "Сохранить" (см. ниже)
+        }
+        
+        // Сохраняем настройки перед переходом на тест Ишихары (по клику на ссылку)
+        const ishiharaLink = document.querySelector('a[href*="ishihara_test"]');
+        if (ishiharaLink) {
+            ishiharaLink.addEventListener('click', function(e) {
+                saveTestSettings();
+                // Не отменяем переход, он произойдёт нормально
+            });
+        }
+        
+        // Восстанавливаем настройки при загрузке страницы
+        window.addEventListener('load', function() {
+            restoreTestSettings();
+        });
+        
+        // Очищаем localStorage после успешного сохранения настроек в БД (кнопка "Сохранить и продолжить")
+        const saveButton = document.querySelector('form button[type="submit"]');
+        if (saveButton) {
+            saveButton.addEventListener('click', function() {
+                localStorage.removeItem('testSettings');
+            });
+        }
+    })();
+
 </script>
 {% endblock %}

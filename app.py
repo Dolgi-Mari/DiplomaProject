@@ -158,7 +158,18 @@ def test():
         db.session.commit()
         return redirect(url_for('profile', user_id=user.id))
     
-    return render_template('test.html')
+    # GET-запрос: получаем текущий тип дальтонизма из БД для предустановки радиокнопки (если такой есть)
+    current_color_vision = 'normal'  # по умолчанию
+    if user.color_blindness_type == 'deuteranopia':
+        current_color_vision = 'deutan'
+    elif user.color_blindness_type == 'protanopia':
+        current_color_vision = 'protan'
+    elif user.color_blindness_type == 'tritanopia':
+        current_color_vision = 'tritan'
+    # 'none' -> 'normal', остальное оставляем как есть
+    print(f"DEBUG: color_blindness_type={user.color_blindness_type} -> current_color_vision={current_color_vision}")  # временно для отладки
+    
+    return render_template('test.html', current_color_vision=current_color_vision)
 
 @app.route('/profile/<int:user_id>')
 def profile(user_id):
@@ -736,12 +747,21 @@ def ishihara_test():
                     scores[typ] += 1
 
         if total_answered == 0:
-            diagnosis = 'normal'  # или сообщение об ошибке
+            # Не сохраняем ничего в БД, выводим сообщение об ошибке
+            return render_template('ishihara_result.html', 
+                                   error="Вы не ответили ни на одну таблицу. Пожалуйста, пройдите тест заново.")
         else:
             diagnosis = max(scores, key=scores.get)
+            # Преобразуем короткие имена в полные для единообразия с основным тестом
+            mapping = {
+                'normal': 'none',
+                'protan': 'protanopia',
+                'deutan': 'deuteranopia'
+            }
+            full_diagnosis = mapping.get(diagnosis, 'none')
         
         # Сохраняем в БД
-        user.color_blindness_type = diagnosis
+        user.color_blindness_type = full_diagnosis
         # Для обратной совместимости обновим и старое поле color_vision
         if diagnosis == 'normal':
             user.color_vision = 'normal'
