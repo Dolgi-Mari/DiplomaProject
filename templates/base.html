@@ -53,6 +53,12 @@
             background-color: #2a2a4a;
         }
 
+        /* Увеличенные кнопки на главной странице (не уверена) */
+        .home-buttons .btn-lg {
+            padding: 0.75rem 2rem !important;
+            font-size: 1.3rem !important;
+            border-radius: 0.5rem;
+        }
         /* Монохромная тема интерфейса (светло-серый фон, чёрно-белые элементы) */
         body.ui-theme-mono {
             --bg-light: #e0e0e0;          /* светло-серый фон */
@@ -514,20 +520,20 @@
                 <ul class="navbar-nav ms-auto">
                     {% if session.user_id %}
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary ms-2" href="{{ url_for('settings') }}">⚙️</a>
+                            <a class="btn btn-outline-primary btn-lg ms-2" href="{{ url_for('settings') }}">⚙️</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary ms-2"  href="/profile/{{ session.user_id }}">Профиль</a>
+                            <a class="btn btn-outline-primary btn-lg ms-2"  href="/profile/{{ session.user_id }}">Профиль</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary ms-2"  href="/logout">Выйти</a>
+                            <a class="btn btn-outline-primary btn-lg ms-2"  href="/logout">Выйти</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary ms-2"  href="/login">Вход</a>
+                            <a class="btn btn-outline-primary btn-lg ms-2"  href="/login">Вход</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-outline-primary ms-2"  href="/register">Регистрация</a>
+                            <a class="btn btn-outline-primary btn-lg ms-2"  href="/register">Регистрация</a>
                         </li>
                     {% endif %}
                 </ul>
