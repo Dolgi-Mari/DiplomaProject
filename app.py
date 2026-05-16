@@ -716,23 +716,30 @@ def ishihara_test():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        # Собираем ответы
+        # Собираем ответы только на те таблицы, где пользователь что-то выбрал
         user_answers = {}
         for i in range(1, 39):
-            key = f'plate_{i}'
-            user_answers[i] = request.form.get(key, 'none')
+            answer = request.form.get(f'plate_{i}')
+            if answer is not None:  # только если радиокнопка была выбрана
+                user_answers[i] = answer
         
         # Подсчёт совпадений
         scores = {'normal': 0, 'protan': 0, 'deutan': 0}
+        total_answered = 0
         for plate_num, expected in EXPECTED.items():
             user_ans = user_answers.get(plate_num)
             if user_ans is None:
-                continue
+                continue # пропускаем неотвеченные таблицы
+            total_answered += 1
             for typ in scores:
                 if expected.get(typ) == user_ans:
                     scores[typ] += 1
+
+        if total_answered == 0:
+            diagnosis = 'normal'  # или сообщение об ошибке
+        else:
+            diagnosis = max(scores, key=scores.get)
         
-        diagnosis = max(scores, key=scores.get)
         # Сохраняем в БД
         user.color_blindness_type = diagnosis
         # Для обратной совместимости обновим и старое поле color_vision
