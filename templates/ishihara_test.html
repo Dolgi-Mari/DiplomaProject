@@ -32,6 +32,9 @@
         </div>
 
         <form method="POST" action="{{ url_for('ishihara_test') }}">
+            {% if next_page %}
+                <input type="hidden" name="next" value="{{ next_page }}">
+            {% endif %}            
             {% for plate in plates %}
             <div class="card mb-4 border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">

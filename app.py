@@ -773,9 +773,12 @@ def ishihara_test():
             user.color_vision = 'unknown'
         db.session.commit()
         
-        return render_template('ishihara_result.html', diagnosis=diagnosis, scores=scores)
+        # Получаем next из формы
+        next_page = request.form.get('next')
+        return render_template('ishihara_result.html', diagnosis=diagnosis, scores=scores, next_page=next_page)
     
-    # GET: показываем форму
+    # GET-запрос: получаем next из URL
+    next_page = request.args.get('next')
     plates = []
     for i in range(1, 39):
         plates.append({
@@ -783,7 +786,7 @@ def ishihara_test():
             'options': PLATE_OPTIONS[i],
             'image': url_for('static', filename=f'ishihara/plate{i}.jpg')
         })
-    return render_template('ishihara_test.html', plates=plates)
+    return render_template('ishihara_test.html', plates=plates, next_page=next_page)
   
 # ================== ЗАПУСК ==================
 if __name__ == '__main__':

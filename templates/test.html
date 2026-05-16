@@ -343,7 +343,7 @@
                     Есть ли у вас особенности цветовосприятия?
                     <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Дейтеранопия и протанопия требуют замены красного/зелёного на синий/оранжевый. Тританопия — замена синего на жёлтый."></i>
                 </h5>
-                <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>.</p>
+                <p>Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test', next=url_for('test')) }}" class="btn btn-sm btn-outline-info">развёрнутый тест Ишихары</a>.</p>
                 <div id="colorBlindnessWarning" class="alert alert-info mt-2" style="display: none;">
                     <strong>Примечание:</strong> При выборе типа дальтонизма выбранная вами тема оформления будет заменена на специализированную цветовую схему для лучшей различимости цветов.
                 </div>

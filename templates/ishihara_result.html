@@ -24,6 +24,10 @@
 </div>
 
 <p><a href="{{ url_for('ishihara_test') }}" class="btn btn-secondary">Пройти тест заново</a></p>
-<p><a href="{{ url_for('test') }}" class="btn btn-primary">Вернуться к основному тесту</a></p>
+{% if next_page %}
+    <a href="{{ next_page }}" class="btn btn-primary">Вернуться к основному тесту</a>
+{% else %}
+    <a href="{{ url_for('test') }}" class="btn btn-primary">Вернуться к основному тесту</a>
+{% endif %}
 {% endif %}
 {% endblock %}

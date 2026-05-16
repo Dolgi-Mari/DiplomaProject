@@ -342,7 +342,7 @@
                             Цветовосприятие
                             <i class="bi bi-question-circle ms-1" data-bs-toggle="tooltip" title="Дейтеранопия и протанопия требуют замены красного/зелёного на синий/оранжевый. Тританопия — замена синего на жёлтый."></i>
                         </label>
-                        <p class="small text-muted">Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test') }}" class="text-decoration-none">тест Ишихары</a>. Результаты теста имеют приоритет.</p>
+                        <p class="small text-muted">Если вы не уверены, пройдите <a href="{{ url_for('ishihara_test', next=url_for('edit_profile', user_id=user.id)) }}" class="btn btn-sm btn-outline-info">тест Ишихары</a>. Результаты теста имеют приоритет.</p>
                         <div id="colorBlindnessWarning" class="alert alert-info mt-2 py-2" style="display: none;">
                             <strong>Примечание:</strong> При выборе типа дальтонизма выбранная вами тема оформления будет заменена на специализированную цветовую схему.
                         </div>
